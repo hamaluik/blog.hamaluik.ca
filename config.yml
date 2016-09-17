@@ -1,0 +1,6 @@
+project-name: hamaluik.com
+base-path: /
+context:
+    static:
+        site-title: hamaluik.com
+        site-root: https://hamaluik.com

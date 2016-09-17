@@ -1,0 +1,8 @@
+title: String
+author: Author
+slug: String
+published: DateTime
+summary: Text
+category: Category
+content: Content
+tags: Text

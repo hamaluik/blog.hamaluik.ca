@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block og_meta %}
+  <meta property="og:title" content="{{ site_title }}" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="{{ site_root }}" />
+  <meta property="og:image" content="{{ site_root }}/assets/ca.svg" />
+  <meta property="og:locale" content="en_CA" />
+{% endblock %}
+
+{% block body %}
+  {% for post in posts %}
+    <article>
+      <header>
+        <p><time pubdate="pubdate">{{ post.published|date('%b %d %Y') }}</time> in {{ post.category.name }}</p>
+        <h1><a href="{% url "post", post %}">{{ post.title }}</a></h1>
+      </header>
+      <p>{{ post.summary|safe }}</p>
+      <footer>
+        <p><a href="{% url "post", post %}">Continue reading...</a></p>
+        <span><i class="fa fa-tags" aria-hidden="true"></i> {{ post.tags }}</span>
+      </footer>
+    </article>
+  {% endfor %}
+{% endblock %}
