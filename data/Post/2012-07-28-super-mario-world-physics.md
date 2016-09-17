@@ -80,31 +80,31 @@ In each of the plots above I've included a simple linear regression analysis bas
 Basically, when thinking about motion, there are a couple key relationships that exist - the velocity of the motion is the derivative with respect to time (rate of change) of the position of the object, and the acceleration of the motion is the derivative of the velocity with respect to time:
 
 $$
-\begin{align}
-v &= \frac{dy}{dt} \\
+\begin{aligned}
+v &= \frac{dy}{dt} \\\\
 a &= \frac{dv}{dt} = \frac{d^2y}{dt^2}
-\end{align}
+\end{aligned}
 $$
 
 Then, assuming we have a constant acceleration due to gravity (in the real world this acceleration is 9.81 m/s^2), we can figure out what the regression coefficients in the above analyses mean:
 
 $$
-\begin{align}
-a &= g \\
-v &= \int a dt \\
-v &= \int (g)dt \\
-v &= gt + v_0 \\
-y &= \int v dt \\
-y &= \int \left(gt + v_0\right) dt \\
-y &= \frac{1}{2}gt^2 + v_0 t + y_0 \\
-\end{align}
+\begin{aligned}
+a &= g \\\\
+v &= \int a dt \\\\
+v &= \int (g)dt \\\\
+v &= gt + v_0 \\\\
+y &= \int v dt \\\\
+y &= \int \left(gt + v_0\right) dt \\\\
+y &= \frac{1}{2}gt^2 + v_0 t + y_0 \\\\
+\end{aligned}
 $$
 
-Applying this math to the regression coefficients that I calculated, we find that the coefficient in front of the _t_^2 term is half of gravity, while the coefficient in front of the _t_ term is the "jump" velocity (we can ignore the y_0 parameter, as it really doesn't mean much here). Using this, I found three separate gravities and push-off velocities, depending on the scenario (assuming short-Mario is 1m tall):
+Applying this math to the regression coefficients that I calculated, we find that the coefficient in front of the _t²_ term is half of gravity, while the coefficient in front of the _t_ term is the "jump" velocity (we can ignore the y_0 parameter, as it really doesn't mean much here). Using this, I found three separate gravities and push-off velocities, depending on the scenario (assuming short-Mario is 1m tall):
 
-  * When **jumping** regularly, Mario experienced a **gravity of 67.82 m/s^2** (6.9 times Earth gravity). Here he had a **push-off velocity of 17.36 m/s**.
-  * When **high-jumping**, Mario experienced a **gravity of 34.79 m/s^2** (3.5 times Earth gravity). Here he had a **push-off velocity of 15.21 m/s**.
-  * When **falling** off a ledge, Mario experienced a **gravity of 55.88 m/s^2** (5.7 times Earth gravity).
+  * When **jumping** regularly, Mario experienced a **gravity of 67.82 m/s²** (6.9 times Earth gravity). Here he had a **push-off velocity of 17.36 m/s**.
+  * When **high-jumping**, Mario experienced a **gravity of 34.79 m/s²** (3.5 times Earth gravity). Here he had a **push-off velocity of 15.21 m/s**.
+  * When **falling** off a ledge, Mario experienced a **gravity of 55.88 m/s²** (5.7 times Earth gravity).
 
 As for running, Mario seemed to follow a perfectly constant run velocity pattern (as is expected, really). When **walking**, he moved at a speed of about **3.7 m/s**, and when **running**, moved at a speed of about **9.1 m/s**.
 

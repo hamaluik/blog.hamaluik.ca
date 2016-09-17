@@ -26,13 +26,13 @@ $$
 you instead get functions like:
 
 $$
-\begin{align}
-x(t) &= \ldots \\
-y(t) &= \ldots \\
-\end{align}
+\begin{aligned}
+x(t) &= \ldots \\\\
+y(t) &= \ldots
+\end{aligned}
 $$
 
-Where $t \in [0, 1]$. This isn't a big deal though, and in fact makes our lives even easier - we can just create a list of points in between 0 and 1 and get the corresponding x, y, [and z] coordinates that belong there:
+Where \\(t \in [0, 1]\\). This isn't a big deal though, and in fact makes our lives even easier - we can just create a list of points in between 0 and 1 and get the corresponding x, y, [and z] coordinates that belong there:
 
 ```matlab
 t = linspace(0, 1);
@@ -41,33 +41,33 @@ t = linspace(0, 1);
 The next thing we need to know is that $x(t)$ and $y(t)$ are just polynomials, defined as:
 
 $$
-\begin{align}
-x(t) &= At^3 + Bt^2 + Ct + D \\
-y(t) &= Et^3 + Ft^2 + Gt + H \\
-\end{align}
+\begin{aligned}
+x(t) &= At^3 + Bt^2 + Ct + D \\\\
+y(t) &= Et^3 + Ft^2 + Gt + H
+\end{aligned}
 $$
 
-Where $A \ldots H$ are just coefficients. These coefficients can be calculated as such:
+Where \\(A \ldots H\\) are just coefficients. These coefficients can be calculated as such:
 
 $$
 \begin{Bmatrix}
-A \\
-B \\
-C \\
-D \\
+A \\\\
+B \\\\
+C \\\\
+D
 \end{Bmatrix}
 =
 \begin{bmatrix}
--1 & 3 & -3 & 1 \\
-3 & -6 & 3 & 0 \\
--3 & 3 & 0 & 0 \\
-1 & 0 & 0 & 0 \\
+-1 & 3 & -3 & 1 \\\\
+3 & -6 & 3 & 0 \\\\
+-3 & 3 & 0 & 0 \\\\
+1 & 0 & 0 & 0
 \end{bmatrix}
 \begin{Bmatrix}
-x_0 \\
-x_1 \\
-x_2 \\
-x_3 \\
+x_0 \\\\
+x_1 \\\\
+x_2 \\\\
+x_3
 \end{Bmatrix}
 $$
 
@@ -75,35 +75,35 @@ and:
 
 $$
 \begin{Bmatrix}
-E \\
-F \\
-G \\
-H \\
+E \\\\
+F \\\\
+G \\\\
+H
 \end{Bmatrix}
 =
 \begin{bmatrix}
--1 & 3 & -3 & 1 \\
-3 & -6 & 3 & 0 \\
--3 & 3 & 0 & 0 \\
-1 & 0 & 0 & 0 \\
+-1 & 3 & -3 & 1 \\\\
+3 & -6 & 3 & 0 \\\\
+-3 & 3 & 0 & 0 \\\\
+1 & 0 & 0 & 0
 \end{bmatrix}
 \begin{Bmatrix}
-y_0 \\
-y_1 \\
-y_2 \\
-y_3 \\
+y_0 \\\\
+y_1 \\\\
+y_2 \\\\
+y_3
 \end{Bmatrix}
 $$
 
 Or, if you're not big into matrices and vectors:
 
 $$
-\begin{align}
-A &= x_3 - 3 x_2 + 3 x_1 - x_0 \\
-B &= 3 x_2 - 6 x_1 + 3 x_0 \\
-C &= 3 x_1 - 3 x_0 \\
-D &= x_0 \\
-\end{align}
+\begin{aligned}
+A &= x_3 - 3 x_2 + 3 x_1 - x_0 \\\\
+B &= 3 x_2 - 6 x_1 + 3 x_0 \\\\
+C &= 3 x_1 - 3 x_0 \\\\
+D &= x_0
+\end{aligned}
 $$
 
 Note that the equations are essentially the same for each dimension, so $z$ would follow the exact same format (note how the $y$ coefficients are calculated the exact same way as the $x$ ones).
@@ -163,16 +163,16 @@ Which results in:
 
 And we're done! That was **a lot** easier than I was expecting!
 
-Note that this formulation is just for _one_ segment that would typically be part of a much longer line composed of multiple segments. If we wanted to connect two segments together, in order to make the connection smooth all we have to do is ensure the slope of these curves are equal. The easiest way to do this would most likely be to calculate $(x\_1, y\_1)$ in the second segment using $(x\_2, y\_2)$ and $(x\_3, y\_3)$ from the first segment such that:
+Note that this formulation is just for _one_ segment that would typically be part of a much longer line composed of multiple segments. If we wanted to connect two segments together, in order to make the connection smooth all we have to do is ensure the slope of these curves are equal. The easiest way to do this would most likely be to calculate \\((x\_1, y\_1)\\) in the second segment using \\((x\_2, y\_2)\\) and \\((x\_3, y\_3)\\) from the first segment such that:
 
 $$
-\begin{align}
-x_0^2 &= x_3^1 \\
-x_1^2 &= \left(x_3^1 - x_2^1\right) + x_3^1 \\
-	  &= 2x_3^1 - x_2^1 \\
-\end{align}
+\begin{aligned}
+x_0^2 &= x_3^1 \\\\
+x_1^2 &= \left(x_3^1 - x_2^1\right) + x_3^1 \\\\
+	  &= 2x_3^1 - x_2^1 \\\\
+\end{aligned}
 $$
 
-(Use the same formulation for the $y$ dimension).
+(Use the same formulation for the \\(y\\) dimension).
 
 I'll probably post more things later, such as how to calculate the length of each spline segment so that we can do things like determine appropriate $t$ resolutions and calculate total lengths of lines etc, but hopefully this will get you off to a start right now!

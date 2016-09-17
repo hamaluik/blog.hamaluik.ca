@@ -14,13 +14,17 @@ Computers are great, but as it turns out - they're not always the smartest of fo
 
 What do I mean by solving a non-linear equation? Well, try solving for _x_ in the following equation:
 
-{image-caption[http://www.codecogs.com/png.latex?5x+\ln\left(x\right)-\sin\left(3\pi%20x\right)+x^{0.53}=0)][]}
+$$
+5x+\ln\left(x\right)-\sin\left(3\pi x\right)+x^{0.53}=0
+$$
 
 It's not even likely that there **is** an analytical solution to this, but if there is the amount of work needed to solve it would simply be ludicrous. This is where numerical methods come in. Numerical methods allow complicated equations to be solved by repeatedly solving a series of smaller, easier-to-solve equations. They're limited in that they're **not exact** equations, but most often they do the job well enough regardless.
 
 One the most famous (and simple) of numerical methods is the [Newton-Raphson](http://en.wikipedia.org/wiki/Newton's_method) method. This is a method for find the local roots of a real function. If you want more details about it, head over to Wikipedia, but basically the formula is like such:
 
-{image-caption[http://www.codecogs.com/png.latex?x_{n+1}=x_n-\frac{f(x_n)}{f'(x_n)})][]}
+$$
+x_{n+1}=x_n-\frac{f(x_n)}{f'(x_n)}
+$$
 
 This simply means that you start with an initial guess, _Xn_, that you think is reasonably close to your answer (you can often get a good indication of this by plotting the function and seeing about where it hits 0). Next, you successively update your guess of what _x_ is by making adjustment based on the slope of the function. Finally, you stop improving your guess of what _x_ is once the error (or value of plugging in your estimated _x_ is in the function) is reasonably small.
 
