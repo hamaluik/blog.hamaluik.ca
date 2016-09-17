@@ -12,7 +12,7 @@
   {% for post in posts %}
     <article>
       <header>
-        <p><time pubdate="pubdate">{{ post.published|date('%b %d %Y') }}</time> in {{ post.category.name }}</p>
+        <p><time pubdate="pubdate">{{ post.published|date('%b %d, %Y') }}</time> in {{ post.category.name }}</p>
         <h1><a href="{% url "post", post %}">{{ post.title }}</a></h1>
       </header>
       <p>{{ post.summary|safe }}</p>
