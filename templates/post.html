@@ -6,6 +6,7 @@
   <meta property="og:title" content="{{ post.title }}" />
   <meta property="og:url" content="{{ site_root }}{% url "post", post %}" />
   <meta property="og:type" content="article" />
+  {% if post.image %}<meta property="og:image" content="{{ site_root }}{{ post.image }}" />{% endif %}
   <meta property="article:published_time" content="{{ post.published|date('%Y-%m-%d %H:%M:%S') }}">
   <meta property="article:author" content="{{ post.author.profile }}">
   <meta property="article:section" content="{{ post.category.name }}">
@@ -14,6 +15,8 @@
   <meta name="twitter:site" content="{{ post.author.twitter }}" />
   <meta name="twitter:title" content="{{ post.title }}" />
   <meta name="twitter:description" content="{{ post.summary }}" />
+  {% if post.image %}<meta name="twitter:image" content="{{ site_root }}{{ post.image }}" />{% endif %}
+
 {% endblock %}
 
 {% block body %}

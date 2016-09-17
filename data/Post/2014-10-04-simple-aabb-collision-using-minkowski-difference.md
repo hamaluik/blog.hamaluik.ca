@@ -6,6 +6,7 @@ author: kenton
 published: 2014-10-04 16:47:13
 category: programming
 tags: OpenFL, Haxe, Collision Detection
+image: /assets/images/discrete-aabb-collision-minkowski/penetration_vector.png
 ---
 
 Since I've started on an adventure to start creating my games with [Haxe](http://haxe.org/) and [OpenFL](http://www.openfl.org/), I found myself in need of some collision detection. I don't really need anything as fancy or extensive as [Nape](http://napephys.com/), and although the [HxCollision](https://github.com/underscorediscovery/hxcollision) library is a pretty solid Separating Axis Theorem implementation, it doesn't deal with swept-collisions, which is a bit of an issue for games (without swept collisions, any lag spikes can easily cause objects to pass right through objects!).

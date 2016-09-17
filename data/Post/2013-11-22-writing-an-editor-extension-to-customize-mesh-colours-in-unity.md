@@ -6,6 +6,7 @@ author: kenton
 published: 2013-11-22 15:29:00
 category: programming
 tags: Unity, Editor Extension
+image: /assets/images/unity-editor-extension-mesh-colour/new-script.png
 ---
 
 

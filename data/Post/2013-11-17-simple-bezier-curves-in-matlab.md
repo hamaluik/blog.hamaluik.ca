@@ -6,6 +6,7 @@ author: kenton
 published: 2013-11-17 15:59:00
 category: math
 tags: Matlab
+image: /assets/images/cubic-splines-matlab/spline-segment.svg
 ---
 
 I've always been curious about how [B&eacute;zier] cubic splines are generated and I how I can use them in various projects (game development probably being the most immediately obvious). If you don't know what I'm talking about, [Wikipedia](http://en.wikipedia.org/wiki/B%C3%A9zier_curve) has a decent if somewhat tedious description. After digging through the math, I came up with these results which I'll share for the simplicity of it all (they really are simpler than I ever though). I found most sources started at the beginning and gave huge mathematical backgrounds, which although are nice, are typically just not what I was looking for. What I was looking for (and what is presented here) is just the end result - given a set of input weights, how do I calculate the actual spline?

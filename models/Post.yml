@@ -6,3 +6,4 @@ summary: Text
 category: Category
 content: Content
 tags: Text
+image: String

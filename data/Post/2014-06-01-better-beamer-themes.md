@@ -6,6 +6,7 @@ author: kenton
 published: 2014-06-01 14:39:38
 category: programming
 tags: LaTeX, Beamer
+image: /assets/images/better-beamer-themes/title.png
 ---
 
 I love LaTeX for typesetting all my documents. A lot of people don't understand why, but that's a discussion for another time. One thing I've always been hesitant to use LaTeX for is presentations - the main LaTeX package for making presentations is [Beamer](http://en.wikipedia.org/wiki/Beamer_(LaTeX)), and although it is extremely functional, I am firmly of the opinion that all the default themes are [butt ugly](http://www.hartwork.org/beamer-theme-matrix/) and there are barely any other themes out there. Thankfully, Beamer themes are very easy to create from scratch!

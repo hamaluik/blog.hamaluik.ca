@@ -6,6 +6,7 @@ author: kenton
 published: 2012-07-28 19:52:00
 category: math
 tags: Matlab, Physics, Reverse Engineering
+image: /assets/images/smw-physics/motioncapture-300x183.png
 ---
 
 Super Mario!
