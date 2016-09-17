@@ -71,7 +71,7 @@ However note that we aren't calculating this vector based on how much we need to
 
 <figure>
     <img src="/assets/images/swept-aabb-collision-minkowski/relativeMotion_collide.png">
-    <figcaption>However, if moving the Minkowski AABB by the relative motion vector doesn't cause it to cover the origin, the objects <b>will</b> collide during this frame!</figcaption>
+    <figcaption>However, if moving the Minkowski AABB by the relative motion vector <b>does</b> cause it to cover the origin, the objects <b>will</b> collide during this frame!</figcaption>
 </figure>
 
 This is fine and dandy if all we want to do is check whether or not the objects _will_ or _won't_ collide&mdash;but if we want to **prevent** those objects from colliding, we're going to have to do things a little bit different. We'll still use the relative velocity, but this time we'll change the perspective:
