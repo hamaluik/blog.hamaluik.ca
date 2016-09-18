@@ -28,7 +28,7 @@ h3 {font-size: 1.44em;}
 
 h4 {font-size: 1.2em;}
 
-small, .font_small {font-size: 0.833em;}
+small {font-size: 0.833em;}
 
 /* center and size the body */
 body {
@@ -148,6 +148,15 @@ a {
 a:hover, a:focus, a:active {
   color: #8c0000;
   text-decoration: none;
+}
+
+/* prettier inline codeformatting */
+:not(pre) > code {
+  margin: 0 2px;
+  padding: 0px 5px;
+  border: 1px solid #ddd;
+  background-color: #f8f8f8;
+  border-radius: 3px;
 }
 
 /* let print do its own thing */
