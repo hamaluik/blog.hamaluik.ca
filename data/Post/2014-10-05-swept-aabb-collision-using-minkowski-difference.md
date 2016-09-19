@@ -5,7 +5,7 @@ summary: Continuing on from yesterday’s post where I explored detecting discre
 author: kenton
 published: 2014-10-04 16:47:13
 category: programming
-tags: OpenFL, Haxe, Collision Detection
+tags: [OpenFL, Haxe]
 image: /assets/images/swept-aabb-collision-minkowski/raytrace_hit.png
 ---
 

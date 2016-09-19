@@ -18,7 +18,7 @@
       <p>{{ post.summary|safe }}</p>
       <footer>
         <p><a href="{% url "post", post %}">Continue reading...</a></p>
-        <span><i class="fa fa-tags" aria-hidden="true"></i> {{ post.tags }}</span>
+        {% if (post.tags is defined) and post.tags %}<span><i class="fa fa-tags" aria-hidden="true"></i> {% for tag in post.tags %}{{ tag.pk }}{% if not loop.last %}, {% endif %}{% endfor %}</span>{% endif %}
       </footer>
     </article>
   {% endfor %}

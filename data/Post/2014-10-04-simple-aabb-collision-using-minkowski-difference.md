@@ -5,7 +5,7 @@ summary: Since I’ve started on an adventure to start creating my games with Ha
 author: kenton
 published: 2014-10-04 16:47:13
 category: programming
-tags: OpenFL, Haxe, Collision Detection
+tags: [OpenFL, Haxe]
 image: /assets/images/discrete-aabb-collision-minkowski/penetration_vector.png
 ---
 

@@ -5,7 +5,7 @@ summary: I'm an engineer and a programmer, not an artist. This sometimes becomes
 author: kenton
 published: 2013-11-22 15:29:00
 category: programming
-tags: Unity, Editor Extension
+tags: [Unity]
 image: /assets/images/unity-editor-extension-mesh-colour/new-script.png
 ---
 

@@ -5,7 +5,7 @@ summary: I've always been curious about how [Bézier] cubic splines are generate
 author: kenton
 published: 2013-11-17 15:59:00
 category: math
-tags: Matlab
+tags: [Matlab]
 image: /assets/images/cubic-splines-matlab/spline-segment.svg
 ---
 

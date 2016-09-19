@@ -5,7 +5,7 @@ summary: "As part of my most recent adventures in game engine programming, I cam
 author: kenton
 published: 2016-09-17 12:58:22
 category: programming
-tags: Blender, Python
+tags: [Blender, Python]
 image: /assets/images/dynamic-blender-properties/sample-finished-result.png
 ---
 

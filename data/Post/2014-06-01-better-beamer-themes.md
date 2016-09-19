@@ -5,7 +5,7 @@ summary: I love LaTeX for typesetting all my documents. A lot of people don’t 
 author: kenton
 published: 2014-06-01 14:39:38
 category: programming
-tags: LaTeX, Beamer
+tags: [LaTeX]
 image: /assets/images/better-beamer-themes/title.png
 ---
 

@@ -5,7 +5,7 @@ summary: With modern hardware utilizing multiple cores, it can be highly advanta
 author: kenton
 published: 2014-10-07 19:44:11
 category: programming
-tags: Haxe, OpenFL, Multithreading
+tags: [Haxe, OpenFL]
 ---
 
 With modern hardware utilizing multiple cores, it can be highly advantageous to do as much [parallel processing](http://en.wikipedia.org/wiki/Parallel_computing) as possible. I think the most elegant way of doing this is to use [thread pools](http://en.wikipedia.org/wiki/Thread_pool_pattern) which allocate tasks to a limited number of threads. Unfortunately, multi-threading support isn't fully implemented in Haxe&mdash;but it is on the neko and cpp targets, so I wrote a simple thread pool to take advantage of multi-threading on those platforms!

@@ -5,7 +5,7 @@ summary: Arguably one of the greatest video game series of all time, I spent cou
 author: kenton
 published: 2012-07-28 19:52:00
 category: math
-tags: Matlab, Physics, Reverse Engineering
+tags: [Matlab]
 image: /assets/images/smw-physics/motioncapture-300x183.png
 ---
 

@@ -5,7 +5,7 @@ summary: I somewhat recently came across AutoTileGen by Pixelatto—a tool for r
 author: kenton
 published: 2014-10-06 21:37:02
 category: programming
-tags: Python
+tags: [Python]
 image: /assets/images/autotilegen-rearranger/Tileset.png.r.png
 ---
 

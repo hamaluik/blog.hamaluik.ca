@@ -5,5 +5,5 @@ published: DateTime
 summary: Text
 category: Category
 content: Content
-tags: Text
+tags: Tag[] -> posts
 image: String
