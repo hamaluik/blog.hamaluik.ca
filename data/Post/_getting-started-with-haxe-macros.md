@@ -84,4 +84,81 @@ to:
   /home/kenton/Projects/macro-demos/bin/assets
 ```
 
-Our function can also 
+Our function can also call other static functions in the class&mdash;in this case, a recursive file copy function (which simply uses the standard library to copy an entire directory somewhere, including all subdirectories):
+
+```haxe
+private static function copy(sourceDir:String, targetDir:String):Int {
+    var numCopied:Int = 0;
+
+    if(!FileSystem.exists(targetDir))
+        FileSystem.createDirectory(targetDir);
+
+    for(entry in FileSystem.readDirectory(sourceDir)) {
+        var srcFile:String = Path.join([sourceDir, entry]);
+        var dstFile:String = Path.join([targetDir, entry]);
+
+        if(FileSystem.isDirectory(srcFile))
+            numCopied += copy(srcFile, dstFile);
+        else {
+            File.copy(srcFile, dstFile);
+            numCopied++;
+        }
+    }
+    return numCopied;
+}
+```
+
+Using this function, we can modify our original macro to copy from our source to build destinations whenever we build the project:
+
+```haxe
+package macros;
+
+import Sys;
+import haxe.io.Path;
+
+class AssetManagement {
+    private static function copy(sourceDir:String, targetDir:String):Int {
+        var numCopied:Int = 0;
+
+        if(!FileSystem.exists(targetDir))
+            FileSystem.createDirectory(targetDir);
+
+        for(entry in FileSystem.readDirectory(sourceDir)) {
+            var srcFile:String = Path.join([sourceDir, entry]);
+            var dstFile:String = Path.join([targetDir, entry]);
+
+            if(FileSystem.isDirectory(srcFile))
+                numCopied += copy(srcFile, dstFile);
+            else {
+                File.copy(srcFile, dstFile);
+                numCopied++;
+            }
+        }
+        return numCopied;
+    }
+
+    public static function copyProjectAssets() {
+        var cwd:String = Sys.getCwd();
+        var assetSrcFolder = Path.join([cwd, "src", "assets"]);
+        var assetsDstFolder = Path.join([cwd, "bin", "assets"]);
+
+        // make sure the assets folder exists
+        if(!FileSystem.exists(assetsDstFolder))
+            FileSystem.createDirectory(assetsDstFolder);
+
+        // copy it!
+        var numCopied = copy(assetSrcFolder, assetsDstFolder);
+        Sys.println('Copied ${numCopied} project assets to ${assetsDstFolder}!');
+    }
+}
+```
+
+And there we go! Now whenever we build, our assets folder will be copied in full:
+
+```bash
+$ haxe init.hxml 
+Copied 5 project assets to /home/kenton/Projects/macro-demos/bin/assets!
+```
+
+## Build Macros
+
