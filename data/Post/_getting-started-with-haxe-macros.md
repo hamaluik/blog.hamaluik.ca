@@ -162,3 +162,171 @@ Copied 5 project assets to /home/kenton/Projects/macro-demos/bin/assets!
 
 ## Build Macros
 
+Build macros are special macros that automatically get executed by the compiler when compiling `class`es, `enum`s, and `abstract`s. Their purpose is generally to modify the structure of the compiled code as it is compiled&mdash;think adding, removing, and changing the fields of a class. I previously wrote about build macros in my post about [creating a code profiler](https://hamaluik.com/posts/creating-a-code-profiler-in-haxe-using-macros/), but in short a build macro could dynamically convert a class that looks like this:
+
+```haxe
+package;
+
+@:build(macros.MyTransformer.transform())
+class MyClass {
+    public var a:String;
+    private var b:Int;
+}
+```
+into this:
+```haxe
+package;
+
+class MyClass {
+    public static var b:Int;
+
+    public function squared():Int x*x;
+}
+```
+(in this example we removed `a`, changed `b` to be public and static, and added a function named `squared`).
+
+Aside from contrived examples such as this, I find that I most commonly use build macros in my own projects to tie into the asset copying system described above. When developing game code, I found myself often needing to include specific asset files, and ended up with constants like `public static var enemySpriteFileName:String = "assets/sprites/enemy.png";` littered throughout my code. When you start getting a lot of assets this very quickly becomes not feasible. Further, you don't get any protection from all-too-common things like mistyping that one file name and inexplicably having some broken system. To remedy some of these issues, HaxeFlixel has a handy utility which I fell in love with and copy in all of my projects these days. Basically, a macro adds a list of `public static` strings to a class which point to specific asset file names. No more typos, and you even benefit from auto-completion.
+
+To do this in your own project, get started by creating an empty class which will hold the file name strings:
+
+```haxe
+package;
+
+@:build(macros.Assets.addAssetList())
+class AssetFiles {}
+```
+
+The only unique thing here is the line `@:build(macros.Assets.addAssetList())`. This is some custom [metadata](https://haxe.org/manual/lf-metadata.html) which tells the compiler to run the `addAssetList()` function while _typing_ the `AssetFiles` class. We should create that function now:
+
+```haxe
+package macros;
+
+import haxe.macro.Context;
+import haxe.macro.Expr;
+import Sys;
+import haxe.io.Path;
+
+class Assets {
+    public static function addAssetList():Array<Field> {
+        // get all the fields in the class at this point
+        // this is an array describing the variables, properties,
+        // and methods in the class.
+        var fields:Array<Field> = Context.getBuildFields();
+
+        // TODO: modify the fields
+
+        // and we're done
+        return fields;
+    }
+}
+```
+
+Right now this class will get the list of build fields, do nothing to it, and return. Basically, it does nothing. What we want it do is change the `AssetFiles` class into the following (assuming we have the files `sprites/enemy.png` and `sounds/hit.ogg` in our assets folder):
+
+```haxe
+package;
+
+class AssetFiles {
+   public static var asset___sprites___enemy__png:String = "assets/sprites/enemy.png";
+   public static var asset___sounds___hut__ogg:String = "assets/sounds/hit.ogg"; 
+}
+```
+
+Let's get started by listing all our files:
+
+```haxe
+public static function addAssetList():Array<Field> {
+    // get all the fields in the class at this point
+    // this is an array describing the variables, properties,
+    // and methods in the class.
+    var fields:Array<Field> = Context.getBuildFields();
+
+    // recursively get a list of all files in our assets folder
+    var assetSrcFolder = Path.join([Sys.getCwd(), "src", "assets"]);
+    var files:Array<String> = listFiles(assetSrcFolder);
+
+    // add the fields to the class
+    for(file in files) {
+        var relativePath:String = file.substr(assetSrcFolder.length + 1);
+        var name:String = "asset___" + relativePath.split("/").join("___").split("-").join("_").split(".").join("__");
+        relativePath = "assets/" + relativePath;
+
+        // TODO: add a public static var string field called `name` with a value of `relativePath`
+    }
+
+    // and we're done
+    return fields;
+}
+```
+
+Now that we have an entry for each file, let's construct the fields. When I was first getting started with macros, I found this bit to be by far the most confusing. Thankfully, the [api docs](http://api.haxe.org/haxe/macro/) have improved a bit since then, but the main thing to remember is that the fields at this point are basically just anonymous structures filled with [`enum` values](https://haxe.org/manual/types-enum-instance.html). Specifically, we need to fill out the following typedef:
+
+```haxe
+typedef Field = {
+    var name:String;
+    @:optional var doc:Null<String>;
+    @:optional var access:Array<Access>;
+    var kind:FieldType;
+    var pos:Position;
+    @:optional var meta:Metadata;
+}
+```
+
+In the `Field` typedef,
+
+<dl>
+    <dt>`name`</dt>
+    <dd>refers to the variable / property / function name. In this case, it's the sanitized file name (`asset___sprites___enemy__png` in the above example.)</dd>
+    <dt>`doc`</dt>
+    <dd>is an optional documentation string used for autocomplete and such</dd>
+    <dt>`access`</dt>
+    <dd>is an array of [access modifier enums](http://api.haxe.org/haxe/macro/Access.html) describing whether the field is private / public, etc.</dd>
+    <dt>`kind`</dt>
+    <dd>is the meat of the field, and is an enum describing the field: be it a variable, property, or function, along with its value (which is itself an "expression" [which is just code])</dd>
+    <dt>`pos`</dt>
+    <dd>is a variable describing where in your file the field is. If you get an error, this describes the file and line number it occurs, for instance.</dd>
+    <dt>`meta`</dt>
+    <dd>is an array of [`metadata entries`](http://api.haxe.org/haxe/macro/MetadataEntry.html) for the field</dd>
+</dl>
+
+Here's how we can construct the field:
+
+```haxe
+// add the fields to the class
+for(file in files) {
+    var relativePath:String = file.substr(assetSrcFolder.length + 1);
+    var name:String = "asset___" + relativePath.split("/").join("___").split("-").join("_").split(".").join("__");
+    relativePath = "assets/" + relativePath;
+
+    fields.push({
+        name: name,
+        doc: 'Relative path for file ${file}',
+        access: [Access.APublic, Access.AStatic, Access.AInline],
+        pos: Context.currentPos(),
+        kind: FieldType.FVar(macro: String, macro: $v{relativePath})
+    });
+}
+```
+
+Now we're basically done, however I think the `kind` field deserves a bit more attention before we move on. The `kind` field is of type [`FieldType`](http://api.haxe.org/haxe/macro/FieldType.html), which is an `enum` which can take the following types:
+
+* `FVar` (variable)
+* `FFun` (function)
+* `FProp` (property)
+
+Using Haxe's [`enum instances`](https://haxe.org/manual/types-enum-instance.html), each of these gets their own constructor:
+
+* `FVar(type:ComplexType, expression:Expr)`
+* `FFun(function:Function)`
+* `FProp(get:String, set:String, type:ComplexType, expression:Expr)`
+
+In our case, we're creating variables (we could create read-only properties, but I'll leave that as an exercise to the reader), so create an `FVar`. We provide the type through [class reification](https://haxe.org/manual/macro-reification-class.html) (we basically just say use the `String` class / type). We then provide the initialization expression using [expression reification](https://haxe.org/manual/macro-reification-expression.html).
+
+So that's that. To use our new superpowers, just reference the `AssetFiles` class:
+
+```haxe
+// ...
+var enemySprite:Sprite = loadSprite(AssetFiles.asset___sprites___enemy__png);
+// ...
+```
+
