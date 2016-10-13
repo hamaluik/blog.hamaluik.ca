@@ -8,11 +8,15 @@ tags: Haxe, Haxe Macros
 published: 2016-09-18
 ---
 
-Like has been said many times before, [Haxe](http://haxe.org/) macros are incredibly powerful. They don't always have the best documentation however, and I find a lot of people forgo their use entirely (instead doing things such as created [nodejs](https://nodejs.org/) scripts to copy files around for building). Hopefully I can help shed some light on how to build your own macros for those who are new to the language, or macros in general. I'll cover three macros I use on a regular basis, one each of the three types listed in the [manual](https://haxe.org/manual/macro.html): an initialization macro for copying files to the build folder; a build macro for providing easy auto-completion of asset filenames (a la [HaxeFlixel](http://haxeflixel.com/)'s `AssetPaths`); and an expression macro for grabbing and formatting the build version.
+Like has been said many times before, [Haxe](http://haxe.org/) macros are incredibly powerful. They don't always have the best documentation however, and I find a lot of people forgo their use entirely (instead doing things such as created [nodejs](https://nodejs.org/) scripts to copy files around for building). Hopefully I can help shed some light on how to build your own macros for those who are new to the language, or macros in general. I'll cover three macros I use on a regular basis, one each of the three types listed in the [manual](https://haxe.org/manual/macro.html):
+
+1. An [**initialization macro**](#initmacros) for copying files to the build folder
+2. A [**build macro**](#buildmacros) for providing easy auto-completion of asset filenames (a la [HaxeFlixel](http://haxeflixel.com/)'s `AssetPaths`)
+3. An [**expression macro**](#exprmacros) for grabbing and formatting the build version.
 
 Before I dive into the macros, it may help to define exactly what Haxe macros are&mdash;basically, Haxe macros are just Haxe code that gets run at compile time, rather than run time. Because the code is executed during your project's compilation phase, macros thus have the ability to transform the code that is getting compiled (generally by modifying the abstract syntax tree). Macros allow you to create, programmatically, anything that you could create manually in normal Haxe source code files. For example, if you are really ambitious, you could create macros to create entire classes based off of a `.json` (or whatever other format floats your boat) description file. Or, you can automatically inject function calls into your code to create a [rudimentary profiler](https://hamaluik.com/posts/creating-a-code-profiler-in-haxe-using-macros/), or even implement [aspect-oriented programming](https://en.wikipedia.org/wiki/Aspect-oriented_programming). Or you can just use them to translate some definition variables into a string that gets used without runtime overhead. Haxe macros are similar-_ish_ to [C/C++ Macros](https://msdn.microsoft.com/en-us/library/503x3e3s.aspx), just _orders of magnitude_ more powerful.
 
-## Initialization Macros
+## <a name="initmacros"></a>Initialization Macros
 
 Initialization macros are just functions that you call in your `.hxml` file by using the `--macro` [parameter](https://haxe.org/manual/compiler-usage-flags.html). In order to better explain these macros to you, I will go through creating the macro that I often use to copy files from one directory to another. This is very useful for things such as games, where you want to copy the production-ready versions of assets from a "source" directory, into your binary directory so that when you run the game, it has access to those assets.
 
@@ -160,7 +164,7 @@ $ haxe init.hxml
 Copied 5 project assets to /home/kenton/Projects/macro-demos/bin/assets!
 ```
 
-## Build Macros
+## <a name="buildmacros"></a>Build Macros
 
 Build macros are special macros that automatically get executed by the compiler when compiling `class`es, `enum`s, and `abstract`s. Their purpose is generally to modify the structure of the compiled code as it is compiled&mdash;think adding, removing, and changing the fields of a class. I previously wrote about build macros in my post about [creating a code profiler](https://hamaluik.com/posts/creating-a-code-profiler-in-haxe-using-macros/), but in short a build macro could dynamically convert a class that looks like this:
 
@@ -248,6 +252,7 @@ public static function addAssetList():Array<Field> {
     // add the fields to the class
     for(file in files) {
         var relativePath:String = file.substr(assetSrcFolder.length + 1);
+        // map characters not allowed in variable names to ones that are
         var name:String = "asset___" + relativePath.split("/").join("___").split("-").join("_").split(".").join("__");
         relativePath = "assets/" + relativePath;
 
@@ -275,26 +280,27 @@ typedef Field = {
 In the `Field` typedef,
 
 <dl>
-    <dt>`name`</dt>
-    <dd>refers to the variable / property / function name. In this case, it's the sanitized file name (`asset___sprites___enemy__png` in the above example.)</dd>
-    <dt>`doc`</dt>
+    <dt><code>name</code></dt>
+    <dd>refers to the variable / property / function name. In this case, it's the sanitized file name (<code>asset___sprites___enemy__png</code> in the above example.)</dd>
+    <dt><code>doc</code></dt>
     <dd>is an optional documentation string used for autocomplete and such</dd>
-    <dt>`access`</dt>
-    <dd>is an array of [access modifier enums](http://api.haxe.org/haxe/macro/Access.html) describing whether the field is private / public, etc.</dd>
-    <dt>`kind`</dt>
+    <dt><code>access</code></dt>
+    <dd>is an array of <a href="http://api.haxe.org/haxe/macro/Access.html">access modifier enums</a> describing whether the field is private / public, etc.</dd>
+    <dt><code>kind</code></dt>
     <dd>is the meat of the field, and is an enum describing the field: be it a variable, property, or function, along with its value (which is itself an "expression" [which is just code])</dd>
-    <dt>`pos`</dt>
+    <dt><code>pos</code></dt>
     <dd>is a variable describing where in your file the field is. If you get an error, this describes the file and line number it occurs, for instance.</dd>
-    <dt>`meta`</dt>
-    <dd>is an array of [`metadata entries`](http://api.haxe.org/haxe/macro/MetadataEntry.html) for the field</dd>
+    <dt><code>meta</code></dt>
+    <dd>is an array of <a href="http://api.haxe.org/haxe/macro/MetadataEntry.html">metadata entries</a> for the field</dd>
 </dl>
 
-Here's how we can construct the field:
+Here's how we can construct the field (note that we don't include a `meta` field; this is because it is `@:optional` in the typedef, and we don't need it&mdash;not including it is equivalent to passing `null` for it):
 
 ```haxe
 // add the fields to the class
 for(file in files) {
     var relativePath:String = file.substr(assetSrcFolder.length + 1);
+    // map characters not allowed in variable names to ones that are
     var name:String = "asset___" + relativePath.split("/").join("___").split("-").join("_").split(".").join("__");
     relativePath = "assets/" + relativePath;
 
@@ -320,13 +326,14 @@ Using Haxe's [`enum instances`](https://haxe.org/manual/types-enum-instance.html
 * `FFun(function:Function)`
 * `FProp(get:String, set:String, type:ComplexType, expression:Expr)`
 
-In our case, we're creating variables (we could create read-only properties, but I'll leave that as an exercise to the reader), so create an `FVar`. We provide the type through [class reification](https://haxe.org/manual/macro-reification-class.html) (we basically just say use the `String` class / type). We then provide the initialization expression using [expression reification](https://haxe.org/manual/macro-reification-expression.html).
+In our case, we're creating variables (we could create read-only properties, but I'll leave that as an exercise to the reader), so create an `FVar`. We provide the type through [class reification](https://haxe.org/manual/macro-reification-class.html) (we basically just say use the `String` class / type). We then provide the initialization expression using [expression reification](https://haxe.org/manual/macro-reification-expression.html) (we just use the compile-time value of `relativePath`).
 
 So that's that. To use our new superpowers, just reference the `AssetFiles` class:
 
 ```haxe
-// ...
 var enemySprite:Sprite = loadSprite(AssetFiles.asset___sprites___enemy__png);
-// ...
+// equivalent to:
+var enemySprite:Sprite = loadSprite("assets/sprites/enemy.png");
 ```
 
+## <a name="exprmacros"></a>Expression Macros
