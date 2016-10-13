@@ -1,24 +1,24 @@
 ---
 title: Getting Started With Haxe Macros
 slug: getting-started-with-haxe-macros
-summary: "Like has been said many times before, Haxe macros are incredibly powerful. They don't always have the best documentation however, and I find a lot of people forgo their use entirely (instead doing things such as created nodejs scripts to copy files around for building). Hopefully I can help shed some light on how to build your own macros for those who are new to the language, or macros in general. I'll cover three macros I use on a regular basis, one each of the three types listed in the manual: an initialization macro for copying files to the build folder; a build macro for providing easy auto-completion of asset filenames (a la HaxeFlixel's AssetPaths); and an expression macro for grabbing and formatting the build version."
+summary: "Like has been said many times before, Haxe macros are incredibly powerful. They don't always have the best documentation however, and I find a lot of people forgo their use entirely (instead doing things such as created nodejs scripts to copy files around for building). Hopefully I can help shed some light on how to build your own macros for those who are new to the language, or macros in general. I'll cover three macros I use on a regular basis, one each of the three types listed in the manual: an initialization macro for copying files to the build folder; a build macro for providing easy auto-completion of asset filenames (a la HaxeFlixel's AssetPaths); and an expression macro for grabbing the build date as a Date object."
 author: kenton
 category: programming
 tags: Haxe, Haxe Macros
-published: 2016-09-18
+published: 2016-10-12
 ---
 
 Like has been said many times before, [Haxe](http://haxe.org/) macros are incredibly powerful. They don't always have the best documentation however, and I find a lot of people forgo their use entirely (instead doing things such as created [nodejs](https://nodejs.org/) scripts to copy files around for building). Hopefully I can help shed some light on how to build your own macros for those who are new to the language, or macros in general. I'll cover three macros I use on a regular basis, one each of the three types listed in the [manual](https://haxe.org/manual/macro.html):
 
 1. An [**initialization macro**](#initmacros) for copying files to the build folder
 2. A [**build macro**](#buildmacros) for providing easy auto-completion of asset filenames (a la [HaxeFlixel](http://haxeflixel.com/)'s `AssetPaths`)
-3. An [**expression macro**](#exprmacros) for grabbing and formatting the build version.
+3. An [**expression macro**](#exprmacros) for grabbing the build date as a `Date` object.
 
 Before I dive into the macros, it may help to define exactly what Haxe macros are&mdash;basically, Haxe macros are just Haxe code that gets run at compile time, rather than run time. Because the code is executed during your project's compilation phase, macros thus have the ability to transform the code that is getting compiled (generally by modifying the abstract syntax tree). Macros allow you to create, programmatically, anything that you could create manually in normal Haxe source code files. For example, if you are really ambitious, you could create macros to create entire classes based off of a `.json` (or whatever other format floats your boat) description file. Or, you can automatically inject function calls into your code to create a [rudimentary profiler](https://hamaluik.com/posts/creating-a-code-profiler-in-haxe-using-macros/), or even implement [aspect-oriented programming](https://en.wikipedia.org/wiki/Aspect-oriented_programming). Or you can just use them to translate some definition variables into a string that gets used without runtime overhead. Haxe macros are similar-_ish_ to [C/C++ Macros](https://msdn.microsoft.com/en-us/library/503x3e3s.aspx), just _orders of magnitude_ more powerful.
 
 ## <a name="initmacros"></a>Initialization Macros
 
-Initialization macros are just functions that you call in your `.hxml` file by using the `--macro` [parameter](https://haxe.org/manual/compiler-usage-flags.html). In order to better explain these macros to you, I will go through creating the macro that I often use to copy files from one directory to another. This is very useful for things such as games, where you want to copy the production-ready versions of assets from a "source" directory, into your binary directory so that when you run the game, it has access to those assets.
+Initialization macros are just functions that you call in your `.hxml` file by using the `--macro` [parameter](https://haxe.org/manual/compiler-usage-flags.html) (note that this means you can easily include them in libraries using [extraParams.hxml](https://haxe.org/manual/haxelib-extraParams.html)!). In order to better explain these macros to you, I will go through creating the macro that I often use to copy files from one directory to another. This is very useful for things such as games, where you want to copy the production-ready versions of assets from a "source" directory, into your binary directory so that when you run the game, it has access to those assets.
 
 I like to keep my projects organized in namespaces describing groups of functionality, so I usually end up with a `macros` package. For this example, let's create the `macros` package:
 
@@ -337,3 +337,80 @@ var enemySprite:Sprite = loadSprite("assets/sprites/enemy.png");
 ```
 
 ## <a name="exprmacros"></a>Expression Macros
+
+Expression macros are certainly the easiest type of macros to grasp, however that doesn't mean they're not worth much. Expression macros are just functions that get called by the compiler at compile time, with their output substituted into your code in place of the function call.
+
+In fact, there's a decent chance you have used an expression macro from a library before without ever knowing it. Here is what calling our build date expression macro looks like:
+
+```haxe
+var date:Date = MacroTools.dateBuilt();
+```
+
+Which is normal, everyday code. Except when you compile it, it is the same as writing:
+
+```haxe
+var date:Date = new Date(2016, 10, 12, 21, 05, 47);
+```
+
+So let's get down to writing our `dateBuilt` function:
+
+```haxe
+package macros;
+
+import haxe.macro.Expr;
+import haxe.macro.Context;
+
+class MacroTools {
+    macro public static function dateBuilt():ExprOf<Date> {
+        return macro Date.now();
+    }
+}
+```
+
+Simple, right! There's a few things going on:
+
+1. The function is prefixed by `macro`, which indicates its status as an expression macro
+2. The function returns a type called `ExprOf<Date>`. Expression macros must return [expressions](http://api.haxe.org/haxe/macro/Expr.html) (which can easily be created through [expression reification](https://haxe.org/manual/macro-reification-expression.html)). `ExprOf<Date>` just means an expression that is constrained to the `Date` type (we might as well help the type system as much as we can!).
+3. Since we need to return an expression, we use reification to convert our `Date.now()` call into an expression (using the `macro` keyword).
+
+There's just one major problem with the above: instead of inserting the time that the project was compiled, we instead just insert the `Date.now()` expression, which will never align with our build time as it is a run-time call.
+
+Once compiled, it will look like this:
+
+```haxe
+var date:Date = Date.now();
+```
+
+instead of what we want:
+
+```haxe
+var date:Date = new Date(2016, 10, 12, 21, 05, 47);
+```
+
+What we need to do is construct that last expression, so lets do that:
+
+```haxe
+macro private static function dateBuilt():ExprOf<Date> {
+    // get the date at compile time
+    var date:Date = Date.now();
+
+    // use the values from the compile-time date to construct
+    // a run-time expression
+    return macro new Date(
+        $v{date.getFullYear()}, $v{date.getMonth()}, $v{date.getDay()},
+        $v{date.getHours()}, $v{date.getMinutes()}, $v{date.getSeconds()}
+    );
+}
+```
+
+Now when we run it, it will work as expected. We had to use the `$v{}` syntax to generate an expression from the `date.get_()` function calls. This is the shorthand equivalent of calling:
+
+```haxe
+$v{date.getFullYear()}
+// is the same as:
+Context.makeExpr(date.getFullYear(), Context.currentPos())
+```
+
+## Conclusions
+
+Well, hopefully this rather long post helped introduce you to Haxe macros, or at least cleared things up a little bit. Please feel free to use any of the examples I've provided in your own code, and as always&mdash;don't hesitate to ask if you have any questions!
