@@ -58,7 +58,7 @@ $$
 R(\theta) = \cos\left(\theta\right) + \hat{i}\sin\left(\theta\right)
 $$
 
-Because of some neat math with complex numbers (including `i² = -1` formula above) which I won't repeat here, this can be reduced to:
+Because of some neat math with complex numbers (including \\(i^2 = -1\\) formula above) which I won't repeat here, this can be reduced to:
 
 $$
 R(\theta) = e^{\hat{i} \theta}
