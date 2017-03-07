@@ -1,12 +1,12 @@
 ---
 title: Super Mario World Physics
 slug: super-mario-world-physics
-summary: Arguably one of the greatest video game series of all time, I spent countless hours playing these games as a kid. One thing I always particularly loved about the games is that the kinematics / physics of Mario's motion were just so.. fun! Not necessarily that they felt real, but when you ran, you ran fast. When you jumped, you jumped high, etc. I think this is a problem that I have with numerous other platforming games.. yea, sure, the gameplay can be fun, but moving around just seems so... boring in comparison to Mario.
 author: kenton
 published: 2012-07-28 19:52:00
 category: math
 tags: Matlab, Physics, Reverse Engineering
-image: /assets/images/smw-physics/motioncapture-300x183.png
+preview_image: /assets/images/smw-physics/motioncapture.png
+preview_summary: Arguably one of the greatest video game series of all time, I spent countless hours playing these games as a kid. One thing I always particularly loved about the games is that the kinematics / physics of Mario's motion were just so.. fun! Not necessarily that they felt real, but when you ran, you ran fast. When you jumped, you jumped high, etc. I think this is a problem that I have with numerous other platforming games.. yea, sure, the gameplay can be fun, but moving around just seems so... boring in comparison to Mario.
 ---
 
 Super Mario!
@@ -37,7 +37,7 @@ Since I've started dabbling around with my own demos and games lately, I figured
 	3. Export the results to be analysed elsewhere
 
 <figure>
-	<img src="/assets/images/smw-physics/motioncapture-300x183.png">
+	<img src="/assets/images/smw-physics/motioncapture.png">
 	<figcaption>A screenshot of the video motion analysis software, PhysMo in action</figcaption>
 </figure>
 

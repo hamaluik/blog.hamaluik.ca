@@ -2,8 +2,11 @@ title: String
 author: Author
 slug: String
 published: DateTime
-summary: Text
 category: Category
 content: Content
 tags: Text
-image: String
+preview_summary: Text
+preview_image: String
+preview_mp4: String
+preview_webm: String
+preview_gif: String

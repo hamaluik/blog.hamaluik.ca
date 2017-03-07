@@ -1,12 +1,12 @@
 ---
 title: Simple AABB Collision Detection Using the Minkowski Difference
 slug: simple-aabb-collision-using-minkowski-difference
-summary: Since I’ve started on an adventure to start creating my games with Haxe and OpenFL, I found myself in need of some collision detection. I don’t really need anything as fancy or extensive as Nape, and although the HxCollision library is a pretty solid Separating Axis Theorem implementation, it doesn’t deal with swept-collisions, which is a bit of an issue for games (without swept collisions, any lag spikes can easily cause objects to pass right through objects!).
 author: kenton
 published: 2014-10-04 16:47:13
 category: programming
 tags: OpenFL, Haxe, Collision Detection
-image: /assets/images/discrete-aabb-collision-minkowski/penetration_vector.png
+preview_image: /assets/images/simple-aabb-collision-using-minkowski-difference/penetration_vector.png
+preview_summary: Since I’ve started on an adventure to start creating my games with Haxe and OpenFL, I found myself in need of some collision detection. I don’t really need anything as fancy or extensive as Nape, and although the HxCollision library is a pretty solid Separating Axis Theorem implementation, it doesn’t deal with swept-collisions, which is a bit of an issue for games (without swept collisions, any lag spikes can easily cause objects to pass right through objects!).
 ---
 
 Since I've started on an adventure to start creating my games with [Haxe](http://haxe.org/) and [OpenFL](http://www.openfl.org/), I found myself in need of some collision detection. I don't really need anything as fancy or extensive as [Nape](http://napephys.com/), and although the [HxCollision](https://github.com/underscorediscovery/hxcollision) library is a pretty solid Separating Axis Theorem implementation, it doesn't deal with swept-collisions, which is a bit of an issue for games (without swept collisions, any lag spikes can easily cause objects to pass right through objects!).
@@ -38,7 +38,7 @@ if (md.min.x <= 0 &&
 You can see a demo showing this off below:
 
 <figure>
-    <embed src="/assets/images/discrete-aabb-collision-minkowski/detect.swf" width="500" height="500">
+    <embed src="/assets/images/simple-aabb-collision-using-minkowski-difference/detect.swf" width="500" height="500">
     <figcaption>Move your mouse around to move the small box. When it's colliding with the larger box, it turns green! The blue box is actually the resulting Minkowski difference AABB (notice how when the box collides, the Minkowski AABB covers the origin).</figcaption>
 </figure>
 
@@ -89,7 +89,7 @@ class AABB
 We can take this a step further by calculating the penetration vector of the two AABBs. Quite conveniently, the penetration vector is simply the minimum distance from the origin to the Minkowski-differenced resultant AABB, as shown below:
 
 <figure>
-    <img src="/assets/images/discrete-aabb-collision-minkowski/penetration_vector.png">
+    <img src="/assets/images/simple-aabb-collision-using-minkowski-difference/penetration_vector.png">
     <figcaption>The penetration vector is the vector that you can apply to one AABB to make sure it leaves the other.</figcaption>
 </figure>
 
@@ -134,7 +134,7 @@ boxA.center += penetrationVector;
 And with just those few small calculations, we can achieve this:
 
 <figure>
-    <embed src="/assets/images/discrete-aabb-collision-minkowski/no_penetrate.swf" width="500" height="500">
+    <embed src="/assets/images/simple-aabb-collision-using-minkowski-difference/no_penetrate.swf" width="500" height="500">
     <figcaption>By applying the penetration vector to the small box, we can prevent it from overlapping with the larger one.</figcaption>
 </figure>
 

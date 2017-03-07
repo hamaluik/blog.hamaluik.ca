@@ -1,14 +1,15 @@
 ---
 title: Making A Custom Teensy3 HID Joystick
 slug: making-a-custom-teensy3-hid-joystick
-summary: Well, as per probably 99% of blogs out there, I haven't updated this one in.. forever, which is unfortunate but surely not the end of the world. Anyway, I recently got married and for our wedding we decided we wanted to include some arcade games for a more unique, personal, and fun wedding experience. Me being the overly-ambitious type that I am decided it would be even more spectacular to create our own wedding arcade ("Wedcade" for short)! These actually turned out pretty decently in the end, and I'll try to write up a post or two about them (as well as the arcade cabinets!) later, but for now I want to talk about using the Teensy3 as a joystick (namely using Teensyduino).
 author: kenton
 published: 2013-10-26 02:59:00
 category: programming
 tags: Arduino, Teensy3, Tutorial, Unity
+preview_image: /assets/images/making-a-custom-teensy3-hid-joystick/making-a-custom-teensy3-hid-joystick.jpg
+preview_summary: I recently got married and for our wedding we decided we wanted to include some arcade games for a more unique, personal, and fun wedding experience. Me being the overly-ambitious type that I am decided it would be even more spectacular to create our own wedding arcade ("Wedcade" for short)! These actually turned out pretty decently in the end, and I'll try to write up a post or two about them (as well as the arcade cabinets!) later, but for now I want to talk about using the Teensy3 as a joystick (namely using Teensyduino).
 ---
 
-Well, as per probably 99% of blogs out there, I haven't updated this one in.. forever, which is unfortunate but surely not the end of the world. Anyway, I recently got married and for our wedding we decided we wanted to include some arcade games for a more unique, personal, and fun wedding experience. Me being the overly-ambitious type that I am decided it would be even more spectacular to create our **own** wedding arcade ("Wedcade" for short)! These actually turned out pretty decently in the end, and I'll try to write up a post or two about them (as well as the arcade cabinets!) later, but for now I want to talk about using the Teensy3 as a joystick (namely using Teensyduino).
+I recently got married and for our wedding we decided we wanted to include some arcade games for a more unique, personal, and fun wedding experience. Me being the overly-ambitious type that I am decided it would be even more spectacular to create our **own** wedding arcade ("Wedcade" for short)! These actually turned out pretty decently in the end, and I'll try to write up a post or two about them (as well as the arcade cabinets!) later, but for now I want to talk about using the Teensy3 as a joystick (namely using Teensyduino).
 
 <!-- PELICAN_END_SUMMARY -->
 

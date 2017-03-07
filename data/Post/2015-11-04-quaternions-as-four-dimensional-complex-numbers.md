@@ -1,11 +1,12 @@
 ---
 title: Quaternions as Four-Dimensional Complex Numbers
 slug: quaternions-as-four-dimensional-complex-numbers
-summary: Although I have a pretty solid background in math (especially vectors, matrices, and even tensors), I've always somewhat struggled with quaternions. Most sources focus on quaternions as some tool for performing rotations in three-dimensions while avoiding gimbal lock. Which is true, they are/ that, but they're also more. After reading several articles about quaternions over the past several days, quaternions finally clicked and made sense! I'll try to share that insight with here here, though be warned that my description may be just as confusing (if not more so) than anywhere else.
 author: kenton
 published: 2015-11-04
 category: math
 tags: Quaternions
+preview_image: /assets/images/quaternions-as-four-dimensional-complex-numbers/quaternions-as-four-dimensional-complex-numbers.png
+preview_summary: Although I have a pretty solid background in math (especially vectors, matrices, and even tensors), I've always somewhat struggled with quaternions. Most sources focus on quaternions as some tool for performing rotations in three-dimensions while avoiding gimbal lock. Which is true, they are/ that, but they're also more. After reading several articles about quaternions over the past several days, quaternions finally clicked and made sense! I'll try to share that insight with here here, though be warned that my description may be just as confusing (if not more so) than anywhere else.
 ---
 
 Although I have a pretty solid background in math (especially vectors, matrices, and even tensors), I've always somewhat struggled with *quaternions*. Most sources focus on quaternions as some tool for performing rotations in three-dimensions while avoiding gimbal lock. Which is true, they *are* that, but they're also more. After reading several articles about quaternions over the past several days, quaternions finally clicked and made sense! I'll try to share that insight with here here, though be warned that my description may be just as confusing (if not more so) than anywhere else.
@@ -27,7 +28,7 @@ As it turns out, complex numbers *also* form an orthonormal basis. However, inst
 Complex numbers are just two-dimensional vectors which are composed of both *real* and *imaginary* dimensions. In the 2D Cartesian coordinate system, vectors are composed of the `x` and `y` dimensions. In the complex plane, the imaginary dimension is given the label `i`, where:
 
 $$
-\hat{i}^2 = -1
+/hat{i}^2 = -1
 $$
 
 Which is an important identity to know, however we don't really need to use it often. Where in the Cartesian plane you might write a vector as such:

@@ -15,7 +15,22 @@
         <p><time pubdate="pubdate">{{ post.published|date('%b %d, %Y') }}</time> in {{ post.category.name }}</p>
         <h1><a href="{% url "post", post %}">{{ post.title }}</a></h1>
       </header>
-      <p>{{ post.summary|safe }}</p>
+      {% if post.preview_mp4 or post.preview_webm or post.preview_gif %}
+      <figure>
+        <a href="{% url "post", post %}"><video autoplay loop>
+            {% if post.preview_webm %}<source src="{{ post.preview_webm }}" type="video/webm">{% endif %}
+            {% if post.preview_mp4 %}<source src="{{ post.preview_mp4 }}" type="video/mp4">{% endif %}
+            {% if post.preview_gif %}<img src="{{ post.preview_gif }}">{% endif %}
+        </video></a>
+      </figure>
+      {% elif post.preview_image %}
+      <figure>
+          <a href="{% url "post", post %}"><img src="{{ post.preview_image }}"></a>
+      </figure>
+      {% endif %}
+      {% if post.preview_summary %}
+      <p>{{ post.preview_summary|safe }}</p>
+      {% endif %}
       <footer>
         <p><a href="{% url "post", post %}">Continue reading...</a></p>
         <span><i class="fa fa-tags" aria-hidden="true"></i> {{ post.tags }}</span>

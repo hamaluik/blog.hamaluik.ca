@@ -126,7 +126,7 @@ article figure img {
 article figure figcaption {
   display: block;
   font-size: 0.75em;
-  text-align: justify;
+  text-align: center;
 }
 
 /* link colours! */
