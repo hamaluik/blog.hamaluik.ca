@@ -1,0 +1,5 @@
+path: /about
+template: about
+context:
+  dynamic:
+    authors: session.query(Author).order_by(Author.name.asc()).all()
