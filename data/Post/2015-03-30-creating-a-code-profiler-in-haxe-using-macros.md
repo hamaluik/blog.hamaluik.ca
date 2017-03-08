@@ -3,8 +3,7 @@ title: Creating a Code Profiler in Haxe Using Macros
 slug: creating-a-code-profiler-in-haxe-using-macros
 author: kenton
 published: 2015-03-30 22:21:55
-category: programming
-tags: Haxe, Haxe Macros
+tags: [Haxe]
 preview_summary: Haxe macros are said by many to be “black magic”, and in some ways they are—macros in Haxe are actual Haxe code (rather than macros in C/C++ for example, which are just fancy pre-processor directives). Macros are undoubtedly the most advanced feature of Haxe and probably the hardest to grasp, however I think a major reason for that is a lack of really solid documentation on the subject. To me, the Haxe docs regarding macros are somewhat obfuscated and leave something to be desired, and unfortunately there’s not a lot of other resources online. This is what led me to embark on my own journey of learning Haxe macros, and hopefully starting to shed a little more light on their mystery.
 ---
 

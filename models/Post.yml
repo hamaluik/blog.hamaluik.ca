@@ -2,9 +2,8 @@ title: String
 author: Author
 slug: String
 published: DateTime
-category: Category
+tags: Tag[] -> posts
 content: Content
-tags: Text
 preview_summary: Text
 preview_image: String
 preview_mp4: String

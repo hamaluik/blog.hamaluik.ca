@@ -3,8 +3,7 @@ title: Quaternions as Four-Dimensional Complex Numbers
 slug: quaternions-as-four-dimensional-complex-numbers
 author: kenton
 published: 2015-11-04
-category: math
-tags: Quaternions
+tags: [Math]
 preview_image: /assets/images/quaternions-as-four-dimensional-complex-numbers/quaternions-as-four-dimensional-complex-numbers.png
 preview_summary: Although I have a pretty solid background in math (especially vectors, matrices, and even tensors), I've always somewhat struggled with quaternions. Most sources focus on quaternions as some tool for performing rotations in three-dimensions while avoiding gimbal lock. Which is true, they are/ that, but they're also more. After reading several articles about quaternions over the past several days, quaternions finally clicked and made sense! I'll try to share that insight with here here, though be warned that my description may be just as confusing (if not more so) than anywhere else.
 ---

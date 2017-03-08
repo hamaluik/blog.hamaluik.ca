@@ -3,8 +3,7 @@ title: Solving Equations Using the Newton-Raphson Method
 slug: solving-equations-using-the-newton-raphson-method
 author: kenton
 published: 2011-12-03 02:50:00
-category: math
-tags: Python, Numeric Method
+tags: [Python, Math]
 preview_summary: "Computers are great, but as it turns out - they're not always the smartest of folks. However, they are great at doing simple math! Today, I'll show you how to exploit these silicon monsters to do something that sometimes humans even fail at: solving a simple non-linear equation."
 ---
 

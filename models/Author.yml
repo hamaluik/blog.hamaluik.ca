@@ -1,5 +1,5 @@
 first-name: String
 last-name: String
-email: String
-profile: String
 twitter: String
+email: String
+bio: Content

@@ -3,8 +3,7 @@ title: Dynamic Blender Properties
 slug: dynamic-blender-properties
 author: kenton
 published: 2016-09-17 12:58:22
-category: programming
-tags: Blender, Python
+tags: [Blender, Python]
 preview_image: /assets/images/dynamic-blender-properties/sample-finished-result.png
 preview_summary: "As part of my most recent adventures in game engine programming, I came across a small problem—I needed a way to edit levels (both their geometry, and the entities within the level and their associated components). Writing an editor to do this is a rather daunting task. Thankfully, Blender is a free, open-source 3D application that is 'easily' extended (well, easy-ish). So, instead of writing my own editor, I can write a Blender addon to make it do what I need it to. First up in that, was presenting an interface for editing which components an object has, and setting the values of each components' attributes. I found this to be more difficult that I expected, thanks to the way Blender handles and presents data. I will show you here how I got things working, as there doesn't seem to be documentation on this and I had to wade through a lot of half-expired forum posts to get things working."
 ---

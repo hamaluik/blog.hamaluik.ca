@@ -3,8 +3,7 @@ title: A Platform Agnostic Thread Pool for Haxe / OpenFL
 slug: a-platform-agnostic-thread-pool-for-haxe-openfl
 author: kenton
 published: 2014-10-07 19:44:11
-category: programming
-tags: Haxe, OpenFL, Multithreading
+tags: [Haxe]
 preview_summary: With modern hardware utilizing multiple cores, it can be highly advantageous to do as much parallel processing as possible. I think the most elegant way of doing this is to use thread pools which allocate tasks to a limited number of threads. Unfortunately, multi-threading support isn’t fully implemented in Haxe—but it is on the neko and cpp targets, so I wrote a simple thread pool to take advantage of multi-threading on those platforms!
 ---
 
