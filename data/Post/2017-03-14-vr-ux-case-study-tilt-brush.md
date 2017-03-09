@@ -27,7 +27,9 @@ When you launch Tilt Brush, you are immediately made to watch the Tilt Brush int
 
 <figure>
     <video autoplay loop>
-        <!-- Need GIF showing Tilt Brush startup sequence -->
+        <source src="/assets/images/vr-ux-case-study-tilt-brush/intro-sequence.webm" type="video/webm">
+        <source src="/assets/images/vr-ux-case-study-tilt-brush/intro-sequence.mp4" type="video/mp4">
+        <img src="/assets/images/vr-ux-case-study-tilt-brush/intro-sequence.gif">
     </video>
 	<figcaption>The Tilt Brush introduction naturally guides your focus to introduce the interface to you.</figcaption>
 </figure>
@@ -103,7 +105,9 @@ Another trick Tilt Brush has up its sleeve is the visual shape of the controller
 
 <figure>
     <video autoplay loop>
-        <!-- Need GIF / image comparing full controller model to Tilt Brush controller model -->
+        <source src="/assets/images/vr-ux-case-study-tilt-brush/controller-design.webm" type="video/webm">
+        <source src="/assets/images/vr-ux-case-study-tilt-brush/controller-design.mp4" type="video/mp4">
+        <img src="/assets/images/vr-ux-case-study-tilt-brush/controller-design.gif">
     </video>
 	<figcaption>The visual representation of the controller matters more than initially thought; hiding the large tracking circle allows users to engage with finer control.</figcaption>
 </figure>
