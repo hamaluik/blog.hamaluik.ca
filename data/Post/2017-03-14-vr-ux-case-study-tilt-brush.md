@@ -4,6 +4,7 @@ slug: vr-ux-case-study-tilt-brush
 author: kenton
 tags: [VR]
 published: 2017-03-14
+meta_image: /assets/images/vr-ux-case-study-tilt-brush/tilt-brush.jpg
 preview_mp4: /assets/images/vr-ux-case-study-tilt-brush/dimensionality-of-buttons.mp4
 preview_webm: /assets/images/vr-ux-case-study-tilt-brush/dimensionality-of-buttons.webm
 preview_gif: /assets/images/vr-ux-case-study-tilt-brush/dimensionality-of-buttons.gif

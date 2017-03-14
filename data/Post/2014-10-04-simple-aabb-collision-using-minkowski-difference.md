@@ -4,6 +4,7 @@ slug: simple-aabb-collision-using-minkowski-difference
 author: kenton
 published: 2014-10-04 16:47:13
 tags: [Haxe, Math]
+meta_image: /assets/images/simple-aabb-collision-using-minkowski-difference/penetration_vector.png
 preview_image: /assets/images/simple-aabb-collision-using-minkowski-difference/penetration_vector.png
 preview_summary: Since I’ve started on an adventure to start creating my games with Haxe and OpenFL, I found myself in need of some collision detection. I don’t really need anything as fancy or extensive as Nape, and although the HxCollision library is a pretty solid Separating Axis Theorem implementation, it doesn’t deal with swept-collisions, which is a bit of an issue for games (without swept collisions, any lag spikes can easily cause objects to pass right through objects!).
 ---

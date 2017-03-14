@@ -5,6 +5,7 @@ published: DateTime
 tags: Tag[] -> posts
 content: Content
 preview_summary: Text
+meta_image: String
 preview_image: String
 preview_mp4: String
 preview_webm: String

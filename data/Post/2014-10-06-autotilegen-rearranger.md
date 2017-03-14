@@ -4,6 +4,7 @@ slug: autotilegen-rearranger
 author: kenton
 published: 2014-10-06 21:37:02
 tags: [Python]
+meta_image: /assets/images/autotilegen-rearranger/rearrange.png
 preview_image: /assets/images/autotilegen-rearranger/rearrange.png
 preview_summary: I somewhat recently came across AutoTileGen by Pixelatto—a tool for rapidly creating “blob pattern” tilesets from just three input images. It seems like a pretty good tool, at least for a quick rough-in of tiles. It just has one major flaw—the tilesheet that it outputs is all mangled.
 ---
