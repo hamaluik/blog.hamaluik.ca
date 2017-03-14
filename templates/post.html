@@ -5,7 +5,7 @@
 {% block og_meta %}
   <meta property="og:title" content="{{ post.title }}" />
   <meta property="og:url" content="https://{{ site_root }}{% url "post", post %}" />
-  <meta property="og:description" content="{{ post.summary }}" />
+  <meta property="og:description" content="{{ post.preview_summary }}" />
   <meta property="og:type" content="article" />
   {% if post.meta_image %}
   <meta property="og:image" content="http://{{ site_root }}{{ post.meta_image }}" />
@@ -17,7 +17,7 @@
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:site" content="{{ post.author.twitter }}" />
   <meta name="twitter:title" content="{{ post.title }}" />
-  <meta name="twitter:description" content="{{ post.summary }}" />
+  <meta name="twitter:description" content="{{ post.preview_summary }}" />
   {% if post.meta_image %}<meta name="twitter:image" content="http://{{ site_root }}{{ post.meta_image }}" />{% endif %}
 
 {% endblock %}
