@@ -15,10 +15,8 @@ My day job consists of creating virtual and augmented reality applications for t
 As many have observed (including myself), new VR users are often hesitant to actually move about in a 3D space—when given a headset and controllers, most people stand perfectly still with their hands hovering in front of them until someone or something nudges them along. This is problematic for us, as we can't always guarantee that someone _will_ be there to nudge them along. As such, it's critically important for us to carefully design the user experience so that players can engage with the tool with absolutely no outside help. Although this is a common problem in VR, it is all the more complicated by the lack of experience and confidence of our users.
 
 <figure>
-    <video autoplay loop>
-        <!-- Need GIF / image of person standing still in VR -->
-    </video>
-	<figcaption>New users in VR often need to be encouraged to actually move and interact in the virtual space.</figcaption>
+    <img src="/assets/images/vr-ux-case-study-tilt-brush/tilt-brush.jpg">
+	<figcaption>Tilt Brush uses a mix of conventional 2D and less-conventional 3D design to allow uses to intuitively paint in 3D.</figcaption>
 </figure>
 
 In our work, we need to bridge the gap between the 2D interactions and experiences that users expect and the 3D interactions that virtual reality demands. So far I have seen no app do this better than [Tilt Brush](https://www.tiltbrush.com/). In an effort to replicate that success, I decided to take a closer look at how Tilt Brush handles UX in VR, and what I've found is briefly presented here.
