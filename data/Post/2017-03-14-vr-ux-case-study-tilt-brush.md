@@ -7,7 +7,6 @@ published: 2017-03-14
 meta_image: /assets/images/vr-ux-case-study-tilt-brush/tilt-brush.jpg
 preview_mp4: /assets/images/vr-ux-case-study-tilt-brush/dimensionality-of-buttons.mp4
 preview_webm: /assets/images/vr-ux-case-study-tilt-brush/dimensionality-of-buttons.webm
-preview_gif: /assets/images/vr-ux-case-study-tilt-brush/dimensionality-of-buttons.gif
 preview-summary: "My day job consists of creating virtual and augmented reality applications for teaching and learning at my local University. In doing this, we run into far more inexperienced users than traditional VR games do. Most of the people using our tools and applications have never experienced virtual reality first hand. Ultimately, this means that a significant amount of our target audience has based their entire digital experience expectations on the interactions they've grown accustomed to on their phones, tablets, and workstations—namely 2D interactions on a 2D screen with 2D objects. Overcoming the tendency to think of and interact with digital spaces as two-dimensional rather than three-dimensional is VR's great power, however it comes with a cost—upending 30 years of 2D zeitgeist is no easy task."
 ---
 
@@ -28,7 +27,6 @@ When you launch Tilt Brush, you are immediately made to watch the Tilt Brush int
     <video autoplay loop>
         <source src="/assets/images/vr-ux-case-study-tilt-brush/intro-sequence.webm" type="video/webm">
         <source src="/assets/images/vr-ux-case-study-tilt-brush/intro-sequence.mp4" type="video/mp4">
-        <img src="/assets/images/vr-ux-case-study-tilt-brush/intro-sequence.gif">
     </video>
 	<figcaption>The Tilt Brush introduction naturally guides your focus to introduce the interface to you.</figcaption>
 </figure>
@@ -39,7 +37,6 @@ Once the user has painted their first brush stroke, a 3-dimensional menu springs
     <video autoplay loop>
         <source src="/assets/images/vr-ux-case-study-tilt-brush/dimensionality-of-menu.webm" type="video/webm">
         <source src="/assets/images/vr-ux-case-study-tilt-brush/dimensionality-of-menu.mp4" type="video/mp4">
-        <img src="/assets/images/vr-ux-case-study-tilt-brush/dimensionality-of-menu.gif">
     </video>
 	<figcaption>The main Tilt Brush menu is inherently 3-dimensional, always attached to the left hand, and always visible.</figcaption>
 </figure>
@@ -55,7 +52,6 @@ Initially, the user is not going to know exactly how to interact with this menu.
     <video autoplay loop>
         <source src="/assets/images/vr-ux-case-study-tilt-brush/backpane-highlighting.webm" type="video/webm">
         <source src="/assets/images/vr-ux-case-study-tilt-brush/backpane-highlighting.mp4" type="video/mp4">
-        <img src="/assets/images/vr-ux-case-study-tilt-brush/backpane-highlighting.gif">
     </video>
 	<figcaption>As soon as the user points at any point on the menu, the entire panel springs to life: moving forward and increasing in brightness.</figcaption>
 </figure>
@@ -66,7 +62,6 @@ I believe this dotted line springing from your controller onto the menu pane is 
     <video autoplay loop>
         <source src="/assets/images/vr-ux-case-study-tilt-brush/animated-dashed-pointer.webm" type="video/webm">
         <source src="/assets/images/vr-ux-case-study-tilt-brush/animated-dashed-pointer.mp4" type="video/mp4">
-        <img src="/assets/images/vr-ux-case-study-tilt-brush/animated-dashed-pointer.gif">
     </video>
 	<figcaption>When one hand gets close to pointing at a panel, a slowly animated dashed line springs forth, giving clear indication of what the user is pointing at.</figcaption>
 </figure>
@@ -84,7 +79,6 @@ With these visual additions, it quickly becomes clear to the user that what they
     <video autoplay loop>
         <source src="/assets/images/vr-ux-case-study-tilt-brush/dimensionality-of-buttons.webm" type="video/webm">
         <source src="/assets/images/vr-ux-case-study-tilt-brush/dimensionality-of-buttons.mp4" type="video/mp4">
-        <img src="/assets/images/vr-ux-case-study-tilt-brush/dimensionality-of-buttons.gif">
     </video>
 	<figcaption>Although you don't have to touch the buttons physically, they are still inherently 3D (albeit working different than reality): when a button is highlighting, it lights up and sticks up above the menu.</figcaption>
 </figure>
@@ -95,7 +89,6 @@ Tilt Brush tries to keep contextual information available to the user. Not only 
     <video autoplay loop>
         <source src="/assets/images/vr-ux-case-study-tilt-brush/colour-hint-on-controller.webm" type="video/webm">
         <source src="/assets/images/vr-ux-case-study-tilt-brush/colour-hint-on-controller.mp4" type="video/mp4">
-        <img src="/assets/images/vr-ux-case-study-tilt-brush/colour-hint-on-controller.gif">
     </video>
 	<figcaption>Tilt Brush tries to help you know what is about to happen by colouring the lighting on the controller model to match the colour you're about to paint with.</figcaption>
 </figure>
@@ -106,7 +99,6 @@ Another trick Tilt Brush has up its sleeve is the visual shape of the controller
     <video autoplay loop>
         <source src="/assets/images/vr-ux-case-study-tilt-brush/controller-design.webm" type="video/webm">
         <source src="/assets/images/vr-ux-case-study-tilt-brush/controller-design.mp4" type="video/mp4">
-        <img src="/assets/images/vr-ux-case-study-tilt-brush/controller-design.gif">
     </video>
 	<figcaption>The visual representation of the controller matters more than initially thought; hiding the large tracking circle allows users to engage with finer control.</figcaption>
 </figure>
