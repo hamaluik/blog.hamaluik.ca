@@ -47,12 +47,14 @@ With that out of the way, let's get started with the simplest bit first: 2D coll
 The GJK algorithm is a way of determining if two shapes are intersection (meaning their Minkowski difference overlaps with the origin), without having to calculate the entire Minkowski difference like I did in my [previous posts](http://hamaluik.com/posts/simple-aabb-collision-using-minkowski-difference/). When you're just colliding AABBs with each other, the Minkowski difference is also an AABB and is very simple and quick to calculate, so you don't need this "shortcut", and can just calculate the entire thing and be on your way. When shapes start to rotate or have "weird" geometries however, this becomes less tenuous.
 
 <figure>
+    <img src="/assets/images/collision-engine-2d-detection/md_aabb_vs_polys.jpg">
     <figcaption>The Minkowski difference of two AABBs is itself an AABB, while the Minkowski difference of a rectangle and a triangle is a generic polygon.</figcaption>
 </figure>
 
 GJK works by trying to find a triangle (or tetrahedron in 3D) which fits inside of the Minkowski difference and encapsulates the origin. If the triangle (or tetrahedron) contains the origin, and it also fits inside of the Minkowski difference, then the Minkowski difference must also contain the origin!
 
 <figure>
+    <img src="/assets/images/collision-engine-2d-detection/triangle-in-md.jpg">
     <figcaption>If we can find a triangle which fits entirely within the Minkowski difference and also captures the origin, we can be confident the larger Minkowski difference captures the origin.</figcaption>
 </figure>
 
@@ -66,12 +68,14 @@ The basis of finding a triangle inside of the Minkowski difference uses two conc
 A support function for a convex shape is just a function that returns a point on the boundary of a shape that is the furthest in a given arbitrary direction. If multiple points are at the same distance, any of the points are acceptable. If you can fully define a support function for a shape, then you can use it to collide with things.
 
 <figure>
+    <img src="/assets/images/collision-engine-2d-detection/convex-shapes.jpg">
     <figcaption>Any convex shape can be used in this algorithm, so long as you can define a support function for it.</figcaption>
 </figure>
 
 Note that due to the properties of Minkowski differences and support functions, the support function of a Minkowski difference of two shapes is equal to the difference of the support functions of two shapes. This is what allows us to not calculate an entire Minkowski difference, but rather just the difference in support functions for the two shapes!
 
 <figure>
+    <img src="/assets/images/collision-engine-2d-detection/md-supports.jpg">
     <figcaption>The support function of a Minkowski difference of two shapes is equal to the difference in support functions for the two shapes.</figcaption>
 </figure>
 
@@ -80,6 +84,7 @@ Here are some support functions for two common shapes:
 #### Circle
 
 <figure>
+    <img src="/assets/images/collision-engine-2d-detection/circle-support.jpg">
     <figcaption>The support function of a circle is easily defined using its centre and radius.</figcaption>
 </figure>
 
@@ -102,6 +107,7 @@ class Circle : Shape2D {
 #### Polygon
 
 <figure>
+    <img src="/assets/images/collision-engine-2d-detection/polygon-support.jpg">
     <figcaption>The support function of a polygon is the vertex furthest in a given direction.</figcaption>
 </figure>
 
@@ -135,6 +141,7 @@ class Polygon : Shape2D {
 A [simplex](https://en.wikipedia.org/wiki/Simplex) is somewhat special a shape in the dimension we're working in. For a given dimension `k`, the simplex in that dimension is a shape with `k + 1` vertices. Or, in the real world: In 2D, a simplex is a **triangle** and in 3D, a simplex is a **tetrahedron**. The simplex represents the most basic solid shape that can exist in a dimension, which is helpful for calculating whether it covers the origin or not.
 
 <figure>
+    <img src="/assets/images/collision-engine-2d-detection/simplex.jpg">
     <figcaption>In 2D, the simplex is a triangle and in 3D, the simplex is a tetrahedron.</figcaption>
 </figure>
 
