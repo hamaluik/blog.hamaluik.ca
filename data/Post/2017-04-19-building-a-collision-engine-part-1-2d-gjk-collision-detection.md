@@ -3,7 +3,6 @@ title: "Building a Collision Engine Part 1: 2D GJK Collision Detection"
 slug: building-a-collision-engine-part-1-2d-gjk-collision-detection
 author: kenton
 tags: [Math, Haxe]
-published: 2017-04-19
 meta-image: /assets/images/collision-engine-2d-detection/2d_yes_slow.gif
 preview-image: /assets/images/collision-engine-2d-detection/2d_yes_slow.gif
 preview-summary: "I've previously written about using the Minkowski Difference to detect collisions of 2D AABBs, but I now want to expand this into creating a fully fleshed out and flexible collision engine for my own purposes. The engine will detect collisions using the GJK method, and calculate intersections using the EPA method. This post details how 2D GJK works, which will serve as a basis for getting the rest of the engine up and running."
