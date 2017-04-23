@@ -641,6 +641,12 @@ class Polygon2D implements Shape2D {
 }
 ```
 
+## Demo
+
+<figure>
+    <iframe style="width: 100%; height: 200px; border: 0;" src="/assets/images/collision-engine-2d-detection/demo.html"></iframe>
+</figure>
+
 ## Headbutt
 
 I've started rolling this code into it's own library, tentatively called _Headbutt_, which you can follow along with if you're interested on Github: https://github.com/FuzzyWuzzie/headbutt.
