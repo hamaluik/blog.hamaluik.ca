@@ -14,8 +14,9 @@
   <meta property="article:published_time" content="{{ post.published|date('%Y-%m-%d %H:%M:%S') }}" />
   <meta property="article:author" content="http://{{ site_root }}/about/" />
 
-  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:card" content="{%if post.large_meta_image %}summary_large_image{% else %}summary{% endif %}" />
   <meta name="twitter:site" content="{{ post.author.twitter }}" />
+  <meta name="twitter:creator" content="{{ post.author.twitter }}" />
   <meta name="twitter:title" content="{{ post.title }}" />
   <meta name="twitter:description" content="{{ post.preview_summary }}" />
   {% if post.meta_image %}<meta name="twitter:image" content="http://{{ site_root }}{{ post.meta_image }}" />{% endif %}
