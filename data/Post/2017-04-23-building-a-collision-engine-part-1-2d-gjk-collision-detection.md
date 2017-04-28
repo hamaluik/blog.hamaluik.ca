@@ -642,6 +642,8 @@ class Polygon2D implements Shape2D {
 }
 ```
 
+In my [next post](/posts/building-a-collision-engine-part-2-2d-penetration-vectors/), I will talk about how we can extend this to calculate the penetration vector of two intersecting shapes which is crucial in collision resolution.
+
 ## Demo
 
 <figure>
