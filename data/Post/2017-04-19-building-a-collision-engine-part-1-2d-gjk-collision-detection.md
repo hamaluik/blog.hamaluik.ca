@@ -233,9 +233,9 @@ public function evolveSimplex():Void {
             var c:Vec2 = vertices[0];
             
             // line cb is the line formed by the first two vertices
-            var cb:Vec2 = vertices[1] - vertices[0];
+            var cb:Vec2 = b - c;
             // line c0 is the line from the first vertex to the origin
-            var c0:Vec2 = vertices[0] * -1;
+            var c0:Vec2 = c * -1;
 
             // use the triple-cross-product to calculate a direction perpendicular to line cb
             // in the direction of the origin
@@ -388,9 +388,9 @@ public function evolveSimplex():EvolveResult {
             var c:Vec2 = vertices[0];
             
             // line cb is the line formed by the first two vertices
-            var cb:Vec2 = vertices[1] - vertices[0];
+            var cb:Vec2 = b - c;
             // line c0 is the line from the first vertex to the origin
-            var c0:Vec2 = vertices[0] * -1;
+            var c0:Vec2 = c * -1;
 
             // use the triple-cross-product to calculate a direction perpendicular to line cb
             // in the direction of the origin
@@ -476,7 +476,8 @@ interface Shape2D {
 ```haxe
 package collision.twod;
 
-import glm.Vec2;
+using glm.Vec2;
+import glm.Vec3;
 import collision.twod.Shape2D;
 
 enum EvolveResult {
@@ -499,6 +500,17 @@ class GJK2D {
         return Vec2.dot(direction, newVertex) > 0;
     }
 
+    function tripleProduct(a:Vec2, b:Vec2, c:Vec2):Vec2 {
+        var A:Vec3 = new Vec3(a.x, a.y, 0);
+        var B:Vec3 = new Vec3(b.x, b.y, 0);
+        var C:Vec3 = new Vec3(c.x, c.y, 0);
+
+        var first:Vec3 = Vec3.cross(A, B, new Vec3());
+        var second:Vec3 = Vec3.cross(first, C, new Vec3());
+
+        return new Vec2(second.x, second.y);
+    }
+
     private function evolveSimplex():EvolveResult {
         switch(vertices.length) {
             case 0: {
@@ -513,9 +525,9 @@ class GJK2D {
                 var c:Vec2 = vertices[0];
                 
                 // line cb is the line formed by the first two vertices
-                var cb:Vec2 = vertices[1] - vertices[0];
+                var cb:Vec2 = b - c;
                 // line c0 is the line from the first vertex to the origin
-                var c0:Vec2 = vertices[0] * -1;
+                var c0:Vec2 = c * -1;
 
                 // use the triple-cross-product to calculate a direction perpendicular
                 // to line cb in the direction of the origin
