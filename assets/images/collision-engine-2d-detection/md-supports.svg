@@ -11,7 +11,7 @@
 <rect x="44.5" y="22.5" class="st0" width="112.2" height="70.3"/>
 <polygon class="st1" points="79,143.8 183,124.8 111.4,237 "/>
 <polyline class="st2" points="301,143.6 376.5,61.5 452,61.5 475,114 475,161.6 391.3,176.4 301,176.4 301,143.6 "/>
-<circle class="st3" cx="183" cy="125" r="6"/>
+<circle class="st3" cx="79" cy="143.8" r="6"/>
 <circle class="st3" cx="157" cy="93" r="6"/>
 <circle class="st3" cx="475" cy="114" r="6"/>
 <g>

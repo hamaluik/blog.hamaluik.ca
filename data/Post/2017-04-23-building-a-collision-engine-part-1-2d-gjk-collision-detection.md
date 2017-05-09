@@ -3,7 +3,9 @@ title: "Building a Collision Engine Part 1: 2D GJK Collision Detection"
 slug: building-a-collision-engine-part-1-2d-gjk-collision-detection
 author: kenton
 tags: [Math, Haxe]
-meta-image: /assets/images/collision-engine-2d-detection/2d_yes_slow.gif
+published: 2017-04-23
+meta-image: /assets/images/collision-engine-2d-detection/meta-preview.jpg
+large-meta-image: true
 preview-image: /assets/images/collision-engine-2d-detection/2d_yes_slow.gif
 preview-summary: "I've previously written about using the Minkowski Difference to detect collisions of 2D AABBs, but I now want to expand this into creating a fully fleshed out and flexible collision engine for my own purposes. The engine will detect collisions using the GJK method, and calculate intersections using the EPA method. This post details how 2D GJK works, which will serve as a basis for getting the rest of the engine up and running."
 ---
@@ -73,7 +75,13 @@ A support function for a convex shape is just a function that returns a point on
     <figcaption>Any convex shape can be used in this algorithm, so long as you can define a support function for it.</figcaption>
 </figure>
 
-Note that due to the properties of Minkowski differences and support functions, the support function of a Minkowski difference of two shapes is equal to the difference of the support functions of two shapes. This is what allows us to not calculate an entire Minkowski difference, but rather just the difference in support functions for the two shapes!
+Note that due to the properties of Minkowski differences and support functions, the support function of a Minkowski difference of two shapes is equal to the difference of the support functions of two shapes. This is what allows us to not calculate an entire Minkowski difference, but rather just the difference in support functions for the two shapes! Basically, given the support functions we can easily call:
+
+```haxe
+public function getSupport(direction:Vec2):Vec2 {
+    return shapeA.support(direction) - shapeB.support(-1 * direction);
+}
+```
 
 <figure>
     <img src="/assets/images/collision-engine-2d-detection/md-supports.svg">
@@ -159,7 +167,7 @@ public function evolveSimplex() {
     switch(vertices.length) {
         case 0: {
             direction = shapeB.centre() - shapeA.centre();
-            vertices.push(shapeB.support(direction) - shapeA.support(direction));
+            vertices.push(shapeA.support(direction) - shapeB.support(-1 * direction));
         }
         case 1: {
             // TODO: add the second vertex
@@ -189,12 +197,12 @@ public function evolveSimplex():Void {
     switch(vertices.length) {
         case 0: {
             direction = shapeB.centre() - shapeA.centre();
-            vertices.push(shapeB.support(direction) - shapeA.support(direction));
+            vertices.push(shapeA.support(direction) - shapeB.support(-1 * direction));
         }
         case 1: {
             // flip the direction
             direction *= -1;
-            vertices.push(shapeB.support(direction) - shapeA.support(direction));
+            vertices.push(shapeA.support(direction) - shapeB.support(-1 * direction));
         }
         case 2: {
             // TODO: add the third vertex
@@ -221,12 +229,12 @@ public function evolveSimplex():Void {
     switch(vertices.length) {
         case 0: {
             direction = shapeB.centre() - shapeA.centre();
-            vertices.push(shapeB.support(direction) - shapeA.support(direction));
+            vertices.push(shapeA.support(direction) - shapeB.support(-1 * direction));
         }
         case 1: {
             // flip the direction
             direction *= -1;
-            vertices.push(shapeB.support(direction) - shapeA.support(direction));
+            vertices.push(shapeA.support(direction) - shapeB.support(-1 * direction));
         }
         case 2: {
             var b:Vec2 = vertices[1];
@@ -240,7 +248,7 @@ public function evolveSimplex():Void {
             // use the triple-cross-product to calculate a direction perpendicular to line cb
             // in the direction of the origin
             direction = tripleProduct(cb, c0, cb);
-            vertices.push(shapeB.support(direction) - shapeA.support(direction));
+            vertices.push(shapeA.support(direction) - shapeB.support(-1 * direction));
         }
         case 3: {
             // TODO: calculate if the simplex contains the origin
@@ -325,14 +333,14 @@ If we found that the origin lies on the outside of one of the line segments, we 
                 // get rid of c and add a new support in the direction of abPerp
                 vertices.remove(c);
                 direction = abPerp;
-                vertices.push(shapeB.support(direction) - shapeA.support(direction));
+                vertices.push(shapeA.support(direction) - shapeB.support(-1 * direction));
             }
             else if(acPerp.dot(a0) > 0) {
                 // the origin is outside line ac
                 // get rid of b and add a new support in the direction of acPerp
                 vertices.remove(b);
                 direction = acPerp;
-                vertices.push(shapeB.support(direction) - shapeA.support(direction));
+                vertices.push(shapeA.support(direction) - shapeB.support(-1 * direction));
             }
             else {
                 // the origin is inside both ab and ac,
@@ -369,9 +377,9 @@ enum EvolveResult {
 // ...
 
 private function addSupport(direction:Vec2):Bool {
-    var newVertex:Vec2 = shapeB.support(direction) - shapeA.support(direction);
+    var newVertex:Vec2 = shapeA.support(direction) - shapeB.support(-1 * direction);
     vertices.push(newVertex);
-    return Vec2.dot(direction, newVertex) > 0;
+    return Vec2.dot(direction, newVertex) >= 0;
 }
 
 public function evolveSimplex():EvolveResult {
@@ -495,7 +503,7 @@ class GJK2D {
     public function new() {}
 
     private function addSupport(direction:Vec2):Bool {
-        var newVertex:Vec2 = shapeB.support(direction) - shapeA.support(direction);
+        var newVertex:Vec2 = shapeA.support(direction) - shapeB.support(-1 * direction);
         vertices.push(newVertex);
         return Vec2.dot(direction, newVertex) > 0;
     }
@@ -645,3 +653,15 @@ class Polygon2D implements Shape2D {
     }
 }
 ```
+
+In my [next post](/posts/building-a-collision-engine-part-2-2d-penetration-vectors/), I will talk about how we can extend this to calculate the penetration vector of two intersecting shapes which is crucial in collision resolution.
+
+## Demo
+
+<figure>
+    <iframe style="width: 100%; height: 200px; border: 0;" src="/assets/images/collision-engine-2d-detection/demo.html"></iframe>
+</figure>
+
+## Headbutt
+
+I've started rolling this code into it's own library, tentatively called _Headbutt_, which you can follow along with if you're interested on Github: [https://github.com/FuzzyWuzzie/headbutt](https://github.com/FuzzyWuzzie/headbutt).
