@@ -119,14 +119,14 @@ article figure {
   text-align: center;
 }
 
-article figure img {
+article figure img, article figure video {
   max-width: 100%;
 }
 
 article figure figcaption {
   display: block;
   font-size: 0.75em;
-  text-align: justify;
+  text-align: center;
 }
 
 /* link colours! */

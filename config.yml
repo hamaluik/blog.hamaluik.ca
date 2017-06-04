@@ -1,5 +1,6 @@
 project-name: hamaluik.com
 base-path: /
+encoding: utf-8
 context:
     static:
         site-title: hamaluik.com

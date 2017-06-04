@@ -1,14 +1,15 @@
 ---
 title: Getting Started With Haxe Macros
 slug: getting-started-with-haxe-macros
-summary: "Like has been said many times before, Haxe macros are incredibly powerful. They don't always have the best documentation however, and I find a lot of people forgo their use entirely (instead doing things such as created nodejs scripts to copy files around for building). Hopefully I can help shed some light on how to build your own macros for those who are new to the language, or macros in general. I'll cover three macros I use on a regular basis, one each of the three types listed in the manual: an initialization macro for copying files to the build folder; a build macro for providing easy auto-completion of asset filenames (a la HaxeFlixel's AssetPaths); and an expression macro for grabbing the build date as a Date object."
 author: kenton
-category: programming
-tags: Haxe, Haxe Macros
+tags: [Haxe]
 published: 2016-10-12
+meta_image: /assets/images/getting-started-with-haxe-macros/getting-started-with-haxe-macros.png
+preview_image: /assets/images/getting-started-with-haxe-macros/getting-started-with-haxe-macros.png
+preview_summary: "Like has been said many times before, Haxe macros are incredibly powerful. They don't always have the best documentation however, and I find a lot of people forgo their use entirely (instead doing things such as creating nodejs scripts to copy files around for building). Hopefully I can help shed some light on how to build your own macros for those who are new to the language, or macros in general. I'll cover three macros I use on a regular basis, one each of the three types listed in the manual: an initialization macro for copying files to the build folder; a build macro for providing easy auto-completion of asset filenames (a la HaxeFlixel's AssetPaths); and an expression macro for grabbing the build date as a Date object."
 ---
 
-Like has been said many times before, [Haxe](http://haxe.org/) macros are incredibly powerful. They don't always have the best documentation however, and I find a lot of people forgo their use entirely (instead doing things such as created [nodejs](https://nodejs.org/) scripts to copy files around for building). Hopefully I can help shed some light on how to build your own macros for those who are new to the language, or macros in general. I'll cover three macros I use on a regular basis, one each of the three types listed in the [manual](https://haxe.org/manual/macro.html):
+Like has been said many times before, [Haxe](http://haxe.org/) macros are incredibly powerful. They don't always have the best documentation however, and I find a lot of people forgo their use entirely (instead doing things such as creating [nodejs](https://nodejs.org/) scripts to copy files around for building). Hopefully I can help shed some light on how to build your own macros for those who are new to the language, or macros in general. I'll cover three macros I use on a regular basis, one each of the three types listed in the [manual](https://haxe.org/manual/macro.html):
 
 1. An [**initialization macro**](#initmacros) for copying files to the build folder
 2. A [**build macro**](#buildmacros) for providing easy auto-completion of asset filenames (a la [HaxeFlixel](http://haxeflixel.com/)'s `AssetPaths`)

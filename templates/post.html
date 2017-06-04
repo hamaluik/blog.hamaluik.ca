@@ -5,21 +5,21 @@
 {% block og_meta %}
   <meta property="og:title" content="{{ post.title }}" />
   <meta property="og:url" content="https://{{ site_root }}{% url "post", post %}" />
-  <meta property="og:description" content="{{ post.summary }}" />
+  <meta property="og:description" content="{{ post.preview_summary }}" />
   <meta property="og:type" content="article" />
-  {% if post.image %}
-  <meta property="og:image" content="http://{{ site_root }}{{ post.image }}" />
-  <meta property="og:image:secure_url" content="https://{{ site_root }}{{ post.image }}" />
+  {% if post.meta_image %}
+  <meta property="og:image" content="http://{{ site_root }}{{ post.meta_image }}" />
+  <meta property="og:image:secure_url" content="https://{{ site_root }}{{ post.meta_image }}" />
   {% endif %}
   <meta property="article:published_time" content="{{ post.published|date('%Y-%m-%d %H:%M:%S') }}" />
-  <meta property="article:author" content="{{ post.author.profile }}" />
-  <meta property="article:section" content="{{ post.category.name }}" />
+  <meta property="article:author" content="http://{{ site_root }}/about/" />
 
-  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:card" content="{%if post.large_meta_image %}summary_large_image{% else %}summary{% endif %}" />
   <meta name="twitter:site" content="{{ post.author.twitter }}" />
+  <meta name="twitter:creator" content="{{ post.author.twitter }}" />
   <meta name="twitter:title" content="{{ post.title }}" />
-  <meta name="twitter:description" content="{{ post.summary }}" />
-  {% if post.image %}<meta name="twitter:image" content="http://{{ site_root }}{{ post.image }}" />{% endif %}
+  <meta name="twitter:description" content="{{ post.preview_summary }}" />
+  {% if post.meta_image %}<meta name="twitter:image" content="http://{{ site_root }}{{ post.meta_image }}" />{% endif %}
 
 {% endblock %}
 
@@ -30,31 +30,16 @@
     </header>
     {{ post.content|safe }}
   </article>
-
-  <div id="disqus_thread"></div>
-  <script>
-  var disqus_config = function () {
-      this.page.url = "https://{{ site_root }}{% url "post", post %}";
-      this.page.identifier = "/posts/{{ post.slug }}";
-  };
-  (function() { // DON'T EDIT BELOW THIS LINE
-      var d = document, s = d.createElement('script');
-      s.src = '//hamaluikcom.disqus.com/embed.js';
-      s.setAttribute('data-timestamp', +new Date());
-      (d.head || d.body).appendChild(s);
-  })();
-  </script>
-  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-
 {% endblock %}
 
 {% block scripts %}
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/styles/monokai_sublime.min.css">
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/highlight.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/languages/haxe.min.js"></script>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/styles/monokai-sublime.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/highlight.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/languages/haxe.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/languages/python.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script>
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/katex.min.css">
-  <script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/katex.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/contrib/auto-render.min.js"></script>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.css" integrity="sha384-wITovz90syo1dJWVh32uuETPVEtGigN07tkttEqPv+uR2SE/mbQcG7ATL28aI9H0" crossorigin="anonymous">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.js" integrity="sha384-/y1Nn9+QQAipbNQWU65krzJralCnuOasHncUFXGkdwntGeSvQicrYkiUBwsgUqc1" crossorigin="anonymous"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/contrib/auto-render.min.js" integrity="sha384-dq1/gEHSxPZQ7DdrM82ID4YVol9BYyU7GbWlIwnwyPzotpoc57wDw/guX8EaYGPx" crossorigin="anonymous"></script>
   <script>renderMathInElement(document.body);</script>
 {% endblock %}
