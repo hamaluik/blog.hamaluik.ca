@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Hamaluik.com</title>
+    <description>{{ site_description }}</description>
+    <link>http://{{ site_root }}</link>
+    <atom:link href="http://{{ site_root }}/rss.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>{{ now_rfc822 }}</lastBuildDate>
+    <pubDate>{{ now_rfc822 }}</pubDate>
+    <ttl>1440</ttl>
+    {% for post in posts %}
+      <item>
+        <title>{{ post.title }}</title>
+        <description>
+          {% if post.meta_image %}
+          <![CDATA[<img src="http://{{ site_root }}{{ post.meta_image }}"/><br />]]>
+          {% endif %}
+          {% if post.preview_summary %}
+            {{ post.preview_summary }}
+          {% else %}
+            {{ post.content|safe|striptags|truncate(600)|escape }}
+          {% endif %}
+        </description>
+        <link>http://{{ site_root }}{% url "post", post %}</link>
+        <guid isPermaLink="true">http://{{ site_root }}{% url "post", post %}</guid>
+        <pubDate>{{ post.published|date("%a, %d %b %Y %H:%M:%S +0200") }}</pubDate>
+      </item>
+    {% endfor %}
+  </channel>
+</rss>
