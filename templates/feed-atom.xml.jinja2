@@ -21,6 +21,13 @@
             <a href="http://{{ site_root }}{% url "post", post %}">
               <img src="http://{{ site_root }}{{ post.meta_image }}" />
             </a>
+            <p>
+            {% if post.preview_summary %}
+              {{ post.preview_summary }}
+            {% else %}
+              {{ post.content|safe|striptags|truncate(600)|escape }}
+            {% endif %}
+            </p>
           ]]>
         </content>
         {% endif %}
