@@ -16,6 +16,8 @@
   <meta name="msapplication-config" content="/assets/browserconfig.xml">
   <meta name="theme-color" content="#ffffff">
   {% block og_meta %}{% endblock %}
+  <link rel="feed" type="application/atom+xml" href="/feed.atom" title="Hamaluik.com">
+  <link rel="feed" type="application/rss+xml" href="/feed.rss" title="Hamaluik.com">
 </head>
 <body>
   <header>
@@ -25,6 +27,7 @@
       <a href="https://blazingmammothgames.itch.io/"><i class="fa fa-gamepad fa-2x" aria-hidden="true"></i></a>
       <a href="https://github.com/FuzzyWuzzie"><i class="fa fa-github fa-2x" aria-hidden="true"></i></a>
       <a href="https://twitter.com/KentonHam"><i class="fa fa-twitter fa-2x" aria-hidden="true"></i></a>
+      <a href="http://{{site_root}}/feed.rss"><i class="fa fa-rss fa-2x" aria-hidden="true"></i></a>
     </nav>
   </header>
   {% block body %}{% endblock %}

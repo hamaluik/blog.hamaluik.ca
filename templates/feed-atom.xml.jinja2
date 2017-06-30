@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <title>Hamaluik.com</title>
+    <link href="http://{{ site_root }}/"/>
+    <link rel="self" href="http://{{ site_root }}/feed.atom"/>
+    <updated>{{ now|atomdate }}</updated>
+    <author><name>Kenton Hamaluik</name></author>
+    <id>http://{{ site_root }}/</id>
+    <icon>http://{{ site_root }}/assets/favicon-32x32.png</icon>
+    <rights>© {{ now|date("%Y") }} Kenton Hamaluik</rights>
+
+    {% for post in posts %}
+    <entry>
+        <id>http://{{ site_root }}{% url "post", post %}</id>
+        <title>{{ post.title }}</title>
+        <link href="http://{{ site_root }}{% url 'post', post %}" />
+        <updated>{{ post.published|atomdate }}</updated>
+        {% if post.meta_image %}
+        <content type="html">
+          <![CDATA[
+            <a href="http://{{ site_root }}{% url "post", post %}">
+              <img src="http://{{ site_root }}{{ post.meta_image }}" />
+            </a>
+            <p>
+            {% if post.preview_summary %}
+              {{ post.preview_summary }}
+            {% else %}
+              {{ post.content|safe|striptags|truncate(600)|escape }}
+            {% endif %}
+            </p>
+          ]]>
+        </content>
+        {% endif %}
+        <summary>
+          {% if post.preview_summary %}
+            {{ post.preview_summary }}
+          {% else %}
+            {{ post.content|safe|striptags|truncate(600)|escape }}
+          {% endif %}
+        </summary>
+    </entry>
+    {% endfor %}
+</feed>

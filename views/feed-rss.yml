@@ -1,0 +1,7 @@
+path: /feed.rss
+template: feed-rss.xml.jinja2
+context:
+  dynamic:
+    posts: session.query(Post).filter(Post.published != None).order_by(Post.published.desc()).all()
+    now: datetime.now()
+    now-rfc822: datetime.now().strftime("%a, %d %b %Y %H:%M:%S +0200")
