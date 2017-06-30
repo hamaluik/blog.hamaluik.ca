@@ -6,7 +6,7 @@ tags: [Math, Haxe]
 published: 2017-06-30
 meta-image: /assets/images/collision-engine-3d-detection/meta-preview.jpg
 large-meta-image: true
-preview-image: /assets/images/collision-engine-2d-detection/meta-preview.jpg
+preview-image: /assets/images/collision-engine-3d-detection/meta-preview.jpg
 preview-summary: "Now that I've conquered 2D collision detection and intersection calculation, it's time to move onto 3D. Thankfully, GJK is relatively easy to extend into 3D once we have the base framework that we developed before."
 ---
 
