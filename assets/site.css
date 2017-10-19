@@ -50,10 +50,11 @@ body > header h1 {
 
 body > header nav {
   float: right;
+  font-size: 1.5em;
 }
 
 body > header nav a {
-  margin-left: 0.5em;
+  margin-left: 0.1em;
 }
 
 body > header {
@@ -65,8 +66,8 @@ body > footer {
   text-align: center;
 }
 
-body > footer img {
-  height: 0.75em;
+body > footer svg {
+  height: 0.75em !important;
 }
 
 /* bold headers */
@@ -150,6 +151,31 @@ a:hover, a:focus, a:active {
   text-decoration: none;
 }
 
+.icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+}
+
+/* ==========================================
+Single-colored icons can be modified like so:
+.icon-name {
+  font-size: 32px;
+  color: red;
+}
+========================================== */
+
+.icon-ca {
+  width: 1.3330078125em;
+}
+
+.icon-rss {
+  width: 0.875em;
+}
+
 /* prettier inline codeformatting */
 :not(pre) > code {
   margin: 0 2px;
@@ -173,5 +199,14 @@ a:hover, a:focus, a:active {
   a, a:hover, a:focus, a:active {
     color: #000;
     text-decoration: underline;
+  }
+
+  h1, h2, h3, h4 {
+    page-break-inside: avoid;
+    page-break-after: avoid;
+  }
+
+  p {
+    page-break-inside: avoid;
   }
 }

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ site_title }}{% if page_title %} | {{ page_title }}{% endif %}</title>
-  <style>article footer,body>header{overflow:auto}article figure,article figure figcaption{display:block;text-align:center}article figure,body>footer{text-align:center}html{font-size:1em}body{background-color:#fff;font-family:sans-serif;font-weight:400;line-height:1.45;color:#333;margin:1em auto;max-width:40em;padding:0 1em}p{margin-bottom:1.3em}h1,h2,h3,h4{margin:1.414em 0 .5em;line-height:1.2}h1{margin-top:0;font-size:2.074em;font-weight:800}h2{font-size:1.728em;font-weight:700}h3{font-size:1.44em;font-weight:600}h4{font-size:1.2em;font-weight:500}small{font-size:.833em}body>header{font-size:1.2em;margin-bottom:2em}body>header h1{float:left;font-size:1.2em}article footer span,body>header nav{float:right}body>header nav a{margin-left:.5em}body>footer img{height:.75em}article{margin-bottom:.75em;border-bottom:thin solid #f3f3f3}article footer span,article header p{font-size:.833em;margin:0;color:#7a7a7a;font-style:italic}article header h1{margin:0}article>p{margin-bottom:.5em}article footer p{margin-top:0;float:left}article p{text-align:justify}article figure img,article figure video{max-width:100%}article figure figcaption{font-size:.75em}h1 a,header a{color:#333;text-decoration:none}a,h1 a:hover,header a:hover{color:#bf0a30;text-decoration:none}a:active,a:focus,a:hover{color:#8c0000;text-decoration:none}:not(pre)>code{margin:0 2px;padding:0 5px;border:1px solid #ddd;background-color:#f8f8f8;border-radius:3px}@media print{body,h1 a{color:#000}body{max-width:none}a,a:active,a:focus,a:hover{color:#000;text-decoration:underline}}</style>
+  <style>article footer,body>header{overflow:auto}article figure,article figure figcaption{display:block;text-align:center}article figure,body>footer{text-align:center}html{font-size:1em}body{background-color:#fff;font-family:sans-serif;font-weight:400;line-height:1.45;color:#333;margin:1em auto;max-width:40em;padding:0 1em}p{margin-bottom:1.3em}h1,h2,h3,h4{margin:1.414em 0 .5em;line-height:1.2}h1{margin-top:0;font-size:2.074em;font-weight:800}h2{font-size:1.728em;font-weight:700}h3{font-size:1.44em;font-weight:600}h4{font-size:1.2em;font-weight:500}small{font-size:.833em}body>header{font-size:1.2em;margin-bottom:2em}body>header h1{float:left;font-size:1.2em}body>header nav{float:right;font-size:1.5em}body>header nav a{margin-left:.1em}body>footer svg{height:.75em!important}article{margin-bottom:.75em;border-bottom:thin solid #f3f3f3}article footer span,article header p{font-size:.833em;margin:0;color:#7a7a7a;font-style:italic}article header h1{margin:0}article>p{margin-bottom:.5em}article footer p{margin-top:0;float:left}article footer span{float:right}article p{text-align:justify}article figure img,article figure video{max-width:100%}article figure figcaption{font-size:.75em}h1 a,header a{color:#333;text-decoration:none}a,h1 a:hover,header a:hover{color:#bf0a30;text-decoration:none}a:active,a:focus,a:hover{color:#8c0000;text-decoration:none}.icon{display:inline-block;width:1em;height:1em;stroke-width:0;stroke:currentColor;fill:currentColor}.icon-ca{width:1.3330078125em}.icon-rss{width:.875em}:not(pre)>code{margin:0 2px;padding:0 5px;border:1px solid #ddd;background-color:#f8f8f8;border-radius:3px}@media print{body,h1 a{color:#000}h1,h2,h3,h4,p{page-break-inside:avoid}body{max-width:none}a,a:active,a:focus,a:hover{color:#000;text-decoration:underline}h1,h2,h3,h4{page-break-after:avoid}}</style>
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
   <link rel="icon" type="image/png" href="/assets/favicon-32x32.png" sizes="32x32">
   <link rel="icon" type="image/png" href="/assets/favicon-16x16.png" sizes="16x16">
@@ -23,19 +23,17 @@
   <header>
     <h1><a href="/">Hamaluik.com</a></h1>
     <nav>
-      <a href="/about/"><i class="fa fa-user fa-2x" aria-hidden="true"></i></a>
-      <a href="https://blazingmammothgames.itch.io/"><i class="fa fa-gamepad fa-2x" aria-hidden="true"></i></a>
-      <a href="https://github.com/FuzzyWuzzie"><i class="fa fa-github fa-2x" aria-hidden="true"></i></a>
-      <a href="https://twitter.com/KentonHam"><i class="fa fa-twitter fa-2x" aria-hidden="true"></i></a>
-      <a href="http://{{site_root}}/feed.rss"><i class="fa fa-rss fa-2x" aria-hidden="true"></i></a>
+      <a href="/about/"><svg class="icon icon-user"><use xlink:href="assets/icons.svg#user"></use></svg></a>
+      <a href="https://blazingmammothgames.itch.io/"><svg class="icon icon-itchio"><use xlink:href="assets/icons.svg#itchio"></use></svg></a>
+      <a href="https://github.com/FuzzyWuzzie"><svg class="icon icon-github"><use xlink:href="assets/icons.svg#github"></use></svg></a>
+      <a href="https://twitter.com/KentonHam"><svg class="icon icon-twitter"><use xlink:href="assets/icons.svg#twitter"></use></svg></a>
+      <a href="http://{{site_root}}/feed.rss"><svg class="icon icon-rss"><use xlink:href="assets/icons.svg#rss"></use></svg></a>
     </nav>
   </header>
   {% block body %}{% endblock %}
   <footer>
-    <p><img src="/assets/ca.svg"> Made in Canada.</p>
+    <p><svg class="icon icon-ca"><use xlink:href="assets/icons.svg#ca"></use></svg> Made in Canada.</p>
   </footer>
-
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   {% block scripts %}{% endblock %}
 </body>
 </html>
