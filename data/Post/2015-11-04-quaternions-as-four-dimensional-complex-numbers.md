@@ -27,7 +27,7 @@ As it turns out, complex numbers *also* form an orthonormal basis. However, inst
 Complex numbers are just two-dimensional vectors which are composed of both *real* and *imaginary* dimensions. In the 2D Cartesian coordinate system, vectors are composed of the `x` and `y` dimensions. In the complex plane, the imaginary dimension is given the label `i`, where:
 
 $$
-/hat{i}^2 = -1
+\hat{i}^2 = -1
 $$
 
 Which is an important identity to know, however we don't really need to use it often. Where in the Cartesian plane you might write a vector as such:
