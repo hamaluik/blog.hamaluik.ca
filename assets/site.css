@@ -151,6 +151,34 @@ a:hover, a:focus, a:active {
   text-decoration: none;
 }
 
+/* prettier inline codeformatting */
+:not(pre) > code {
+  margin: 0 2px;
+  padding: 0px 5px;
+  border: 1px solid #ddd;
+  background-color: #f8f8f8;
+  border-radius: 3px;
+  word-break: break-all;
+}
+
+pre > code, figure {
+  overflow-x: auto;
+}
+
+.katex-display > .katex {
+  display: inline-block;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow-x: auto;
+  text-align: initial;
+}
+.katex {
+  font: normal 1.21em KaTeX_Main, Times New Roman, serif;
+  line-height: 1.2;
+  white-space: normal;
+  text-indent: 0;
+}
+
 .icon {
   display: inline-block;
   width: 1em;
@@ -174,20 +202,6 @@ Single-colored icons can be modified like so:
 
 .icon-rss {
   width: 0.875em;
-}
-
-/* prettier inline codeformatting */
-:not(pre) > code {
-  margin: 0 2px;
-  padding: 0px 5px;
-  border: 1px solid #ddd;
-  background-color: #f8f8f8;
-  border-radius: 3px;
-  word-break: break-all;
-}
-
-pre > code, .katex-display, figure {
-  overflow: scroll;
 }
 
 /* let print do its own thing */
