@@ -5,10 +5,10 @@ author: kenton
 published: 2015-11-04
 tags: [Math]
 preview_image: /assets/images/quaternions-as-four-dimensional-complex-numbers/quaternions-as-four-dimensional-complex-numbers.png
-preview_summary: Although I have a pretty solid background in math (especially vectors, matrices, and even tensors), I've always somewhat struggled with quaternions. Most sources focus on quaternions as some tool for performing rotations in three-dimensions while avoiding gimbal lock. Which is true, they are/ that, but they're also more. After reading several articles about quaternions over the past several days, quaternions finally clicked and made sense! I'll try to share that insight with here here, though be warned that my description may be just as confusing (if not more so) than anywhere else.
+preview_summary: Although I have a pretty solid background in math (especially vectors, matrices, and even tensors), I've always somewhat struggled with quaternions. Most sources focus on quaternions as some tool for performing rotations in three-dimensions while avoiding gimbal lock. Which is true, they are/ that, but they're also more. After reading several articles about quaternions over the past several days, quaternions finally clicked and made sense! I'll try to share that insight with you here, though be warned that my description may be just as confusing (if not more so) than anywhere else.
 ---
 
-Although I have a pretty solid background in math (especially vectors, matrices, and even tensors), I've always somewhat struggled with *quaternions*. Most sources focus on quaternions as some tool for performing rotations in three-dimensions while avoiding gimbal lock. Which is true, they *are* that, but they're also more. After reading several articles about quaternions over the past several days, quaternions finally clicked and made sense! I'll try to share that insight with here here, though be warned that my description may be just as confusing (if not more so) than anywhere else.
+Although I have a pretty solid background in math (especially vectors, matrices, and even tensors), I've always somewhat struggled with *quaternions*. Most sources focus on quaternions as some tool for performing rotations in three-dimensions while avoiding gimbal lock. Which is true, they *are* that, but they're also more. After reading several articles about quaternions over the past several days, quaternions finally clicked and made sense! I'll try to share that insight with you here, though be warned that my description may be just as confusing (if not more so) than anywhere else.
 
 In short, once I really understood that quaternions are simply four-dimensional [complex numbers](https://en.wikipedia.org/wiki/Complex_number), understanding their creation and use became a lot simpler. Quaternions are basically just four-dimensional vectors, who's orthonormal basis lies in some weird four-dimensional existence. That sounds like a mouthful, and to be honest, it kind of is. Let's take a step back and look at complex numbers. Actually, before that, let's look at orthonormal bases.
 
@@ -16,9 +16,9 @@ In short, once I really understood that quaternions are simply four-dimensional 
 
 If you don't know what an orthonormal basis is, that's probably just because you don't know their name. To quote [wikipedia](https://en.wikipedia.org/wiki/Orthonormal_basis):
 
-&gt;In mathematics, particularly linear algebra, an orthonormal basis for an inner product space V with finite dimension is a basis for V whose vectors are orthonormal, that is, they are all unit vectors and orthogonal to each other.
+> In mathematics, particularly linear algebra, an orthonormal basis for an inner product space V with finite dimension is a basis for V whose vectors are orthonormal, that is, they are all unit vectors and orthogonal to each other.
 
-That is to say, an orthonormal basis is a set of vectors which are **all** perpendicular to each other. You almost assuredly know one such basis: the `&lt;x, y, z&gt;` coordinate system (also called the "[Cartesian coordinate system](https://en.wikipedia.org/wiki/Cartesian_coordinate_system)"). Essentially each component of the basis represents a different dimension. There are many other orthonormal bases, for example: 2D Cartesian coordinates, polar coordinates (2D), cylindrical coordinates (3D), and spherical coordinates (3D) to name a few.
+That is to say, an orthonormal basis is a set of vectors which are **all** perpendicular to each other. You almost assuredly know one such basis: the `<x, y, z>` coordinate system (also called the "[Cartesian coordinate system](https://en.wikipedia.org/wiki/Cartesian_coordinate_system)"). Essentially each component of the basis represents a different dimension. There are many other orthonormal bases, for example: 2D Cartesian coordinates, polar coordinates (2D), cylindrical coordinates (3D), and spherical coordinates (3D) to name a few.
 
 As it turns out, complex numbers *also* form an orthonormal basis. However, instead of representing physical dimensions, complex numbers represent a complex plane composed of *real* and *imaginary* components representing real and imaginary dimensions.
 
@@ -154,17 +154,17 @@ $$
 \vec{p}' = q\vec{p}q^{-1}
 $$
 
-By adding this multiplication in, the resulting `p'` quaternion will be **pure** quaternion, with the complex parts representing the vector `p` rotated by the quaternion `q`. There's a catch however: since you effectively multiplied the vector twice (once by `q` and once by the inverse of `q`), the resulting vector gets rotated by `2θ`, meaning to rotate the vector only by `θ`, you need to construct `q` as if it was rotated by `0.5 θ`.
+By adding this multiplication in, the resulting `p'` quaternion will be **pure** quaternion, with the complex parts representing the vector `p` rotated by the quaternion `q`. There's a catch however: since you effectively multiplied the vector twice (once by `q` and once by the inverse of `q`), the resulting vector gets rotated by <code>2θ</code>, meaning to rotate the vector only by <code>θ</code>, you need to construct `q` as if it was rotated by <code>0.5θ</code>.
 
 #### Constructing a Quaternion as a Rotation
 
-Remembering the formula for `R(θ)` from before, we can construct a rotation quaternion as such:
+Remembering the formula for <code>R(θ)</code> from before, we can construct a rotation quaternion as such:
 
 $$
 q(\theta) = \cos(\theta) + \sin(\theta)\hat{i} + \sin(\theta)\hat{j} + \sin(\theta)\hat{k}
 $$
 
-However, this suffers from the `2θ` issue mentioned above, so we actually want to construct it as so:
+However, this suffers from the <code>2θ</code> issue mentioned above, so we actually want to construct it as so:
 
 $$
 q\left(\theta\right) = \cos\left(\frac{\theta}{2}\right) + \sin\left(\frac{\theta}{2}\right)\hat{i} + \sin\left(\frac{\theta}{2}\right)\hat{j} + \sin\left(\frac{\theta}{2}\right)\hat{k}
