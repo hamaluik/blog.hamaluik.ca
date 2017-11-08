@@ -16,7 +16,7 @@ My main hobbyist interests lie in how games are created. As such, I have a great
     <img src="/assets/images/about/rubycrush_ss_full.jpg">
 </figure>
 
-Aside from game creation, I also have a propensity for creating apps for my [and my family's] own personal use. These projects include things like: a Christmas gift-giving wishlist website, a webapp for managing storyboards online, a webapp for keeping track of spells in DnD, and [Who is the Fuck Man?](http://whoisthefuckman.com/) (among others).
+Aside from game creation, I also have a propensity for creating apps for my [and my family's] own personal use. These projects include things like: a Christmas gift-giving wishlist website, a webapp for managing storyboards online, and a webapp for keeping track of spells in DnD (among others).
 
 <figure>
     <img src="/assets/images/about/listwish.jpg">
@@ -27,5 +27,11 @@ I occasionally tinker in hardware, though tend towards software due to the cost 
 <figure>
     <img src="/assets/images/about/wedcade.jpg">
 </figure>
+
+I have a BSc in Biomechanical Engineering from the [University of Alberta](https://ualberta.ca), as well as an MSc in Mechanical Engineering (also from the UofA). You can view the results from my thesis here:
+
+* [Defence presentation slides](/assets/msc/Hamaluik_Kenton_D_201406_MSc_Defence.pdf)
+* [Thesis](/assets/msc/Hamaluik_Kenton_D_201406_MSc.pdf)
+* [Poster](/assets/msc/Hamaluik_Kenton_D_201406_MSc_Poster.pdf)
 
 I'm happy to hear from people about the projects that I post, unfortunately I often don't have the time / energy / willpower to maintain, fix, or do things for you. Please don't be upset if I rebuff you!
