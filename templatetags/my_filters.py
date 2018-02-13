@@ -13,4 +13,4 @@ def filter_atomdate(d):
     local = pytz.timezone("America/Edmonton")
     ld = local.localize(d, is_dst=None)
     #ud = ld.astimezone(pytz.utc)
-    return ld.isoformat('T')
+    return ld.isoformat('T'.encode('ascii', 'ignore'))
