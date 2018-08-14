@@ -1,7 +1,7 @@
-project-name: hamaluik.ca
+project-name: blog.hamaluik.ca
 base-path: /
 encoding: utf-8
 context:
     static:
-        site-title: hamaluik.ca
-        site-root: hamaluik.ca
+        site-title: Kenton's Programming Blog
+        site-root: blog.hamaluik.ca
