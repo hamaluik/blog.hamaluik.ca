@@ -1,6 +1,6 @@
 ---
 name: Kenton Hamaluik
-email: kenton@hamaluik.com
+email: kenton@hamaluik.ca
 twitter: "KentonHam"
 ---
 

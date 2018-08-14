@@ -1,3 +1,3 @@
-# hamaluik.com
+# hamaluik.ca
 
-Sources for https://hamaluik.com (generated using [statik](https://github.com/thanethomson/statik) / https://getstatik.com/)
+Sources for https://hamaluik.ca (generated using [statik](https://github.com/thanethomson/statik) / https://getstatik.com/)

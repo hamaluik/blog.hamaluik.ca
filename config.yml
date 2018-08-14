@@ -1,7 +1,7 @@
-project-name: hamaluik.com
+project-name: hamaluik.ca
 base-path: /
 encoding: utf-8
 context:
     static:
-        site-title: hamaluik.com
-        site-root: hamaluik.com
+        site-title: hamaluik.ca
+        site-root: hamaluik.ca
