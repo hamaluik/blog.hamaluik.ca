@@ -664,4 +664,4 @@ In my [next post](/posts/building-a-collision-engine-part-2-2d-penetration-vecto
 
 ## Headbutt
 
-I've started rolling this code into it's own library, tentatively called _Headbutt_, which you can follow along with if you're interested on Github: [https://github.com/FuzzyWuzzie/headbutt](https://github.com/FuzzyWuzzie/headbutt).
+I've started rolling this code into it's own library, tentatively called _Headbutt_, which you can follow along with if you're interested on Github: [https://github.com/hamaluik/headbutt](https://github.com/hamaluik/headbutt).

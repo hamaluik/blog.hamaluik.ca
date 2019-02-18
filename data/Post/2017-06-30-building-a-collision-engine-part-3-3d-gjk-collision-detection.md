@@ -192,7 +192,7 @@ case 4: {
 
 ## Putting it All Together
 
-3D collision detection with GJk is definitely a lot easier than I originally thought it was, especially after you get all the concepts figured out in 2D. For reference, here is the complete 3D collision detection class at the time of writing from my [Headbutt](https://github.com/FuzzyWuzzie/headbutt) library:
+3D collision detection with GJk is definitely a lot easier than I originally thought it was, especially after you get all the concepts figured out in 2D. For reference, here is the complete 3D collision detection class at the time of writing from my [Headbutt](https://github.com/hamaluik/headbutt) library:
 
 ### Headbutt3D.hx
 
@@ -345,4 +345,4 @@ class Headbutt3D {
 
 ## Headbutt
 
-I've started rolling this code into it's own library, tentatively called _Headbutt_, which you can follow along with if you're interested on Github: [https://github.com/FuzzyWuzzie/headbutt](https://github.com/FuzzyWuzzie/headbutt).
+I've started rolling this code into it's own library, tentatively called _Headbutt_, which you can follow along with if you're interested on Github: [https://github.com/hamaluik/headbutt](https://github.com/hamaluik/headbutt).

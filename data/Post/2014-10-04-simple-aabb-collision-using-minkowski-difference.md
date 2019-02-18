@@ -138,4 +138,4 @@ And with just those few small calculations, we can achieve this:
     <figcaption>By applying the penetration vector to the small box, we can prevent it from overlapping with the larger one.</figcaption>
 </figure>
 
-[I've posted the source](https://gist.github.com/FuzzyWuzzie/048d24c5d3ce154316f3) for the demos shown here so you can see all the machinery in place. That said, it's still super simple! Join me next time when I explore using this technique to do **continuous** collision detection between two moving AABBs!
+[I've posted the source](https://gist.github.com/hamaluik/048d24c5d3ce154316f3) for the demos shown here so you can see all the machinery in place. That said, it's still super simple! Join me next time when I explore using this technique to do **continuous** collision detection between two moving AABBs!

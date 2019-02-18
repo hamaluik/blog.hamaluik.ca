@@ -655,7 +655,7 @@ if (!lastWasReturn)
 }
 ```
 
-I know that describing things this way isn't ideal, but instead of essentially directly copying all the code over again, I will just let you browse the entire working project as a Gist: [https://gist.github.com/FuzzyWuzzie/412e2109a5f5fbcf12e1](https://gist.github.com/FuzzyWuzzie/412e2109a5f5fbcf12e1).
+I know that describing things this way isn't ideal, but instead of essentially directly copying all the code over again, I will just let you browse the entire working project as a Gist: [https://gist.github.com/hamaluik/412e2109a5f5fbcf12e1](https://gist.github.com/hamaluik/412e2109a5f5fbcf12e1).
 
 ## Caveats With This Profiler
 

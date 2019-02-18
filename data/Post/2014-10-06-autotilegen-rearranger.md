@@ -25,4 +25,4 @@ So I created a simple tool in Python to covert the above output in something a l
     <figcaption>Much better!</figcaption>
 </figure>
 
-You can get it (and the source) on [GitHub](https://github.com/FuzzyWuzzie/AutoTileGenRearranger).
+You can get it (and the source) on [GitHub](https://github.com/hamaluik/AutoTileGenRearranger).

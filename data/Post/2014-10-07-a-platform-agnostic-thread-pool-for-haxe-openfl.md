@@ -69,4 +69,4 @@ herp derp
 
 Since the tasks will be executed in the order they were added.
 
-The code is available in a Gist: [FuzzyWuzzie / ThreadPool.hx](https://gist.github.com/FuzzyWuzzie/80fb81f84ecedbe2a6af).
+The code is available in a Gist: [hamaluik / ThreadPool.hx](https://gist.github.com/hamaluik/80fb81f84ecedbe2a6af).

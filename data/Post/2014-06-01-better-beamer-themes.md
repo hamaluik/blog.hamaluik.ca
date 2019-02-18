@@ -32,7 +32,7 @@ For my thesis defence, I wanted to use LaTeX to beautifully typeset the technica
 	<figcaption>A typical slide</figcaption>
 </figure>
 
-If you just want to grab the theme now without taking a look into how it was made, you can check it out on [Github](https://github.com/FuzzyWuzzie/Beamer-Theme-Execushares). Otherwise, let's dig in!
+If you just want to grab the theme now without taking a look into how it was made, you can check it out on [Github](https://github.com/hamaluik/Beamer-Theme-Execushares). Otherwise, let's dig in!
 
 First things first, realize that Beamer "themes" are pretty much just `.sty` files, so we can go ahead and create a new `.sty` file. Since we want the theme to be called "Execushares", the file must be named `beamerthemeExecushares.sty`, and we should put it in the same file as the main `.tex` document. We also want to use custom fonts, so for that I'm going to use [XeLaTeX](http://en.wikipedia.org/wiki/XeTeX). We can start off our sample file like so:
 
@@ -326,4 +326,4 @@ There's just one thing left to do: create the section title slides. I like to ha
 
 What this does is just before every single `\section` command in the document, it will insert a `section page` slide. We then proceed to define what that section page looks like. Since I've already draw the frame title at the top of the slide, I need to get rid of it. The easiest way to do that is to draw the background colour overtop of it. Super duper hacky, but it gets the job done. Then I just draw the red rectangle through the middle of the slide and plop the section title text on top of it. One thing of note here is that instead of the bottom left corner of the slide being at `(0cm, 0cm)` like we were using for the backgrounds, the bottom-left of the slide is at `(-1cm, 0cm)` for this template. It certainly has something to do with Beamer's margins, but I haven't looked too deeply into it and using the negative numbers doesn't bother me at all.
 
-And there you have it! A fully functioning, nice-looking Beamer template in 183 lines and half an hour. You can check the theme out on GitHub: [Beamer-Theme-Execushares](https://github.com/FuzzyWuzzie/Beamer-Theme-Execushares) where I encourage you to use and abuse it to your heart's content. Also, please fork it if you wish! We can all benefit from more Beamer themes to be had out there!
+And there you have it! A fully functioning, nice-looking Beamer template in 183 lines and half an hour. You can check the theme out on GitHub: [Beamer-Theme-Execushares](https://github.com/hamaluik/Beamer-Theme-Execushares) where I encourage you to use and abuse it to your heart's content. Also, please fork it if you wish! We can all benefit from more Beamer themes to be had out there!
