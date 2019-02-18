@@ -1,5 +1,8 @@
-<html><html>
+<!DOCTYPE html>
+<html>
 	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Headbutt 3D Collisions</title>
 		<style>
 			html, body {
@@ -16,7 +19,7 @@
 	</head>
 	<body>
         <canvas id='canvas'></canvas>
-        <script src="http://cdnjs.cloudflare.com/ajax/libs/three.js/r73/three.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/101/three.min.js" integrity="sha384-/mYgnOjpbKHFWxkvkjMdK3ExJCbMbxzrKXHHMnSYMspNoACaJaiXpEqFnl7aR6P0" crossorigin="anonymous"></script>
 		<script>(function(A){var u=function(){};u.__name__=!0;u.remove=function(b,a){var c=b.indexOf(a);if(-1==c)return!1;b.splice(c,1);return!0};var F=function(){};F.__name__=!0;F.main=function(){var b=new B,a=window.document.getElementById("canvas"),c=new THREE.Scene,d=new THREE.MeshLambertMaterial({color:13369344}),e=new THREE.Mesh(new THREE.BoxGeometry(50,50,50,1,1,1),d);e.position.set(0,0,0);c.add(e);var f=new h(4);f[0]=-25;f[1]=-25;f[2]=-25;var g=new h(4);g[0]=-25;g[1]=-25;g[2]=25;var k=new h(4);k[0]=-25;k[1]=
 25;k[2]=-25;var C=new h(4);C[0]=-25;C[1]=25;C[2]=25;var w=new h(4);w[0]=25;w[1]=-25;w[2]=-25;var D=new h(4);D[0]=25;D[1]=-25;D[2]=25;var n=new h(4);n[0]=25;n[1]=25;n[2]=-25;var p=new h(4);p[0]=25;p[1]=25;p[2]=25;var q=new x([f,g,k,C,w,D,n,p]),l=new THREE.Mesh(new THREE.SphereGeometry(20),new THREE.MeshLambertMaterial({color:204}));l.position.set(50,0,0);c.add(l);f=new h(4);f[0]=50;f[1]=0;f[2]=0;var m=new y(f,20),f=new THREE.PointLight(16777215,1,0);f.position.set(100,200,50);c.add(f);f=new THREE.AmbientLight(4210752);
 c.add(f);f=new THREE.GridHelper(200,25);c.add(f);var r=new THREE.PerspectiveCamera(70,a.clientWidth/a.clientHeight,1,1E3);r.position.set(75*Math.cos(Math.PI/4),75,75*Math.sin(Math.PI/4));r.lookAt(e.position);c.add(r);var t=new THREE.WebGLRenderer({canvas:a});t.setSize(window.document.body.clientWidth,window.document.body.clientHeight);t.setClearColor(16777215);window.document.body.appendChild(t.domElement);var u=0,v=null,v=function(a){window.requestAnimationFrame(v);r.aspect=window.document.body.clientWidth/
