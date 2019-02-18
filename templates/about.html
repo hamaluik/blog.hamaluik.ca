@@ -1,9 +1,0 @@
-{% extends "home.html" %}
-
-{% block body %}
-  {% for author in authors %}
-    <article>
-      {{ author.bio|safe }}
-    </article>
-  {% endfor %}
-{% endblock %}
