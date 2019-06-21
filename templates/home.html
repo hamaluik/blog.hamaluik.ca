@@ -10,6 +10,8 @@
 
 {% block body %}
   {% for post in posts %}
-  <article><h1><a href="{% url "post", post %}">{{ post.title }}</a></h1></article>
+  <article>
+    <h1><a href="{% url "post", post %}">{{ post.title }}</a></h1>
+  </article>
   {% endfor %}
 {% endblock %}
