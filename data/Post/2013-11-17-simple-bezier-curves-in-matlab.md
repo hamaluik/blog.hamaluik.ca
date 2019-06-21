@@ -146,7 +146,7 @@ So that we get something like:
 	<figcaption>The cubic spline using the given raw points</figcaption>
 </figure>
 
-Note that the "resolution" of this is entirely dependent on the number of points that exist in $t$. By default, in `linspace`, this will be 100, but we can easily drop that down:
+Note that the "resolution" of this is entirely dependent on the number of points that exist in `t`. By default, in `linspace`, this will be 100, but we can easily drop that down:
 
 ```matlab
 t = linspace(0, 1, 10);
