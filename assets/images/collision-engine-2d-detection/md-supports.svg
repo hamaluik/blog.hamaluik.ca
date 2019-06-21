@@ -3,10 +3,10 @@
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 512 256" style="enable-background:new 0 0 512 256;" xml:space="preserve">
 <style type="text/css">
-	.st0{fill:none;stroke:#324D5C;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
-	.st1{fill:none;stroke:#46B39D;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
-	.st2{fill:none;stroke:#DE5B49;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
-	.st3{fill:#F0CA4D;}
+	.st0{fill:none;stroke:#88c0d0;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st1{fill:none;stroke:#8fbcbb;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st2{fill:none;stroke:#bf616a;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st3{fill:#ebcb8b;}
 </style>
 <rect x="44.5" y="22.5" class="st0" width="112.2" height="70.3"/>
 <polygon class="st1" points="79,143.8 183,124.8 111.4,237 "/>

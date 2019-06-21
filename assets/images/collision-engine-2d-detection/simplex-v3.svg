@@ -3,13 +3,13 @@
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 512 256" style="enable-background:new 0 0 512 256;" xml:space="preserve">
 <style type="text/css">
-	.st0{fill:none;stroke:#324D5C;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
-	.st1{fill:none;stroke:#46B39D;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
-	.st2{fill:none;stroke:#DE5B49;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
-	.st3{fill:#F0CA4D;}
-	.st4{fill:none;stroke:#E37B40;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;}
-	.st5{fill:#E37B40;}
-	.st6{fill:none;stroke:#F0CA4D;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st0{fill:none;stroke:#88c0d0;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st1{fill:none;stroke:#8fbcbb;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st2{fill:none;stroke:#bf616a;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st3{fill:#ebcb8b;}
+	.st4{fill:none;stroke:#d08770;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;}
+	.st5{fill:#d08770;}
+	.st6{fill:none;stroke:#ebcb8b;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
 </style>
 <line class="st0" x1="366" y1="46" x2="366" y2="230"/>
 <line class="st0" x1="212" y1="157" x2="448" y2="157"/>

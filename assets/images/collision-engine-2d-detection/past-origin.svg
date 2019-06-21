@@ -3,18 +3,18 @@
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 512 256" style="enable-background:new 0 0 512 256;" xml:space="preserve">
 <style type="text/css">
-	.st0{fill:none;stroke:#324D5C;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
-	.st1{fill:none;stroke:#DE5B49;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
-	.st2{fill:none;stroke:#F0CA4D;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
-	.st3{fill:none;stroke:#F0CA4D;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;}
-	.st4{fill:none;stroke:#F0CA4D;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:5.8103,5.8103;}
+	.st0{fill:none;stroke:#88c0d0;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st1{fill:none;stroke:#bf616a;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st2{fill:none;stroke:#ebcb8b;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st3{fill:none;stroke:#ebcb8b;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;}
+	.st4{fill:none;stroke:#ebcb8b;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:5.8103,5.8103;}
 	
-		.st5{fill:none;stroke:#F0CA4D;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:6;}
-	.st6{fill:#46B39D;}
-	.st7{fill:#F0CA4D;}
-	.st8{fill:none;stroke:#46B39D;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;}
-	.st9{fill:#324D5C;}
-	.st10{fill:none;stroke:#46B39D;stroke-width:2;stroke-miterlimit:10;}
+		.st5{fill:none;stroke:#ebcb8b;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:6;}
+	.st6{fill:#8fbcbb;}
+	.st7{fill:#ebcb8b;}
+	.st8{fill:none;stroke:#8fbcbb;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;}
+	.st9{fill:#88c0d0;}
+	.st10{fill:none;stroke:#8fbcbb;stroke-width:2;stroke-miterlimit:10;}
 </style>
 <line class="st0" x1="123" y1="11" x2="123" y2="195"/>
 <line class="st0" x1="5" y1="103" x2="181" y2="103"/>
