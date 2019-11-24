@@ -6,128 +6,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ site_title }}{% if page_title %} | {{ page_title }}{% endif %}</title>
   <style>
-    html {
-      font-size: 1em
-    }
-
     body {
-      background-color: #2e3440;
-      font-family: 'Fira Mono', 'Source Code Pro', 'Inconsolata', monospace;
-      font-weight: 400;
-      line-height: 1.45;
-      color: #eceff4;
-    }
-
-    p {
-      margin-bottom: 1.3em
+      margin: 2em auto;
+      max-width: 36em;
+      line-height: 1.6;
+      font-size: 14pt;
+      color: #222222;
+      background: #eeeeee;
+      padding: 0 0.5em;
+      font-family: 'Georgia', Georgia, 'Times New Roman', Times, serif;
     }
 
     h1,
     h2,
-    h3,
-    h4 {
-      margin: 1.414em 0 .5em;
-      font-weight: inherit;
-      line-height: 1.2;
-      font-size: 1em;
-    }
-
-    small {
-      font-size: .833em
-    }
-
-    body {
-      margin: 1em auto;
-      max-width: 50em;
-      padding: 0 1em
-    }
-
-    body>header {
-      overflow: auto;
-      font-size: 1.2em
-    }
-
-    body>header h1 {
-      float: left;
-      font-size: 1.2em;
-      margin-top: 0;
-    }
-
-    body>header nav {
-      float: right;
-    }
-
-    body>header nav a {
-      font-size: 0.866em;
-    }
-
-    body>header nav a::after {
-      content: " |";
-    }
-
-    body>header nav a:last-child::after {
-      content: none;
-    }
-
-    body>header {
-      margin-bottom: 2em
-    }
-
-    body>footer {
-      text-align: center
-    }
-
-    body>footer svg {
-      height: 0.75em !important
-    }
-
-    h1 {
-      font-weight: 800
-    }
-
-    h2 {
-      font-weight: 700
-    }
-
     h3 {
-      font-weight: 600
+      line-height: 1.2
     }
 
-    h4 {
-      font-weight: 500
+    p {
+      text-align: justify;
     }
 
-    article header p,
-    article footer span {
-      font-size: .833em;
-      margin: 0;
-      color: #e5e9f0;
-      font-style: italic
+    a {
+      color: #222222;
+      text-decoration: underline;
     }
 
-    article header h1 {
-      margin: 0
-    }
-
-    article>p {
-      margin-bottom: .5em
-    }
-
-    article footer {
-      overflow: auto
-    }
-
-    article footer p {
-      margin-top: 0;
-      float: left
-    }
-
-    article footer span {
-      float: right
-    }
-
-    article p {
-      text-align: justify
+    a:hover,
+    a:focus,
+    a:active {
+      color: #bf0a30;
+      text-decoration: none;
     }
 
     article figure {
@@ -144,30 +53,6 @@
       display: block;
       font-size: .75em;
       text-align: center
-    }
-
-    header a,
-    h1 a {
-      color: #e5e9f0;
-      text-decoration: none
-    }
-
-    header a:hover,
-    h1 a:hover {
-      color: #8fbcbb;
-      text-decoration: none
-    }
-
-    a {
-      color: #8fbcbb;
-      text-decoration: none
-    }
-
-    a:hover,
-    a:focus,
-    a:active {
-      color: #88c0d0;
-      text-decoration: none
     }
 
     :not(pre)>code {
@@ -200,12 +85,26 @@
 
     .icon-ca {
       display: inline-block;
-      width: 1em;
-      height: 1em;
+      height: 0.75em;
       stroke-width: 0;
       stroke: currentColor;
       fill: currentColor;
       width: 1.3330078125em
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #222222;
+        color: #eeeeee;
+      }
+
+      a {
+        color: #eeeeee;
+      }
+
+      img {
+        filter: grayscale(30%);
+      }
     }
   </style>
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
@@ -229,7 +128,7 @@
           d="M-1.309 0h11.321v32H-1.309zm33.963 0h11.321v32H32.654zM13.398 15.463l-.879.3 4.091 3.59c.309.923-.108 1.195-.373 1.679l4.441-.564-.116 4.47.92-.026-.201-4.432 4.446.527c-.275-.581-.52-.89-.265-1.819l4.088-3.402-.715-.259c-.585-.451.253-2.174.379-3.261 0 0-2.387.821-2.544.391l-.608-1.168-2.172 2.386c-.237.057-.338-.037-.394-.238l1.003-4.985-1.589.894c-.133.057-.266.008-.354-.147l-1.528-3.066-1.576 3.184c-.119.114-.238.127-.336.05l-1.513-.849.908 4.946c-.072.196-.245.252-.449.145l-2.076-2.359c-.272.435-.456 1.146-.815 1.305-.359.149-1.561-.301-2.367-.477.275.993 1.136 2.644.591 3.185z" />
       </symbol>
     </defs>
-</svg>
+  </svg>
   <header>
     <h1><a href="/">Kenton's Programming Blog</a></h1>
     <nav>
