@@ -1,8 +1,0 @@
-path:
-  template: /posts/{{ post.slug }}
-  for-each:
-    post: session.query(Post).filter(Post.published != None).all()
-template: post.html
-context:
-  dynamic:
-    tags: session.query(Tag).all()

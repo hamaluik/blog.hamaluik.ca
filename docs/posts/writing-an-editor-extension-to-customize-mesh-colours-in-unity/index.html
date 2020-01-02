@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Writing an Editor Extension to Customize Mesh Colours in Unity</title>
+    <link href="https://fonts.googleapis.com/css?family=Crimson+Pro:400,400i,700|Eczar:800|Fira+Code&display=swap" rel="stylesheet">
+    <link href="/style.css" rel="stylesheet"> 
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="manifest" href="/assets/site.webmanifest">
+    <link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#bf616a">
+    <meta name="msapplication-TileColor" content="#bf616a">
+    <meta name="theme-color" content="#bf616a">
+</head>
+
+<body>
+    <svg style="position:absolute;width:0;height:0;display:none;" xmlns="http://www.w3.org/2000/svg" overflow="hidden">
+        <defs>
+            <symbol id="ca" viewBox="0 0 43 32">
+                <path fill="var(--color1, #fff)" d="M10.012 0h22.642v32H10.012z" />
+                <path fill="var(--color2, #bf616a)"
+                    d="M-1.309 0h11.321v32H-1.309zm33.963 0h11.321v32H32.654zM13.398 15.463l-.879.3 4.091 3.59c.309.923-.108 1.195-.373 1.679l4.441-.564-.116 4.47.92-.026-.201-4.432 4.446.527c-.275-.581-.52-.89-.265-1.819l4.088-3.402-.715-.259c-.585-.451.253-2.174.379-3.261 0 0-2.387.821-2.544.391l-.608-1.168-2.172 2.386c-.237.057-.338-.037-.394-.238l1.003-4.985-1.589.894c-.133.057-.266.008-.354-.147l-1.528-3.066-1.576 3.184c-.119.114-.238.127-.336.05l-1.513-.849.908 4.946c-.072.196-.245.252-.449.145l-2.076-2.359c-.272.435-.456 1.146-.815 1.305-.359.149-1.561-.301-2.367-.477.275.993 1.136 2.644.591 3.185z" />
+            </symbol>
+        </defs>
+    </svg>
+    <header>
+        <h1><a href="/">Kenton Hamaluik</a></h1>
+    </header>
+    <article>
+        <header>
+            <h1>Writing an Editor Extension to Customize Mesh Colours in Unity</h1>
+        </header>
+        <p>I’m an engineer and a programmer, not an artist. This sometimes becomes an issue for me when I work on games as while I can make the game technically sound, the art is often downright horrible, or I spend <em>way</em> more time on it than I have any right to. I’m currently working on a long-term, back-burner type game project to keep me busy and distracted when I occasionally need a break from real life. Programming-wise, I’m fine, but what’s a game without art? Well, aside from <a href="http://www.bay12games.com/dwarves/">Dwarf Fortress</a> and most <a href="http://en.wikipedia.org/wiki/Roguelike">Roguelikes</a> out there, it’s not much. Fortunately, I recently stumbled across (what I think) is a <strong>great</strong> art style: <a href="http://cgcookie.com/blender/2013/06/19/creating-geometric-assets-in-blender/">geometric assets</a>, as shown below:</p>
+<!-- PELICAN_END_SUMMARY -->
+<figure>
+	<img src="/images/unity-editor-extension-mesh-colour/geometric-ss-01.jpg">
+	<figcaption>Geometric Asset Scene by <a href="http://cgcookie.com/profile/metalix">Metalix</a></figcaption>
+</figure>
+<p>This is an art style that while it may take some ability to master and look great, I think it can look decent with relatively minimal work. Note that it is also really low-poly, so creating assets this way is <strong>great</strong> for mobile games (including things like the <a href="https://www.ouya.tv/">Ouya</a>). For information on creating this look in Blender, I can’t recommend enough the <a href="http://cgcookie.com/blender/2013/06/19/creating-geometric-assets-in-blender/">cgcookie tutorial on it</a> written / presented by <a href="http://www.metalix.co.nz/">Metalix Studios</a>. After creating these assets, we must import them into <a href="http://unity3d.com/">Unity</a>. Since Unity has such great support for Blender files, this is more or less of a non-issue, however when the models get imported into Unity they must use a special shader which will allow the colour to come out (these models aren’t textured at all). Metalix has also <a href="http://cgcookie.com/unity/2013/03/21/quick-tips-combining-multiple-materials-into-a-single-draw-call/">written a tutorial on this</a>, but I found their script a bit cumbersome to use to colour meshes with, so I decided to mod it a bit for my own use.</p>
+<p>My custom script makes use of an editor-extension to support multi-object colour editing as well as a saved palette of colours that you can easily pick from. This will take the inspector for these meshes from something that looks like:</p>
+<figure>
+	<img src="/images/unity-editor-extension-mesh-colour/old-script.png">
+	<figcaption>Old Script Inspector</figcaption>
+</figure>
+<p>Into something that looks like:</p>
+<figure>
+	<img src="/images/unity-editor-extension-mesh-colour/new-script.png">
+	<figcaption>New Script Inspector</figcaption>
+</figure>
+<p>Since I try to organize my projects extensively, I started by creating a new script in a folder called <code>Assets/Scripts/Customizations/MeshColour.cs</code>, with the contents:</p>
+<div class="highlight"><pre><span></span><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">MeshColour</span> <span class="p">:</span> <span class="n">MonoBehaviour</span>
+<span class="p">{</span>
+	<span class="k">public</span> <span class="n">Color</span> <span class="n">meshColour</span> <span class="p">=</span> <span class="n">Color</span><span class="p">.</span><span class="n">blue</span><span class="p">;</span>
+	<span class="k">public</span> <span class="k">static</span> <span class="n">HashSet</span><span class="p">&lt;</span><span class="n">Color</span><span class="p">&gt;</span> <span class="n">savedColours</span> <span class="p">=</span> <span class="k">new</span> <span class="n">HashSet</span><span class="p">&lt;</span><span class="n">Color</span><span class="p">&gt;();</span>
+<span class="p">}</span>
+</pre></div>
+<p>Note that there isn’t anything special here, other than remembering a mesh’s colour and keeping a static list of all colours in our palette. The real magic happens in a file I called <code>Assets/Scripts/Customizations/Editor/MeshColourEditor.cs</code>. Note that editor customization scripts <strong>MUST</strong> be located in a folder called <code>Editor</code> for them to work. Start off by adding the following to the file:</p>
+<div class="highlight"><pre><span></span><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">UnityEditor</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;</span>
+
+<span class="na">[CustomEditor(typeof(MeshColour))]</span>
+<span class="na">[CanEditMultipleObjects]</span>
+<span class="k">public</span> <span class="k">class</span> <span class="nc">MeshColourEditor</span> <span class="p">:</span> <span class="n">Editor</span>
+<span class="p">{</span>
+
+<span class="p">}</span>
+</pre></div>
+<p>This just sets up the class to be an extension of the Editor class, for the <code>MeshColour</code> class defined before, and enabled multi-object editing on it. Multi-object editing is so that I can select say 5 trees and make them all the same colour at once rather than having to select each one individually. Next, we create a colour property which can be exposed to the user:</p>
+<div class="highlight"><pre><span></span><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">UnityEditor</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;</span>
+
+<span class="na">[CustomEditor(typeof(MeshColour))]</span>
+<span class="na">[CanEditMultipleObjects]</span>
+<span class="k">public</span> <span class="k">class</span> <span class="nc">MeshColourEditor</span> <span class="p">:</span> <span class="n">Editor</span>
+<span class="p">{</span>
+	<span class="n">SerializedProperty</span> <span class="n">colourProp</span><span class="p">;</span>
+	<span class="k">public</span> <span class="k">void</span> <span class="nf">OnEnable</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="n">colourProp</span> <span class="p">=</span> <span class="n">serializedObject</span><span class="p">.</span><span class="n">FindProperty</span><span class="p">(</span><span class="s">&quot;meshColour&quot;</span><span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="k">public</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">OnInspectorGUI</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="c1">// always do this at the beginning of OnInspectorGUI</span>
+		<span class="n">serializedObject</span><span class="p">.</span><span class="n">Update</span><span class="p">();</span>
+
+		<span class="c1">// allow us to change our mesh colours</span>
+		<span class="n">EditorGUILayout</span><span class="p">.</span><span class="n">PropertyField</span><span class="p">(</span><span class="n">colourProp</span><span class="p">);</span>
+		<span class="n">serializedObject</span><span class="p">.</span><span class="n">ApplyModifiedProperties</span><span class="p">();</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+<p>What this did was allow us to change the colour of the colour property (which points to the <code>MeshColour.meshColour</code> variable we defined in <code>MeshColour.cs</code>) across all the selected instances of objects with the <code>MeshColour</code> script attached. However, the script still isn’t that useful: if you run the script at this point, it won’t do anything (or at least, it won’t seem like it’s doing anything, as it’s just changing the <code>meshColour</code> property, which doesn’t actually apply colours to the meshes). In order to apply the mesh colour to the selected meshes, we’re going to need some more code:</p>
+<div class="highlight"><pre><span></span><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">UnityEditor</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;</span>
+
+<span class="na">[CustomEditor(typeof(MeshColour))]</span>
+<span class="na">[CanEditMultipleObjects]</span>
+<span class="k">public</span> <span class="k">class</span> <span class="nc">MeshColourEditor</span> <span class="p">:</span> <span class="n">Editor</span>
+<span class="p">{</span>
+	<span class="n">SerializedProperty</span> <span class="n">colourProp</span><span class="p">;</span>
+	<span class="k">public</span> <span class="k">void</span> <span class="nf">OnEnable</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="n">colourProp</span> <span class="p">=</span> <span class="n">serializedObject</span><span class="p">.</span><span class="n">FindProperty</span><span class="p">(</span><span class="s">&quot;meshColour&quot;</span><span class="p">);</span>
+
+		<span class="c1">// get our selected game objects</span>
+		<span class="n">Transform</span><span class="p">[]</span> <span class="n">transforms</span> <span class="p">=</span> <span class="n">Selection</span><span class="p">.</span><span class="n">GetTransforms</span><span class="p">(</span>
+			  <span class="n">SelectionMode</span><span class="p">.</span><span class="n">Deep</span>
+			<span class="p">|</span> <span class="n">SelectionMode</span><span class="p">.</span><span class="n">ExcludePrefab</span>
+			<span class="p">|</span> <span class="n">SelectionMode</span><span class="p">.</span><span class="n">OnlyUserModifiable</span><span class="p">);</span>
+		<span class="n">meshes</span><span class="p">.</span><span class="n">Clear</span><span class="p">();</span>
+		<span class="c1">// loop over our selected transforms</span>
+		<span class="k">foreach</span><span class="p">(</span><span class="n">Transform</span> <span class="n">transform</span> <span class="k">in</span> <span class="n">transforms</span><span class="p">)</span>
+		<span class="p">{</span>
+			<span class="c1">// we have to instantiate a new mesh and set this objects mesh to the new one</span>
+			<span class="n">MeshFilter</span> <span class="n">mf</span> <span class="p">=</span> <span class="n">transform</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">MeshFilter</span><span class="p">&gt;();</span>
+			<span class="k">if</span> <span class="p">(</span><span class="n">mf</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
+			<span class="p">{</span>
+				<span class="k">continue</span><span class="p">;</span>
+			<span class="p">}</span>
+			<span class="n">Mesh</span> <span class="n">meshCopy</span> <span class="p">=</span> <span class="n">Mesh</span><span class="p">.</span><span class="n">Instantiate</span><span class="p">(</span><span class="n">mf</span><span class="p">.</span><span class="n">sharedMesh</span><span class="p">)</span> <span class="k">as</span> <span class="n">Mesh</span><span class="p">;</span>
+			<span class="n">Mesh</span> <span class="n">mesh</span> <span class="p">=</span> <span class="n">mf</span><span class="p">.</span><span class="n">mesh</span> <span class="p">=</span> <span class="n">meshCopy</span><span class="p">;</span>
+			<span class="n">mesh</span><span class="p">.</span><span class="n">name</span> <span class="p">=</span> <span class="n">mf</span><span class="p">.</span><span class="n">name</span><span class="p">;</span>
+			<span class="n">meshes</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">mesh</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="k">public</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">OnInspectorGUI</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="c1">// always do this at the beginning of OnInspectorGUI</span>
+		<span class="n">serializedObject</span><span class="p">.</span><span class="n">Update</span><span class="p">();</span>
+
+		<span class="c1">// allow us to change our mesh colours</span>
+		<span class="n">EditorGUILayout</span><span class="p">.</span><span class="n">PropertyField</span><span class="p">(</span><span class="n">colourProp</span><span class="p">);</span>
+		<span class="n">serializedObject</span><span class="p">.</span><span class="n">ApplyModifiedProperties</span><span class="p">();</span>
+
+		<span class="c1">// if we updated anything, update our mesh colours</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">GUI</span><span class="p">.</span><span class="n">changed</span><span class="p">)</span>
+		<span class="p">{</span>
+			<span class="k">foreach</span> <span class="p">(</span><span class="n">Mesh</span> <span class="n">mesh</span> <span class="k">in</span> <span class="n">meshes</span><span class="p">)</span>
+			<span class="p">{</span>
+				<span class="n">Color</span><span class="p">[]</span> <span class="n">colours</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Color</span><span class="p">[</span><span class="n">mesh</span><span class="p">.</span><span class="n">vertices</span><span class="p">.</span><span class="n">Length</span><span class="p">];</span>
+				<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="n">colours</span><span class="p">.</span><span class="n">Length</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
+				<span class="p">{</span>
+					<span class="n">colours</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">=</span> <span class="n">colourProp</span><span class="p">.</span><span class="n">colorValue</span><span class="p">;</span>
+				<span class="p">}</span>
+				<span class="n">mesh</span><span class="p">.</span><span class="n">colors</span> <span class="p">=</span> <span class="n">colours</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+<p>A lot changed here, but I will try to go over it all. First up, in the <code>OnEnable</code> function, we get a list of all the transforms that the user has currently selected using <a href="http://docs.unity3d.com/Documentation/ScriptReference/Selection.GetTransforms.html"><code>Selection.GetTransforms</code></a>. The options here will pick up all child transforms that aren’t prefabs (we don’t want to mess with those) and that are actually modifiable. Next, we go through our list of transforms and collect a list of all the meshes that are associated with those transforms (skipping any transforms that don’t have a mesh attached). For each mesh that we have, we actually instantiate a new copy of the shared mesh. This will result in a new mesh being created for each object (instead of each object sharing the same mesh) which will allow us to have multiple models but with different colours. Note that doing this <strong>will</strong> increase the number of draw calls, but I will address this issue in my next post. This <code>OnEnable</code> function will be called each time we select an object with the <code>MeshColour</code> script on it, so this list will only be updated when we select objects (which is what we want anyway). Next up, in the <code>OnInspectorGUI</code> function, we check if anything changed in the GUI (either the selected colour changed, or a button was pressed, etc). If something need change, we loop through all our previously stored meshes. For each of those meshes, we loop through all the vertices of that mesh and assign the new colour to those vertices. Once we’ve assigned all the colours, we store it back in the mesh, and we’re good to go!</p>
+<p>The above script works great, but I find it beneficial to generate a “palette” when I’m creating these assets so that I can quickly set the “trunk” colour of all my trees to be the same brown, for instance. While the Unity colour picker <em>does</em> allow you to save preset colours, you can’t access them until you’ve clicked on the colour box and moved your mouse over to the window - an inefficiency we can [relatively] easily solve. To add this functionality, we get to the following version of the script:</p>
+<div class="highlight"><pre><span></span><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">UnityEditor</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;</span>
+
+<span class="na">[CustomEditor(typeof(MeshColour))]</span>
+<span class="na">[CanEditMultipleObjects]</span>
+<span class="k">public</span> <span class="k">class</span> <span class="nc">MeshColourEditor</span> <span class="p">:</span> <span class="n">Editor</span>
+<span class="p">{</span>
+	<span class="n">SerializedProperty</span> <span class="n">colourProp</span><span class="p">;</span>
+	<span class="n">List</span><span class="p">&lt;</span><span class="n">Mesh</span><span class="p">&gt;</span> <span class="n">meshes</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Mesh</span><span class="p">&gt;();</span>
+	<span class="k">public</span> <span class="k">void</span> <span class="nf">OnEnable</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="n">colourProp</span> <span class="p">=</span> <span class="n">serializedObject</span><span class="p">.</span><span class="n">FindProperty</span><span class="p">(</span><span class="s">&quot;meshColour&quot;</span><span class="p">);</span>
+
+		<span class="c1">// get our selected game objects</span>
+		<span class="n">Transform</span><span class="p">[]</span> <span class="n">transforms</span> <span class="p">=</span> <span class="n">Selection</span><span class="p">.</span><span class="n">GetTransforms</span><span class="p">(</span>
+			  <span class="n">SelectionMode</span><span class="p">.</span><span class="n">Deep</span>
+			<span class="p">|</span> <span class="n">SelectionMode</span><span class="p">.</span><span class="n">ExcludePrefab</span>
+			<span class="p">|</span> <span class="n">SelectionMode</span><span class="p">.</span><span class="n">OnlyUserModifiable</span><span class="p">);</span>
+		<span class="n">meshes</span><span class="p">.</span><span class="n">Clear</span><span class="p">();</span>
+		<span class="c1">// loop over our selected transforms</span>
+		<span class="k">foreach</span><span class="p">(</span><span class="n">Transform</span> <span class="n">transform</span> <span class="k">in</span> <span class="n">transforms</span><span class="p">)</span>
+		<span class="p">{</span>
+			<span class="c1">// we have to instantiate a new mesh and set this objects mesh to the new one</span>
+			<span class="n">MeshFilter</span> <span class="n">mf</span> <span class="p">=</span> <span class="n">transform</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">MeshFilter</span><span class="p">&gt;();</span>
+			<span class="k">if</span> <span class="p">(</span><span class="n">mf</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
+			<span class="p">{</span>
+				<span class="k">continue</span><span class="p">;</span>
+			<span class="p">}</span>
+			<span class="n">Mesh</span> <span class="n">meshCopy</span> <span class="p">=</span> <span class="n">Mesh</span><span class="p">.</span><span class="n">Instantiate</span><span class="p">(</span><span class="n">mf</span><span class="p">.</span><span class="n">sharedMesh</span><span class="p">)</span> <span class="k">as</span> <span class="n">Mesh</span><span class="p">;</span>
+			<span class="n">Mesh</span> <span class="n">mesh</span> <span class="p">=</span> <span class="n">mf</span><span class="p">.</span><span class="n">mesh</span> <span class="p">=</span> <span class="n">meshCopy</span><span class="p">;</span>
+			<span class="n">mesh</span><span class="p">.</span><span class="n">name</span> <span class="p">=</span> <span class="n">mf</span><span class="p">.</span><span class="n">name</span><span class="p">;</span>
+			<span class="n">meshes</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">mesh</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="k">public</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">OnInspectorGUI</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="c1">// always do this at the beginning of OnInspectorGUI</span>
+		<span class="n">serializedObject</span><span class="p">.</span><span class="n">Update</span><span class="p">();</span>
+
+		<span class="c1">// allow us to change our mesh colours</span>
+		<span class="n">EditorGUILayout</span><span class="p">.</span><span class="n">PropertyField</span><span class="p">(</span><span class="n">colourProp</span><span class="p">);</span>
+		<span class="n">serializedObject</span><span class="p">.</span><span class="n">ApplyModifiedProperties</span><span class="p">();</span>
+
+		<span class="n">GUILayout</span><span class="p">.</span><span class="n">BeginHorizontal</span><span class="p">();</span>
+		<span class="n">GUILayout</span><span class="p">.</span><span class="n">Label</span><span class="p">(</span><span class="s">&quot;Save Colours:&quot;</span><span class="p">);</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">GUILayout</span><span class="p">.</span><span class="n">Button</span><span class="p">(</span><span class="s">&quot;+&quot;</span><span class="p">))</span>
+		<span class="p">{</span>
+			<span class="n">MeshColour</span><span class="p">.</span><span class="n">savedColours</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">colourProp</span><span class="p">.</span><span class="n">colorValue</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">GUILayout</span><span class="p">.</span><span class="n">Button</span><span class="p">(</span><span class="s">&quot;-&quot;</span><span class="p">))</span>
+		<span class="p">{</span>
+			<span class="n">MeshColour</span><span class="p">.</span><span class="n">savedColours</span><span class="p">.</span><span class="n">Remove</span><span class="p">(</span><span class="n">colourProp</span><span class="p">.</span><span class="n">colorValue</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="n">GUILayout</span><span class="p">.</span><span class="n">EndHorizontal</span><span class="p">();</span>
+
+		<span class="c1">// display our saved colours list</span>
+		<span class="n">GUILayout</span><span class="p">.</span><span class="n">Label</span><span class="p">(</span><span class="s">&quot;Palette&quot;</span><span class="p">);</span>
+		<span class="n">HashSet</span><span class="p">&lt;</span><span class="n">Color</span><span class="p">&gt;.</span><span class="n">Enumerator</span> <span class="n">enu</span> <span class="p">=</span> <span class="n">MeshColour</span><span class="p">.</span><span class="n">savedColours</span><span class="p">.</span><span class="n">GetEnumerator</span><span class="p">();</span>
+		<span class="kt">bool</span> <span class="n">hasNext</span> <span class="p">=</span> <span class="n">enu</span><span class="p">.</span><span class="n">MoveNext</span><span class="p">();</span>
+		<span class="k">while</span> <span class="p">(</span><span class="n">hasNext</span><span class="p">)</span>
+		<span class="p">{</span>
+			<span class="n">GUILayout</span><span class="p">.</span><span class="n">BeginHorizontal</span><span class="p">();</span>
+			<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">x</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">x</span> <span class="p">&lt;</span> <span class="m">7</span> <span class="p">&amp;&amp;</span> <span class="n">hasNext</span><span class="p">;</span> <span class="n">x</span><span class="p">++)</span>
+			<span class="p">{</span>
+				<span class="n">GUI</span><span class="p">.</span><span class="n">color</span> <span class="p">=</span> <span class="n">enu</span><span class="p">.</span><span class="n">Current</span><span class="p">;</span>
+				<span class="n">hasNext</span> <span class="p">=</span> <span class="n">enu</span><span class="p">.</span><span class="n">MoveNext</span><span class="p">();</span>
+				<span class="k">if</span> <span class="p">(</span><span class="n">GUILayout</span><span class="p">.</span><span class="n">Button</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">))</span>
+				<span class="p">{</span>
+					<span class="n">colourProp</span><span class="p">.</span><span class="n">colorValue</span> <span class="p">=</span> <span class="n">GUI</span><span class="p">.</span><span class="n">color</span><span class="p">;</span>
+					<span class="n">serializedObject</span><span class="p">.</span><span class="n">ApplyModifiedProperties</span><span class="p">();</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+			<span class="n">GUILayout</span><span class="p">.</span><span class="n">EndHorizontal</span><span class="p">();</span>
+		<span class="p">}</span>
+
+		<span class="c1">// if we updated anything, update our mesh colours</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">GUI</span><span class="p">.</span><span class="n">changed</span><span class="p">)</span>
+		<span class="p">{</span>
+			<span class="k">foreach</span> <span class="p">(</span><span class="n">Mesh</span> <span class="n">mesh</span> <span class="k">in</span> <span class="n">meshes</span><span class="p">)</span>
+			<span class="p">{</span>
+				<span class="n">Color</span><span class="p">[]</span> <span class="n">colours</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Color</span><span class="p">[</span><span class="n">mesh</span><span class="p">.</span><span class="n">vertices</span><span class="p">.</span><span class="n">Length</span><span class="p">];</span>
+				<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="n">colours</span><span class="p">.</span><span class="n">Length</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
+				<span class="p">{</span>
+					<span class="n">colours</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">=</span> <span class="n">colourProp</span><span class="p">.</span><span class="n">colorValue</span><span class="p">;</span>
+				<span class="p">}</span>
+				<span class="n">mesh</span><span class="p">.</span><span class="n">colors</span> <span class="p">=</span> <span class="n">colours</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+<p>What this added code does is first add two buttons (and a label) in a horizontal line across the inspector. When the <code>+</code> button is clicked, it simply adds the current selected colour to the static list stored in the <code>MeshColour</code> class (the palette of colours is stored as a <a href="http://msdn.microsoft.com/en-us/library/bb359438(v=vs.110).aspx"><code>HashSet</code></a> so that we don’t get duplicate colours). Similarly, <code>-</code> removes the colour. Next, we draw the Palette. We loop over every colour in our list, and for every 7 colours, we start a new horizontal row. In that row, we set the GUI colour to the current palette colour a draw an empty button for the user to click on. If they do click on it, we set the colour property to the saved colour and make sure to update it with <code>serializedObject.ApplyModifiedProperties()</code> (otherwise the colour picker won’t get updated). And that’s it!</p>
+<p>With this script in place we can now easily colour meshes to our hearts content! There’s just one more thing we can do to make our lives a bit easier, and that’s to create an easy way to add this script to all the meshes we want to colourize. I do that by adding a menu item to unity that when pressed will add the <code>MeshColour</code> script to all selected objects with both a <code>MeshFilter</code> and a <code>MeshRenderer</code> component attached:</p>
+<div class="highlight"><pre><span></span><span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">UnityEditor</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Collections</span><span class="p">;</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">AddMeshColourEditor</span> <span class="p">:</span> <span class="n">EditorWindow</span>
+<span class="p">{</span>
+	<span class="c1">// add a menu item to add this component to all children</span>
+<span class="na">	[MenuItem(&quot;BlazingMammothGames/Geometric/Add Mesh Colour Editor&quot;)]</span>
+	<span class="k">static</span> <span class="k">void</span> <span class="nf">AddEditor</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="n">AddMeshColourEditor</span> <span class="n">window</span> <span class="p">=</span> <span class="k">new</span> <span class="n">AddMeshColourEditor</span><span class="p">();</span>
+		<span class="n">window</span><span class="p">.</span><span class="n">position</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Rect</span><span class="p">(</span><span class="n">Screen</span><span class="p">.</span><span class="n">width</span> <span class="p">/</span> <span class="m">2</span><span class="p">,</span> <span class="n">Screen</span><span class="p">.</span><span class="n">height</span> <span class="p">/</span> <span class="m">2</span><span class="p">,</span> <span class="m">50</span><span class="p">,</span> <span class="m">25</span><span class="p">);</span>
+		<span class="n">window</span><span class="p">.</span><span class="n">ShowUtility</span><span class="p">();</span>
+	<span class="p">}</span>
+
+<span class="na">	[MenuItem(&quot;BlazingMammothGames/Geometric/Add Mesh Colour Editor&quot;, true)]</span>
+	<span class="k">static</span> <span class="kt">bool</span> <span class="nf">ValidateSelection</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="k">return</span> <span class="n">Selection</span><span class="p">.</span><span class="n">GetTransforms</span><span class="p">(</span>
+			  <span class="n">SelectionMode</span><span class="p">.</span><span class="n">Deep</span>
+			<span class="p">|</span> <span class="n">SelectionMode</span><span class="p">.</span><span class="n">ExcludePrefab</span>
+			<span class="p">|</span> <span class="n">SelectionMode</span><span class="p">.</span><span class="n">OnlyUserModifiable</span><span class="p">).</span><span class="n">Length</span> <span class="p">&gt;</span> <span class="m">0</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="k">private</span> <span class="k">static</span> <span class="n">Material</span> <span class="n">addedMaterial</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
+
+	<span class="k">void</span> <span class="nf">OnGUI</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="n">addedMaterial</span> <span class="p">=</span> <span class="p">(</span><span class="n">Material</span><span class="p">)</span><span class="n">EditorGUILayout</span><span class="p">.</span><span class="n">ObjectField</span><span class="p">(</span><span class="s">&quot;Material:&quot;</span><span class="p">,</span>
+							<span class="n">addedMaterial</span><span class="p">,</span> <span class="k">typeof</span><span class="p">(</span><span class="n">Material</span><span class="p">));</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">GUILayout</span><span class="p">.</span><span class="n">Button</span><span class="p">(</span><span class="s">&quot;Add it!&quot;</span><span class="p">))</span>
+		<span class="p">{</span>
+			<span class="c1">// get all our selected transforms</span>
+			<span class="n">Transform</span><span class="p">[]</span> <span class="n">transforms</span> <span class="p">=</span> <span class="n">Selection</span><span class="p">.</span><span class="n">GetTransforms</span><span class="p">(</span>
+			  <span class="n">SelectionMode</span><span class="p">.</span><span class="n">Deep</span>
+			<span class="p">|</span> <span class="n">SelectionMode</span><span class="p">.</span><span class="n">ExcludePrefab</span>
+			<span class="p">|</span> <span class="n">SelectionMode</span><span class="p">.</span><span class="n">OnlyUserModifiable</span><span class="p">);</span>
+
+			<span class="c1">// only add the component if there is both a mesh filter and a mesh renderer</span>
+			<span class="k">foreach</span> <span class="p">(</span><span class="n">Transform</span> <span class="n">transform</span> <span class="k">in</span> <span class="n">transforms</span><span class="p">)</span>
+			<span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span>   <span class="n">transform</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">MeshFilter</span><span class="p">&gt;()</span> <span class="p">!=</span> <span class="k">null</span>
+				    <span class="p">&amp;&amp;</span> <span class="n">transform</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">MeshRenderer</span><span class="p">&gt;()</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span>
+				<span class="p">{</span>
+					<span class="n">transform</span><span class="p">.</span><span class="n">gameObject</span><span class="p">.</span><span class="n">AddComponent</span><span class="p">&lt;</span><span class="n">MeshColour</span><span class="p">&gt;();</span>
+					<span class="k">if</span> <span class="p">(</span><span class="n">addedMaterial</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span>
+					<span class="p">{</span>
+						<span class="n">transform</span><span class="p">.</span><span class="n">gameObject</span><span class="p">.</span><span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">MeshRenderer</span><span class="p">&gt;().</span><span class="n">material</span> <span class="p">=</span> <span class="n">addedMaterial</span><span class="p">;</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+
+			<span class="c1">// close our window</span>
+			<span class="k">this</span><span class="p">.</span><span class="n">Close</span><span class="p">();</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+<p>This code just adds a menu item (in the “BlazingMammothGames -&gt; Geometric” menu section) that when clicked will show a popup window. With a place to put a material. This will be the material used when adding the <code>MeshRenderer</code> component. When the <code>Add it!</code> button is clicked, we loop through all the selected transforms and add the <code>MeshColour</code> component to each one that has both a <code>MeshFilter</code> and <code>MeshRenderer</code> component, injecting the material along the way.</p>
+<p>Voilà!</p>
+
+    </article>
+    <footer>
+        <p><svg class="icon icon-ca">
+                <use xlink:href="#ca"></use>
+            </svg> Made in Canada.</p>
+    </footer>
+</body>
+
+</html>

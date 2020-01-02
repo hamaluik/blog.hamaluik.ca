@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>A Unity 4.6 UI Shader to Ignore Depth Testing</title>
+    <link href="https://fonts.googleapis.com/css?family=Crimson+Pro:400,400i,700|Eczar:800|Fira+Code&display=swap" rel="stylesheet">
+    <link href="/style.css" rel="stylesheet"> 
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="manifest" href="/assets/site.webmanifest">
+    <link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#bf616a">
+    <meta name="msapplication-TileColor" content="#bf616a">
+    <meta name="theme-color" content="#bf616a">
+</head>
+
+<body>
+    <svg style="position:absolute;width:0;height:0;display:none;" xmlns="http://www.w3.org/2000/svg" overflow="hidden">
+        <defs>
+            <symbol id="ca" viewBox="0 0 43 32">
+                <path fill="var(--color1, #fff)" d="M10.012 0h22.642v32H10.012z" />
+                <path fill="var(--color2, #bf616a)"
+                    d="M-1.309 0h11.321v32H-1.309zm33.963 0h11.321v32H32.654zM13.398 15.463l-.879.3 4.091 3.59c.309.923-.108 1.195-.373 1.679l4.441-.564-.116 4.47.92-.026-.201-4.432 4.446.527c-.275-.581-.52-.89-.265-1.819l4.088-3.402-.715-.259c-.585-.451.253-2.174.379-3.261 0 0-2.387.821-2.544.391l-.608-1.168-2.172 2.386c-.237.057-.338-.037-.394-.238l1.003-4.985-1.589.894c-.133.057-.266.008-.354-.147l-1.528-3.066-1.576 3.184c-.119.114-.238.127-.336.05l-1.513-.849.908 4.946c-.072.196-.245.252-.449.145l-2.076-2.359c-.272.435-.456 1.146-.815 1.305-.359.149-1.561-.301-2.367-.477.275.993 1.136 2.644.591 3.185z" />
+            </symbol>
+        </defs>
+    </svg>
+    <header>
+        <h1><a href="/">Kenton Hamaluik</a></h1>
+    </header>
+    <article>
+        <header>
+            <h1>A Unity 4.6 UI Shader to Ignore Depth Testing</h1>
+        </header>
+        <p>I’ve started using Unity again for some 3D development with <a href="https://www.google.com/get/cardboard/">Google Cardboard</a> and have been using the new Unity 4.6 UI (which I think is great by the way). Specifically, in order to get UIs rendered for the user in the 3D environment, I needed to place text on a canvas set to <code>World Space</code> (parenting the canvas to the camera, so that it tracks with the user’s head motion). This places the UI in a physical space, which works well for the 3D view but doesn’t work well for a HUD where you need it to always be displayed over everything.</p>
+<p>After some searching around and not finding a fix, I ended up modifying the default Unity UI shader to ignore z-testing; I’ve shared it here in case someone else runs into the same issue!</p>
+<p>Here is the modified shader. Save it as a <code>.shader</code> file in your <code>Assets</code> folder, then create a material which uses this shader. Apply the material to any and all UI elements you have that you want to ignore the z-testing on.</p>
+<p>Happy developing!</p>
+<div class="highlight"><pre><span></span><span class="k">Shader</span> <span class="s">&quot;UI/Unlit/AlwaysOnTop&quot;</span>
+<span class="p">{</span>
+    <span class="k">Properties</span>
+    <span class="p">{</span>
+        <span class="n">_Color</span> <span class="p">(</span><span class="s">&quot;Main Color&quot;</span><span class="p">,</span> <span class="k">Color</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">_MainTex</span> <span class="p">(</span><span class="s">&quot;Alpha (A)&quot;</span><span class="p">,</span> <span class="k">2D</span><span class="p">)</span> <span class="o">=</span> <span class="s">&quot;white&quot;</span> <span class="p">{}</span>
+        
+        <span class="n">_StencilComp</span> <span class="p">(</span><span class="s">&quot;Stencil Comparison&quot;</span><span class="p">,</span> <span class="k">Float</span><span class="p">)</span> <span class="o">=</span> <span class="mi">8</span>
+        <span class="n">_Stencil</span> <span class="p">(</span><span class="s">&quot;Stencil ID&quot;</span><span class="p">,</span> <span class="k">Float</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">_StencilOp</span> <span class="p">(</span><span class="s">&quot;Stencil Operation&quot;</span><span class="p">,</span> <span class="k">Float</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">_StencilWriteMask</span> <span class="p">(</span><span class="s">&quot;Stencil Write Mask&quot;</span><span class="p">,</span> <span class="k">Float</span><span class="p">)</span> <span class="o">=</span> <span class="mi">255</span>
+        <span class="n">_StencilReadMask</span> <span class="p">(</span><span class="s">&quot;Stencil Read Mask&quot;</span><span class="p">,</span> <span class="k">Float</span><span class="p">)</span> <span class="o">=</span> <span class="mi">255</span>
+
+        <span class="n">_ColorMask</span> <span class="p">(</span><span class="s">&quot;Color Mask&quot;</span><span class="p">,</span> <span class="k">Float</span><span class="p">)</span> <span class="o">=</span> <span class="mi">15</span>
+    <span class="p">}</span>
+
+    <span class="k">SubShader</span>
+    <span class="p">{</span>
+        <span class="k">LOD</span> <span class="mi">200</span>
+
+        <span class="k">Tags</span>
+        <span class="p">{</span>
+            <span class="s">&quot;Queue&quot;</span> <span class="o">=</span> <span class="s">&quot;Transparent&quot;</span>
+            <span class="s">&quot;IgnoreProjector&quot;</span> <span class="o">=</span> <span class="s">&quot;True&quot;</span>
+            <span class="s">&quot;RenderType&quot;</span> <span class="o">=</span> <span class="s">&quot;Transparent&quot;</span>
+            <span class="s">&quot;PreviewType&quot;</span><span class="o">=</span><span class="s">&quot;Plane&quot;</span>
+        <span class="p">}</span>
+
+        <span class="k">Cull</span> <span class="n">Off</span>
+        <span class="k">Lighting</span> <span class="n">Off</span>
+        <span class="k">ZWrite</span> <span class="n">Off</span>
+        <span class="k">ZTest</span> <span class="n">Always</span>
+        <span class="k">Offset</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">Fog</span> <span class="p">{</span> <span class="k">Mode</span> <span class="n">Off</span> <span class="p">}</span>
+        <span class="k">Blend</span> <span class="n">SrcAlpha</span> <span class="n">OneMinusSrcAlpha</span>
+        <span class="k">ColorMask</span> <span class="p">[</span><span class="n">_ColorMask</span><span class="p">]</span>
+
+        <span class="k">Pass</span>
+        <span class="p">{</span>
+            <span class="k">CGPROGRAM</span>
+                <span class="cp">#pragma vertex vert</span>
+                <span class="cp">#pragma fragment frag</span>
+                <span class="cp">#include</span> <span class="cpf">&quot;UnityCG.cginc&quot;</span><span class="cp"></span>
+
+                <span class="k">struct</span> <span class="n">appdata_t</span>
+                <span class="p">{</span>
+                    <span class="kt">float4</span> <span class="n">vertex</span> <span class="o">:</span> <span class="kc">POSITION</span><span class="p">;</span>
+                    <span class="kt">half4</span> <span class="n">color</span> <span class="o">:</span> <span class="kc">COLOR</span><span class="p">;</span>
+                    <span class="kt">float2</span> <span class="n">texcoord</span> <span class="o">:</span> <span class="kc">TEXCOORD0</span><span class="p">;</span>
+                <span class="p">};</span>
+
+                <span class="k">struct</span> <span class="n">v2f</span>
+                <span class="p">{</span>
+                    <span class="kt">float4</span> <span class="n">vertex</span> <span class="o">:</span> <span class="kc">POSITION</span><span class="p">;</span>
+                    <span class="kt">half4</span> <span class="n">color</span> <span class="o">:</span> <span class="kc">COLOR</span><span class="p">;</span>
+                    <span class="kt">float2</span> <span class="n">texcoord</span> <span class="o">:</span> <span class="kc">TEXCOORD0</span><span class="p">;</span>
+                <span class="p">};</span>
+
+                <span class="kt">sampler2D</span> <span class="n">_MainTex</span><span class="p">;</span>
+                <span class="kt">float4</span> <span class="n">_MainTex_ST</span><span class="p">;</span>
+                <span class="kt">fixed4</span> <span class="n">_Color</span><span class="p">;</span>
+
+                <span class="n">v2f</span> <span class="n">vert</span> <span class="p">(</span><span class="n">appdata_t</span> <span class="n">v</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="n">v2f</span> <span class="n">o</span><span class="p">;</span>
+                    <span class="n">o</span><span class="p">.</span><span class="n">vertex</span> <span class="o">=</span> <span class="k k-Builtin">mul</span><span class="p">(</span><span class="n">UNITY_MATRIX_MVP</span><span class="p">,</span> <span class="n">v</span><span class="p">.</span><span class="n">vertex</span><span class="p">);</span>
+                    <span class="n">o</span><span class="p">.</span><span class="n">texcoord</span> <span class="o">=</span> <span class="n">TRANSFORM_TEX</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">texcoord</span><span class="p">,</span> <span class="n">_MainTex</span><span class="p">);</span>
+                    <span class="n">o</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">v</span><span class="p">.</span><span class="n">color</span><span class="p">;</span>
+<span class="cp">#ifdef UNITY_HALF_TEXEL_OFFSET</span>
+                    <span class="n">o</span><span class="p">.</span><span class="n">vertex</span><span class="p">.</span><span class="n">xy</span> <span class="o">+=</span> <span class="p">(</span><span class="n">_ScreenParams</span><span class="p">.</span><span class="n">zw</span><span class="o">-</span><span class="mf">1.0</span><span class="p">)</span><span class="o">*</span><span class="kt">float2</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
+<span class="cp">#endif</span>
+                    <span class="k">return</span> <span class="n">o</span><span class="p">;</span>
+                <span class="p">}</span>
+
+                <span class="kt">half4</span> <span class="n">frag</span> <span class="p">(</span><span class="n">v2f</span> <span class="n">i</span><span class="p">)</span> <span class="o">:</span> <span class="kc">COLOR</span>
+                <span class="p">{</span>
+                    <span class="kt">half4</span> <span class="n">col</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">color</span><span class="p">;</span>
+                    <span class="n">col</span><span class="p">.</span><span class="n">a</span> <span class="o">*=</span> <span class="k k-Builtin">tex2D</span><span class="p">(</span><span class="n">_MainTex</span><span class="p">,</span> <span class="n">i</span><span class="p">.</span><span class="n">texcoord</span><span class="p">).</span><span class="n">a</span><span class="p">;</span>
+                    <span class="n">col</span> <span class="o">=</span> <span class="n">col</span> <span class="o">*</span> <span class="n">_Color</span><span class="p">;</span>
+                    <span class="k k-Builtin">clip</span> <span class="p">(</span><span class="n">col</span><span class="p">.</span><span class="n">a</span> <span class="o">-</span> <span class="mf">0.01</span><span class="p">);</span>
+                    <span class="k">return</span> <span class="n">col</span><span class="p">;</span>
+                <span class="p">}</span>
+            <span class="k">ENDCG</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+    </article>
+    <footer>
+        <p><svg class="icon icon-ca">
+                <use xlink:href="#ca"></use>
+            </svg> Made in Canada.</p>
+    </footer>
+</body>
+
+</html>

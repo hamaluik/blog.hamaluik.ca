@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Building a Collision Engine Part 2: 2D Penetration Vectors</title>
+    <link href="https://fonts.googleapis.com/css?family=Crimson+Pro:400,400i,700|Eczar:800|Fira+Code&display=swap" rel="stylesheet">
+    <link href="/style.css" rel="stylesheet"> 
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="manifest" href="/assets/site.webmanifest">
+    <link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#bf616a">
+    <meta name="msapplication-TileColor" content="#bf616a">
+    <meta name="theme-color" content="#bf616a">
+</head>
+
+<body>
+    <svg style="position:absolute;width:0;height:0;display:none;" xmlns="http://www.w3.org/2000/svg" overflow="hidden">
+        <defs>
+            <symbol id="ca" viewBox="0 0 43 32">
+                <path fill="var(--color1, #fff)" d="M10.012 0h22.642v32H10.012z" />
+                <path fill="var(--color2, #bf616a)"
+                    d="M-1.309 0h11.321v32H-1.309zm33.963 0h11.321v32H32.654zM13.398 15.463l-.879.3 4.091 3.59c.309.923-.108 1.195-.373 1.679l4.441-.564-.116 4.47.92-.026-.201-4.432 4.446.527c-.275-.581-.52-.89-.265-1.819l4.088-3.402-.715-.259c-.585-.451.253-2.174.379-3.261 0 0-2.387.821-2.544.391l-.608-1.168-2.172 2.386c-.237.057-.338-.037-.394-.238l1.003-4.985-1.589.894c-.133.057-.266.008-.354-.147l-1.528-3.066-1.576 3.184c-.119.114-.238.127-.336.05l-1.513-.849.908 4.946c-.072.196-.245.252-.449.145l-2.076-2.359c-.272.435-.456 1.146-.815 1.305-.359.149-1.561-.301-2.367-.477.275.993 1.136 2.644.591 3.185z" />
+            </symbol>
+        </defs>
+    </svg>
+    <header>
+        <h1><a href="/">Kenton Hamaluik</a></h1>
+    </header>
+    <article>
+        <header>
+            <h1>Building a Collision Engine Part 2: 2D Penetration Vectors</h1>
+        </header>
+        <p>In my <a href="/posts/building-a-collision-engine-part-1-2d-gjk-collision-detection/">last post</a>, I discussed how to determine if any two convex shapes in two dimensions overlap. The result of this calculation is a boolean state—either the two are colliding or they aren’t. This is great for things such as triggers, but if you want to use the collision engine for any type of physics calculations, you’ll need at least one more crucial piece of information: the penetration vector.</p>
+<p>The penetration vector of two shapes is a vector which describes the overlap of those two shapes. By adding the penetration vector to one of the shapes, the shapes can be separated so that they are just touching, but not really intersecting. Without any extra information, this vector chosen as the one that separate the two shapes along the shortest path possible, which can lead to some issues at the corners of polygons but is often exactly what we want.</p>
+<p>In my collision engine, I’ve decided to implement the calculation of this penetration vector using the <a href="http://www.dyn4j.org/2010/05/epa-expanding-polytope-algorithm/">EPA</a> method. This method again makes use of the same support functions we used to calculate whether we were colliding or not. The reason for this is that the penetration vector is the distance from the origin to the Minkowski difference, whether the Minkowski difference contains the origin or not.</p>
+<figure>
+    <img src="/images/collision-engine-2d-penetration/penetration-vector-md-origin.svg">
+    <figcaption>The penetration vector of two overlapping shapes is the distance of the Minkowski difference to the origin.</figcaption>
+</figure>
+<h3><a href="#the-epa-method" aria-hidden="true" class="anchor" id="headerthe-epa-method"></a>The EPA Method</h3>
+<p>The EPA (Expanding Polytope Algorithm) works well with Minkowski differences because it uses many of the same concepts—namely support functions and simplexes. However, instead of trying to use the support functions to construct a simplex which encases the origin, EPA seeks to use the support functions to find the boundaries of the Minkowski difference in an attempt to find the boundary that is closest to the origin. In order to do this, the algorithm starts with a simplex contained within the Minkowski difference (we might as well use the one from the previous step!), then “expands” it into higher vertex count polygons (gradually approaching the true Minkowski difference polygon) until one of the edges is found to be the closest to the origin.</p>
+<figure>
+    <img src="/images/collision-engine-2d-penetration/search-closest.svg">
+    <figcaption>EPA "searches" for the edge of the polytope which is closest to the origin.</figcaption>
+</figure>
+<p>We start by finding the closest edge in our simplex to the origin:</p>
+<div class="highlight"><pre><span></span><span class="kd">private</span> <span class="kd">function</span> <span class="nf">findClosestEdge</span><span class="p">(</span><span class="n">winding</span><span class="p">:</span><span class="n">PolygonWinding</span><span class="p">):</span><span class="n">Edge</span> <span class="p">{</span>
+    <span class="kd">var</span> closestDistance<span class="p">:</span><span class="n">Float</span> <span class="o">=</span> <span class="n">Math</span><span class="p">.</span><span class="n">POSITIVE_INFINITY</span><span class="p">;</span>
+    <span class="kd">var</span> closestNormal<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Vec2</span><span class="p">();</span>
+    <span class="kd">var</span> closestIndex<span class="p">:</span><span class="n">Int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="kd">var</span> edge<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Vec2</span><span class="p">();</span>
+
+    <span class="c1">// loop through all the vertices (each edge will be vertex i -&gt; vertex j)</span>
+    <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="k">in</span> <span class="mi">0</span><span class="o">...</span><span class="n">vertices</span><span class="p">.</span><span class="n">length</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> j<span class="p">:</span><span class="n">Int</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">j</span> <span class="o">&gt;=</span> <span class="n">vertices</span><span class="p">.</span><span class="n">length</span><span class="p">)</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// wrap</span>
+
+        <span class="c1">// calculate the edge as v[j] - v[i]</span>
+        <span class="n">vertices</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">copy</span><span class="p">(</span><span class="n">edge</span><span class="p">);</span>
+        <span class="n">edge</span><span class="p">.</span><span class="n">subtractVec</span><span class="p">(</span><span class="n">vertices</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">edge</span><span class="p">);</span>
+
+        <span class="c1">// quickly calculate the outward-facing normal of the edge</span>
+        <span class="c1">// (make use of the polygon winding to do this in 2D easily)</span>
+        <span class="kd">var</span> norm<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="k">switch</span><span class="p">(</span><span class="n">winding</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">case</span> <span class="n">PolygonWinding</span><span class="p">.</span><span class="n">Clockwise</span><span class="p">:</span>
+                <span class="k">new</span> <span class="n">Vec2</span><span class="p">(</span><span class="n">edge</span><span class="p">.</span><span class="n">y</span><span class="p">,</span> <span class="o">-</span><span class="n">edge</span><span class="p">.</span><span class="n">x</span><span class="p">);</span>
+            <span class="k">case</span> <span class="n">PolygonWinding</span><span class="p">.</span><span class="n">CounterClockwise</span><span class="p">:</span>
+                <span class="k">new</span> <span class="n">Vec2</span><span class="p">(</span><span class="o">-</span><span class="n">edge</span><span class="p">.</span><span class="n">y</span><span class="p">,</span> <span class="n">edge</span><span class="p">.</span><span class="n">x</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="n">norm</span><span class="p">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">norm</span><span class="p">);</span>
+
+        <span class="c1">// calculate how far away the edge is from the origin</span>
+        <span class="kd">var</span> dist<span class="p">:</span><span class="n">Float</span> <span class="o">=</span> <span class="n">norm</span><span class="p">.</span><span class="n">dot</span><span class="p">(</span><span class="n">vertices</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+        <span class="c1">// we&#39;re looking for the closest edge!</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">dist</span> <span class="o">&lt;</span> <span class="n">closestDistance</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">closestDistance</span> <span class="o">=</span> <span class="n">dist</span><span class="p">;</span>
+            <span class="n">closestNormal</span> <span class="o">=</span> <span class="n">norm</span><span class="p">;</span>
+            <span class="n">closestIndex</span> <span class="o">=</span> <span class="n">j</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="k">new</span> <span class="n">Edge</span><span class="p">(</span><span class="n">closestDistance</span><span class="p">,</span> <span class="n">closestNormal</span><span class="p">,</span> <span class="n">closestIndex</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+<p>Once we have the edge in our polygon which is the closest to the origin, try to find a support point in the direction of the edge’s normal direction to see if there might be something closer to the origin (that exists in the Minkowski difference, but not our simplex yet):</p>
+<div class="highlight"><pre><span></span><span class="kd">var</span> edge<span class="p">:</span><span class="n">Edge</span> <span class="o">=</span> <span class="n">findClosestEdge</span><span class="p">(</span><span class="n">simplexWinding</span><span class="p">);</span>
+<span class="kd">var</span> support<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">calculateSupport</span><span class="p">(</span><span class="n">edge</span><span class="p">.</span><span class="n">normal</span><span class="p">);</span>
+<span class="kd">var</span> distance<span class="p">:</span><span class="n">Float</span> <span class="o">=</span> <span class="n">support</span><span class="p">.</span><span class="n">dot</span><span class="p">(</span><span class="n">edge</span><span class="p">.</span><span class="n">normal</span><span class="p">);</span>
+
+<span class="k">if</span><span class="p">(</span><span class="n">Math</span><span class="p">.</span><span class="n">abs</span><span class="p">(</span><span class="n">distance</span> <span class="o">-</span> <span class="n">edge</span><span class="p">.</span><span class="n">distance</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">EPSILON</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// we found the edge in the Minkowski difference that is closest to the origin!</span>
+<span class="p">}</span>
+<span class="k">else</span> <span class="p">{</span>
+    <span class="c1">// there&#39;s likely an edge in the Minkowski difference that is closer to the origin..</span>
+<span class="p">}</span>
+</pre></div>
+<figure>
+    <img src="/images/collision-engine-2d-penetration/search-further-supports.svg">
+    <figcaption>If there is a support point sufficiently far away from our edge in it's normal direction, we haven't found the edge closest to the origin.</figcaption>
+</figure>
+<p>If we <em>did</em> find the edge closest to the origin, the support point in the direction of the edge’s normal should lie on the edge itself. In this case, we can return the penetration vector as:</p>
+<div class="highlight"><pre><span></span><span class="n">intersection</span> <span class="o">=</span> <span class="n">edge</span><span class="p">.</span><span class="n">normal</span><span class="p">.</span><span class="n">copy</span><span class="p">(</span><span class="n">intersection</span><span class="p">);</span>
+<span class="n">intersection</span><span class="p">.</span><span class="n">multiplyScalar</span><span class="p">(</span><span class="n">distance</span><span class="p">,</span> <span class="n">intersection</span><span class="p">);</span>
+</pre></div>
+<p>On the other hand, if we found that we <em>didn’t</em> find the edge closest to the origin, we can <strong>expand</strong> the simplex toward the support point and try again:</p>
+<div class="highlight"><pre><span></span><span class="n">vertices</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">edge</span><span class="p">.</span><span class="n">index</span><span class="p">,</span> <span class="n">support</span><span class="p">);</span>
+</pre></div>
+<figure>
+    <img src="/images/collision-engine-2d-penetration/search-expanded-simplex.svg">
+    <figcaption>Expand the simplex to try again.</figcaption>
+</figure>
+<p>Once we’ve expanded our simplex (for the first iteration the simplex will go from having 3 to having 4 vertices), we run the algorithm again, searching for the closest edge and determining if the support point along its normal lies on the edge or not. We can continue this process until we find the <em>de-facto</em> closest edge or we hit some upper limit of iterations that we’re willing to try. The code for calculating the intersection now looks like this:</p>
+<div class="highlight"><pre><span></span><span class="kd">public</span> <span class="kd">function</span> <span class="nf">intersect</span><span class="p">(</span><span class="n">shapeA</span><span class="p">:</span><span class="n">Shape2D</span><span class="p">,</span> <span class="n">shapeB</span><span class="p">:</span><span class="n">Shape2D</span><span class="p">):</span><span class="n">Null</span><span class="p">&lt;</span><span class="n">Vec2</span><span class="p">&gt;</span> <span class="p">{</span>
+    <span class="kd">var</span> intersection<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Vec2</span><span class="p">();</span>
+    <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="k">in</span> <span class="mi">0</span><span class="o">...</span><span class="mi">32</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> edge<span class="p">:</span><span class="n">Edge</span> <span class="o">=</span> <span class="n">findClosestEdge</span><span class="p">(</span><span class="n">PolygonWinding</span><span class="p">.</span><span class="n">Clockwise</span><span class="p">);</span>
+        <span class="kd">var</span> support<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">calculateSupport</span><span class="p">(</span><span class="n">edge</span><span class="p">.</span><span class="n">normal</span><span class="p">);</span>
+        <span class="kd">var</span> distance<span class="p">:</span><span class="n">Float</span> <span class="o">=</span> <span class="n">support</span><span class="p">.</span><span class="n">dot</span><span class="p">(</span><span class="n">edge</span><span class="p">.</span><span class="n">normal</span><span class="p">);</span>
+
+        <span class="n">intersection</span> <span class="o">=</span> <span class="n">edge</span><span class="p">.</span><span class="n">normal</span><span class="p">.</span><span class="n">copy</span><span class="p">(</span><span class="n">intersection</span><span class="p">);</span>
+        <span class="n">intersection</span><span class="p">.</span><span class="n">multiplyScalar</span><span class="p">(</span><span class="n">distance</span><span class="p">,</span> <span class="n">intersection</span><span class="p">);</span>
+
+        <span class="k">if</span><span class="p">(</span><span class="n">Math</span><span class="p">.</span><span class="n">abs</span><span class="p">(</span><span class="n">distance</span> <span class="o">-</span> <span class="n">edge</span><span class="p">.</span><span class="n">distance</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">EPSILON</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="n">intersection</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">else</span> <span class="p">{</span>
+            <span class="n">vertices</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">edge</span><span class="p">.</span><span class="n">index</span><span class="p">,</span> <span class="n">support</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">intersection</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+<figure>
+    <img src="/images/collision-engine-2d-penetration/search-support-on-edge.svg">
+    <figcaption>Search until we find a support vertex that lies on our closest edge.</figcaption>
+</figure>
+<p>One last thing we can do is actually calculate the polygon winding of the simplex we’re given so that we can pass it into our <code>findClosestEdge</code> function. This is relatively straightforward:</p>
+<div class="highlight"><pre><span></span><span class="c1">// calculate the winding of the existing simplex</span>
+<span class="kd">var</span> e0<span class="p">:</span><span class="n">Float</span> <span class="o">=</span> <span class="p">(</span><span class="n">vertices</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">x</span> <span class="o">-</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">vertices</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">y</span> <span class="o">+</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">y</span><span class="p">);</span>
+<span class="kd">var</span> e1<span class="p">:</span><span class="n">Float</span> <span class="o">=</span> <span class="p">(</span><span class="n">vertices</span><span class="p">[</span><span class="mi">2</span><span class="p">].</span><span class="n">x</span> <span class="o">-</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">vertices</span><span class="p">[</span><span class="mi">2</span><span class="p">].</span><span class="n">y</span> <span class="o">+</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">y</span><span class="p">);</span>
+<span class="kd">var</span> e2<span class="p">:</span><span class="n">Float</span> <span class="o">=</span> <span class="p">(</span><span class="n">vertices</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">x</span> <span class="o">-</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">2</span><span class="p">].</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">vertices</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">y</span> <span class="o">+</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">2</span><span class="p">].</span><span class="n">y</span><span class="p">);</span>
+<span class="kd">var</span> winding<span class="p">:</span><span class="n">PolygonWinding</span> <span class="o">=</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">e0</span> <span class="o">+</span> <span class="n">e1</span> <span class="o">+</span> <span class="n">e2</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="n">PolygonWinding</span><span class="p">.</span><span class="n">Clockwise</span><span class="p">;</span>
+    <span class="k">else</span> <span class="n">PolygonWinding</span><span class="p">.</span><span class="n">CounterClockwise</span><span class="p">;</span>
+</pre></div>
+<h2><a href="#putting-it-all-together" aria-hidden="true" class="anchor" id="headerputting-it-all-together"></a>Putting it All Together</h2>
+<p>We can now extend the class from the <a href="/posts/building-a-collision-engine-part-1-2d-gjk-collision-detection/">previous post</a> to include penetration vector calculation by adding the following. What you do with the penetration vector depends on your goal. If you’re creating a physics system, you can use these vectors to resolve collision responses (pushing objects apart based on physical properties like mass and elasticity for example).</p>
+<h4><a href="#gjk2dhx" aria-hidden="true" class="anchor" id="headergjk2dhx"></a>GJK2D.hx</h4>
+<div class="highlight"><pre><span></span><span class="c1">// ...</span>
+
+<span class="kd">enum</span> <span class="n">PolygonWinding</span> <span class="p">{</span>
+    <span class="n">Clockwise</span><span class="p">;</span>
+    <span class="n">CounterClockwise</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="n">Edge</span> <span class="p">{</span>
+    <span class="kd">public</span> <span class="kd">var</span> distance<span class="p">:</span><span class="n">Float</span><span class="p">;</span>
+    <span class="kd">public</span> <span class="kd">var</span> normal<span class="p">:</span><span class="n">Vec2</span><span class="p">;</span>
+    <span class="kd">public</span> <span class="kd">var</span> index<span class="p">:</span><span class="n">Int</span><span class="p">;</span>
+
+    <span class="kd">public</span> <span class="kd">function</span> <span class="nf">new</span><span class="p">(</span><span class="n">distance</span><span class="p">:</span><span class="n">Float</span><span class="p">,</span> <span class="n">normal</span><span class="p">:</span><span class="n">Vec2</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span><span class="n">Int</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">distance</span> <span class="o">=</span> <span class="n">distance</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">normal</span> <span class="o">=</span> <span class="n">normal</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">index</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="n">GJK2D</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+
+    <span class="kd">private</span> <span class="kd">function</span> <span class="nf">findClosestEdge</span><span class="p">(</span><span class="n">winding</span><span class="p">:</span><span class="n">PolygonWinding</span><span class="p">):</span><span class="n">Edge</span> <span class="p">{</span>
+        <span class="kd">var</span> closestDistance<span class="p">:</span><span class="n">Float</span> <span class="o">=</span> <span class="n">Math</span><span class="p">.</span><span class="n">POSITIVE_INFINITY</span><span class="p">;</span>
+        <span class="kd">var</span> closestNormal<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Vec2</span><span class="p">();</span>
+        <span class="kd">var</span> closestIndex<span class="p">:</span><span class="n">Int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="kd">var</span> line<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Vec2</span><span class="p">();</span>
+        <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="k">in</span> <span class="mi">0</span><span class="o">...</span><span class="n">vertices</span><span class="p">.</span><span class="n">length</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">var</span> j<span class="p">:</span><span class="n">Int</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">j</span> <span class="o">&gt;=</span> <span class="n">vertices</span><span class="p">.</span><span class="n">length</span><span class="p">)</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+            <span class="n">vertices</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">copy</span><span class="p">(</span><span class="n">line</span><span class="p">);</span>
+            <span class="n">line</span><span class="p">.</span><span class="n">subtractVec</span><span class="p">(</span><span class="n">vertices</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">line</span><span class="p">);</span>
+
+            <span class="kd">var</span> norm<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="k">switch</span><span class="p">(</span><span class="n">winding</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">case</span> <span class="n">PolygonWinding</span><span class="p">.</span><span class="n">Clockwise</span><span class="p">:</span>
+                    <span class="k">new</span> <span class="n">Vec2</span><span class="p">(</span><span class="n">line</span><span class="p">.</span><span class="n">y</span><span class="p">,</span> <span class="o">-</span><span class="n">line</span><span class="p">.</span><span class="n">x</span><span class="p">);</span>
+                <span class="k">case</span> <span class="n">PolygonWinding</span><span class="p">.</span><span class="n">CounterClockwise</span><span class="p">:</span>
+                    <span class="k">new</span> <span class="n">Vec2</span><span class="p">(</span><span class="o">-</span><span class="n">line</span><span class="p">.</span><span class="n">y</span><span class="p">,</span> <span class="n">line</span><span class="p">.</span><span class="n">x</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="n">norm</span><span class="p">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">norm</span><span class="p">);</span>
+
+            <span class="c1">// calculate how far away the edge is from the origin</span>
+            <span class="kd">var</span> dist<span class="p">:</span><span class="n">Float</span> <span class="o">=</span> <span class="n">norm</span><span class="p">.</span><span class="n">dot</span><span class="p">(</span><span class="n">vertices</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">dist</span> <span class="o">&lt;</span> <span class="n">closestDistance</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">closestDistance</span> <span class="o">=</span> <span class="n">dist</span><span class="p">;</span>
+                <span class="n">closestNormal</span> <span class="o">=</span> <span class="n">norm</span><span class="p">;</span>
+                <span class="n">closestIndex</span> <span class="o">=</span> <span class="n">j</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="k">new</span> <span class="n">Edge</span><span class="p">(</span><span class="n">closestDistance</span><span class="p">,</span> <span class="n">closestNormal</span><span class="p">,</span> <span class="n">closestIndex</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kd">public</span> <span class="kd">function</span> <span class="nf">intersect</span><span class="p">(</span><span class="n">shapeA</span><span class="p">:</span><span class="n">Shape2D</span><span class="p">,</span> <span class="n">shapeB</span><span class="p">:</span><span class="n">Shape2D</span><span class="p">):</span><span class="n">Null</span><span class="p">&lt;</span><span class="n">Vec2</span><span class="p">&gt;</span> <span class="p">{</span>
+        <span class="c1">// first, calculate the base simplex</span>
+        <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">test</span><span class="p">(</span><span class="n">shapeA</span><span class="p">,</span> <span class="n">shapeB</span><span class="p">))</span> <span class="p">{</span>
+            <span class="c1">// if we&#39;re not intersecting, return null</span>
+            <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="c1">// calculate the winding of the existing simplex</span>
+        <span class="kd">var</span> e0<span class="p">:</span><span class="n">Float</span> <span class="o">=</span> <span class="p">(</span><span class="n">vertices</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">x</span> <span class="o">-</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">vertices</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">y</span> <span class="o">+</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">y</span><span class="p">);</span>
+        <span class="kd">var</span> e1<span class="p">:</span><span class="n">Float</span> <span class="o">=</span> <span class="p">(</span><span class="n">vertices</span><span class="p">[</span><span class="mi">2</span><span class="p">].</span><span class="n">x</span> <span class="o">-</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">vertices</span><span class="p">[</span><span class="mi">2</span><span class="p">].</span><span class="n">y</span> <span class="o">+</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">y</span><span class="p">);</span>
+        <span class="kd">var</span> e2<span class="p">:</span><span class="n">Float</span> <span class="o">=</span> <span class="p">(</span><span class="n">vertices</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">x</span> <span class="o">-</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">2</span><span class="p">].</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">vertices</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">y</span> <span class="o">+</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">2</span><span class="p">].</span><span class="n">y</span><span class="p">);</span>
+        <span class="kd">var</span> winding<span class="p">:</span><span class="n">PolygonWinding</span> <span class="o">=</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">e0</span> <span class="o">+</span> <span class="n">e1</span> <span class="o">+</span> <span class="n">e2</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="n">PolygonWinding</span><span class="p">.</span><span class="n">Clockwise</span><span class="p">;</span>
+            <span class="k">else</span> <span class="n">PolygonWinding</span><span class="p">.</span><span class="n">CounterClockwise</span><span class="p">;</span>
+
+        <span class="kd">var</span> intersection<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Vec2</span><span class="p">();</span>
+        <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="k">in</span> <span class="mi">0</span><span class="o">...</span><span class="mi">32</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">var</span> edge<span class="p">:</span><span class="n">Edge</span> <span class="o">=</span> <span class="n">findClosestEdge</span><span class="p">(</span><span class="n">winding</span><span class="p">);</span>
+            <span class="kd">var</span> support<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">calculateSupport</span><span class="p">(</span><span class="n">edge</span><span class="p">.</span><span class="n">normal</span><span class="p">);</span>
+            <span class="kd">var</span> distance<span class="p">:</span><span class="n">Float</span> <span class="o">=</span> <span class="n">support</span><span class="p">.</span><span class="n">dot</span><span class="p">(</span><span class="n">edge</span><span class="p">.</span><span class="n">normal</span><span class="p">);</span>
+
+            <span class="n">intersection</span> <span class="o">=</span> <span class="n">edge</span><span class="p">.</span><span class="n">normal</span><span class="p">.</span><span class="n">copy</span><span class="p">(</span><span class="n">intersection</span><span class="p">);</span>
+            <span class="n">intersection</span><span class="p">.</span><span class="n">multiplyScalar</span><span class="p">(</span><span class="n">distance</span><span class="p">,</span> <span class="n">intersection</span><span class="p">);</span>
+
+            <span class="k">if</span><span class="p">(</span><span class="n">Math</span><span class="p">.</span><span class="n">abs</span><span class="p">(</span><span class="n">distance</span> <span class="o">-</span> <span class="n">edge</span><span class="p">.</span><span class="n">distance</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mf">0.000001</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="n">intersection</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">else</span> <span class="p">{</span>
+                <span class="n">vertices</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">edge</span><span class="p">.</span><span class="n">index</span><span class="p">,</span> <span class="n">support</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">intersection</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+<h2><a href="#demo" aria-hidden="true" class="anchor" id="headerdemo"></a>Demo</h2>
+<figure>
+    <iframe style="width: 100%; height: 200px; border: 0;" src="/images/collision-engine-2d-penetration/demo.html"></iframe>
+</figure>
+<h2><a href="#headbutt" aria-hidden="true" class="anchor" id="headerheadbutt"></a>Headbutt</h2>
+<p>I’ve started rolling this code into it’s own library, tentatively called <em>Headbutt</em>, which you can follow along with if you’re interested on Github: <a href="https://github.com/hamaluik/headbutt">https://github.com/hamaluik/headbutt</a>.</p>
+
+    </article>
+    <footer>
+        <p><svg class="icon icon-ca">
+                <use xlink:href="#ca"></use>
+            </svg> Made in Canada.</p>
+    </footer>
+</body>
+
+</html>

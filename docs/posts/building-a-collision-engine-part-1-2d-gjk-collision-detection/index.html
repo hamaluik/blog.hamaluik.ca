@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Building a Collision Engine Part 1: 2D GJK Collision Detection</title>
+    <link href="https://fonts.googleapis.com/css?family=Crimson+Pro:400,400i,700|Eczar:800|Fira+Code&display=swap" rel="stylesheet">
+    <link href="/style.css" rel="stylesheet"> 
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="manifest" href="/assets/site.webmanifest">
+    <link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#bf616a">
+    <meta name="msapplication-TileColor" content="#bf616a">
+    <meta name="theme-color" content="#bf616a">
+</head>
+
+<body>
+    <svg style="position:absolute;width:0;height:0;display:none;" xmlns="http://www.w3.org/2000/svg" overflow="hidden">
+        <defs>
+            <symbol id="ca" viewBox="0 0 43 32">
+                <path fill="var(--color1, #fff)" d="M10.012 0h22.642v32H10.012z" />
+                <path fill="var(--color2, #bf616a)"
+                    d="M-1.309 0h11.321v32H-1.309zm33.963 0h11.321v32H32.654zM13.398 15.463l-.879.3 4.091 3.59c.309.923-.108 1.195-.373 1.679l4.441-.564-.116 4.47.92-.026-.201-4.432 4.446.527c-.275-.581-.52-.89-.265-1.819l4.088-3.402-.715-.259c-.585-.451.253-2.174.379-3.261 0 0-2.387.821-2.544.391l-.608-1.168-2.172 2.386c-.237.057-.338-.037-.394-.238l1.003-4.985-1.589.894c-.133.057-.266.008-.354-.147l-1.528-3.066-1.576 3.184c-.119.114-.238.127-.336.05l-1.513-.849.908 4.946c-.072.196-.245.252-.449.145l-2.076-2.359c-.272.435-.456 1.146-.815 1.305-.359.149-1.561-.301-2.367-.477.275.993 1.136 2.644.591 3.185z" />
+            </symbol>
+        </defs>
+    </svg>
+    <header>
+        <h1><a href="/">Kenton Hamaluik</a></h1>
+    </header>
+    <article>
+        <header>
+            <h1>Building a Collision Engine Part 1: 2D GJK Collision Detection</h1>
+        </header>
+        <p>I’ve previously written about <a href="http://blog.hamaluik.ca/posts/simple-aabb-collision-using-minkowski-difference/">using the Minkowski Difference to detect collisions of 2D AABBs</a>, but I now want to expand that into creating a fully fleshed out and <em>flexible</em> collision engine for my own purposes (in <a href="http://haxe.org/">Haxe</a> of course!). I recommend you read up on the <a href="https://en.wikipedia.org/wiki/Minkowski_addition">Minkowski difference</a> and the overall technique of using to calculate the intersection of shapes before diving into things here as hopefully things will make much more sense then. Full credit also goes to <a href="https://github.com/wnbittle">William Bittle</a> who created <a href="http://www.dyn4j.org/">dyn4j</a> (which is a collision detection and physics engine written in Java) for his blog posts on <a href="http://www.dyn4j.org/2010/04/gjk-gilbert-johnson-keerthi/">GJK</a> and <a href="http://www.dyn4j.org/2010/05/epa-expanding-polytope-algorithm/">EPA</a>, which this work is heavily based on.</p>
+<p>Before I get any further, let me define what I want this collision engine to do:</p>
+<ol>
+<li>Detect whether a collision occurred or not</li>
+<li>Calculate a penetration vector if a collision did occur</li>
+<li>Operate on any pair of convex objects in both 2D and 3D</li>
+</ol>
+<p>The engine will perform the collision detection and penetration calculation steps completely separately, and at your discretion, meaning for every pair of objects you want to determine the collision of, you will have to call something to the effect of:</p>
+<div class="highlight"><pre><span></span><span class="kd">var</span> shapeA<span class="p">:</span><span class="n">Array</span><span class="p">&lt;</span><span class="n">Vec2</span><span class="p">&gt;</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="k">new</span> <span class="n">Vec2</span><span class="p">(</span><span class="o">-</span><span class="mi">18</span><span class="p">,</span> <span class="o">-</span><span class="mi">18</span><span class="p">),</span> <span class="k">new</span> <span class="n">Vec2</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="o">-</span><span class="mi">18</span><span class="p">),</span>
+    <span class="k">new</span> <span class="n">Vec2</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="o">-</span><span class="mi">13</span><span class="p">),</span> <span class="k">new</span> <span class="n">Vec2</span><span class="p">(</span><span class="o">-</span><span class="mi">18</span><span class="p">,</span> <span class="o">-</span><span class="mi">13</span><span class="p">)</span>
+<span class="p">];</span>
+<span class="kd">var</span> shapeB<span class="p">:</span><span class="n">Array</span><span class="p">&lt;</span><span class="n">Vec2</span><span class="p">&gt;</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="k">new</span> <span class="n">Vec2</span><span class="p">(</span><span class="o">-</span><span class="mi">14</span><span class="p">,</span> <span class="o">-</span><span class="mi">14</span><span class="p">),</span> <span class="k">new</span> <span class="n">Vec2</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mi">16</span><span class="p">),</span> <span class="k">new</span> <span class="n">Vec2</span><span class="p">(</span><span class="o">-</span><span class="mi">12</span><span class="p">,</span> <span class="o">-</span><span class="mi">8</span><span class="p">)</span>
+<span class="p">];</span>
+
+<span class="kd">var</span> colliding<span class="p">:</span><span class="n">Bool</span> <span class="o">=</span> <span class="n">checkCollision2D</span><span class="p">(</span><span class="n">shapeA</span><span class="p">,</span> <span class="n">shapeB</span><span class="p">);</span>
+<span class="n">trace</span><span class="p">(</span><span class="s1">&#39;Colliding: </span><span class="si">${</span><span class="n">colliding</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">);</span>
+
+<span class="kd">var</span> collision<span class="p">:</span><span class="n">Collision</span> <span class="o">=</span> <span class="n">calculateCollision2D</span><span class="p">(</span><span class="n">shapeA</span><span class="p">,</span> <span class="n">shapeB</span><span class="p">);</span>
+<span class="n">trace</span><span class="p">(</span><span class="s1">&#39;Colliding: </span><span class="si">${</span><span class="n">collision</span><span class="p">.</span><span class="n">colliding</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">);</span>
+<span class="n">trace</span><span class="p">(</span><span class="s1">&#39;Collision normal: </span><span class="si">${</span><span class="n">collision</span><span class="p">.</span><span class="n">normal</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">);</span>
+<span class="n">trace</span><span class="p">(</span><span class="s1">&#39;Collision point: </span><span class="si">${</span><span class="n">collision</span><span class="p">.</span><span class="n">point</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">);</span>
+</pre></div>
+<p>This engine <em>will not</em> be responsible for:</p>
+<ol>
+<li>Performing broad-phase collision culling (this is likely to be more engine / environment dependent, though I may one day add it)</li>
+<li>Applying any physics simulation or collision response (again, this is engine / environment dependent)</li>
+</ol>
+<p>Since I want this to be as flexible as possible (while being limited to convex shapes), I’ll be developing the collision engine using <a href="https://en.wikipedia.org/wiki/Gilbert%E2%80%93Johnson%E2%80%93Keerthi_distance_algorithm">GJK (Gilbert-Johnson-Keerthi)</a> for collision detection and <a href="http://www.dyn4j.org/2010/05/epa-expanding-polytope-algorithm/">EPA</a> for intersection calculation.</p>
+<p>With that out of the way, let’s get started with the simplest bit first: 2D collision detection using GJK.</p>
+<p>The GJK algorithm is a way of determining if two shapes are intersecting (meaning their Minkowski difference overlaps with the origin), without having to calculate the entire Minkowski difference like I did in my <a href="http://blog.hamaluik.ca/posts/simple-aabb-collision-using-minkowski-difference/">previous posts</a>. When you’re just colliding AABBs with each other, the Minkowski difference is also an AABB and is very simple and quick to calculate, so you don’t need this “shortcut”, and can just calculate the entire thing and be on your way. When shapes start to rotate or have “weird” geometries however, this becomes less tenuous.</p>
+<figure>
+    <img src="/images/collision-engine-2d-detection/md_aabb_vs_polys.svg">
+    <figcaption>The Minkowski difference of two AABBs is itself an AABB, while the Minkowski difference of a rectangle and a triangle is a generic polygon.</figcaption>
+</figure>
+<p>GJK works by trying to find a triangle (or tetrahedron in 3D) which fits inside of the Minkowski difference and encapsulates the origin. If the triangle (or tetrahedron) contains the origin, and it also fits inside of the Minkowski difference, then the Minkowski difference must also contain the origin!</p>
+<figure>
+    <img src="/images/collision-engine-2d-detection/triangle-in-md.svg">
+    <figcaption>If we can find a triangle which fits entirely within the Minkowski difference and also captures the origin, we can be confident the larger Minkowski difference captures the origin.</figcaption>
+</figure>
+<p>The basis of finding a triangle inside of the Minkowski difference uses two concepts:</p>
+<ol>
+<li>Support functions</li>
+<li>Simplexes</li>
+</ol>
+<h3><a href="#support-functions" aria-hidden="true" class="anchor" id="headersupport-functions"></a>Support Functions</h3>
+<p>A support function for a convex shape is just a function that returns a point on the boundary of a shape that is the furthest in a given arbitrary direction. If multiple points are at the same distance, any of the points are acceptable. If you can fully define a support function for a shape, then you can use it to collide with things.</p>
+<figure>
+    <img src="/images/collision-engine-2d-detection/convex-shapes.svg">
+    <figcaption>Any convex shape can be used in this algorithm, so long as you can define a support function for it.</figcaption>
+</figure>
+<p>Note that due to the properties of Minkowski differences and support functions, the support function of a Minkowski difference of two shapes is equal to the difference of the support functions of two shapes. This is what allows us to not calculate an entire Minkowski difference, but rather just the difference in support functions for the two shapes! Basically, given the support functions we can easily call:</p>
+<div class="highlight"><pre><span></span><span class="kd">public</span> <span class="kd">function</span> <span class="nf">getSupport</span><span class="p">(</span><span class="n">direction</span><span class="p">:</span><span class="n">Vec2</span><span class="p">):</span><span class="n">Vec2</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">shapeA</span><span class="p">.</span><span class="n">support</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span> <span class="o">-</span> <span class="n">shapeB</span><span class="p">.</span><span class="n">support</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">direction</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+<figure>
+    <img src="/images/collision-engine-2d-detection/md-supports.svg">
+    <figcaption>The support function of a Minkowski difference of two shapes is equal to the difference in support functions for the two shapes.</figcaption>
+</figure>
+<p>Here are some support functions for two common shapes:</p>
+<h4><a href="#circle" aria-hidden="true" class="anchor" id="headercircle"></a>Circle</h4>
+<div class="highlight"><pre><span></span><span class="kd">class</span> <span class="n">Circle</span> <span class="kd">implements</span> <span class="n">Shape2D</span> <span class="p">{</span>
+    <span class="kd">public</span> <span class="kd">var</span> centre<span class="p">:</span><span class="n">Vec2</span><span class="p">;</span>
+    <span class="kd">public</span> <span class="kd">var</span> radius<span class="p">:</span><span class="n">Float</span><span class="p">;</span>
+
+    <span class="kd">public</span> <span class="kd">function</span> <span class="nf">new</span><span class="p">(</span><span class="n">centre</span><span class="p">:</span><span class="n">Vec2</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span><span class="n">Float</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">centre</span> <span class="o">=</span> <span class="n">centre</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">radius</span> <span class="o">=</span> <span class="n">radius</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kd">public</span> <span class="kd">function</span> <span class="nf">support</span><span class="p">(</span><span class="n">direction</span><span class="p">:</span><span class="n">Vec2</span><span class="p">):</span><span class="n">Vec2</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">centre</span> <span class="o">+</span> <span class="n">radius</span> <span class="o">*</span> <span class="n">direction</span><span class="p">.</span><span class="n">normalized</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+<h4><a href="#polygon" aria-hidden="true" class="anchor" id="headerpolygon"></a>Polygon</h4>
+<div class="highlight"><pre><span></span><span class="kd">class</span> <span class="n">Polygon</span> <span class="kd">implements</span> <span class="n">Shape2D</span> <span class="p">{</span>
+    <span class="kd">public</span> <span class="kd">var</span> vertices<span class="p">:</span><span class="n">Array</span><span class="p">&lt;</span><span class="n">Vec2</span><span class="p">&gt;;</span>
+
+    <span class="kd">public</span> <span class="kd">function</span> <span class="nf">new</span><span class="p">(</span><span class="n">vertices</span><span class="p">:</span><span class="n">Array</span><span class="p">&lt;</span><span class="n">Vec2</span><span class="p">&gt;)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">vertices</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kd">public</span> <span class="kd">function</span> <span class="nf">support</span><span class="p">(</span><span class="n">direction</span><span class="p">:</span><span class="n">Vec2</span><span class="p">):</span><span class="n">Vec2</span> <span class="p">{</span>
+        <span class="kd">var</span> furthestDistance<span class="p">:</span><span class="n">Float</span> <span class="o">=</span> <span class="n">Math</span><span class="p">.</span><span class="n">NEGATIVE_INFINITY</span><span class="p">;</span>
+        <span class="kd">var</span> furthestVertex<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+
+        <span class="k">for</span><span class="p">(</span><span class="n">v</span> <span class="k">in</span> <span class="n">vertices</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">var</span> distance<span class="p">:</span><span class="n">Float</span> <span class="o">=</span> <span class="n">Vec2</span><span class="p">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">direction</span><span class="p">);</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">distance</span> <span class="o">&gt;</span> <span class="n">furthestDistance</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">furthestDistance</span> <span class="o">=</span> <span class="n">distance</span><span class="p">;</span>
+                <span class="n">furthestVertex</span> <span class="o">=</span> <span class="n">v</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">furthestVertex</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+<h3><a href="#simplexes" aria-hidden="true" class="anchor" id="headersimplexes"></a>Simplexes</h3>
+<p>A <a href="https://en.wikipedia.org/wiki/Simplex">simplex</a> is a somewhat special shape in the dimension we’re working in. For a given dimension \(k\), the simplex in that dimension is a shape with \(k + 1\) vertices. Or, in the real world: In 2D, a simplex is a <strong>triangle</strong> and in 3D, a simplex is a <strong>tetrahedron</strong>. The simplex represents the most basic solid shape that can exist in a dimension, which is helpful for calculating whether it covers the origin or not.</p>
+<figure>
+    <img src="/images/collision-engine-2d-detection/simplex.svg">
+    <figcaption>In 2D, the simplex is a triangle and in 3D, the simplex is a tetrahedron.</figcaption>
+</figure>
+<h2><a href="#the-gjk-algorithm" aria-hidden="true" class="anchor" id="headerthe-gjk-algorithm"></a>The GJK Algorithm</h2>
+<p>The GJK algorithm starts by calculating a triangle that fits within the Minkowski difference. If that first triangle contains the origin, then congrats! You’ve determined that the shapes are intersecting! Otherwise, see if you can make a new triangle which does contain the origin. Keep going until you’ve either created a triangle which contains the origin or are confident that there is not way you can create a triangle which contains the origin. This process is called “evolving the simplex”, because you keep upgrading the simplex until you get what you want or find if its not possible.</p>
+<figure>
+    <img src="/images/collision-engine-2d-detection/2d_yes_slow.gif">
+    <figcaption>Evolving the simplex until it contains the origin.</figcaption>
+</figure>
+<h3><a href="#calculating-the-first-simplex--triangle" aria-hidden="true" class="anchor" id="headercalculating-the-first-simplex--triangle"></a>Calculating the First Simplex / Triangle</h3>
+<p>In order to have a triangle, you must have 3 points / vertices. Note that since we’re using support functions, a good pick for the first vertex is the support in the direction of separation of the two shapes (though we could pick any arbitrary direction, picking this one tends to make the simplex converge on a result much faster).</p>
+<figure>
+    <img src="/images/collision-engine-2d-detection/simplex-v1.svg">
+    <figcaption>The first vertex of the simplex is the support of the Minkowski difference in the direction of the shapes' separation.</figcaption>
+</figure>
+<div class="highlight"><pre><span></span><span class="kd">public</span> <span class="kd">function</span> <span class="nf">evolveSimplex</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">switch</span><span class="p">(</span><span class="n">vertices</span><span class="p">.</span><span class="n">length</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="mi">0</span><span class="p">:</span> <span class="p">{</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="n">shapeB</span><span class="p">.</span><span class="n">centre</span><span class="p">()</span> <span class="o">-</span> <span class="n">shapeA</span><span class="p">.</span><span class="n">centre</span><span class="p">();</span>
+            <span class="n">vertices</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">shapeA</span><span class="p">.</span><span class="n">support</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span> <span class="o">-</span> <span class="n">shapeB</span><span class="p">.</span><span class="n">support</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">direction</span><span class="p">));</span>
+        <span class="p">}</span>
+        <span class="k">case</span> <span class="mi">1</span><span class="p">:</span> <span class="p">{</span>
+            <span class="c1">// TODO: add the second vertex</span>
+        <span class="p">}</span>
+        <span class="k">case</span> <span class="mi">2</span><span class="p">:</span> <span class="p">{</span>
+            <span class="c1">// TODO: add the third vertex</span>
+        <span class="p">}</span>
+        <span class="k">case</span> <span class="mi">3</span><span class="p">:</span> <span class="p">{</span>
+            <span class="c1">// TODO: calculate if the simplex contains the origin</span>
+            <span class="c1">// if it does, we&#39;re done!</span>
+            <span class="c1">// if it doesn&#39;t, update the simplex!</span>
+        <span class="p">}</span>
+        <span class="k">case</span> <span class="n">_</span><span class="p">:</span> <span class="k">throw</span> <span class="s1">&#39;Can</span><span class="se">\&#39;</span><span class="s1">t have simplex with </span><span class="si">${</span><span class="n">vertices</span><span class="p">.</span><span class="n">length</span><span class="si">}</span><span class="s1"> verts!&#39;</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+<p>The second vertex can be chosen as the support in the opposite direction of what we chose in the first place (so as to maximize the size of our simplex).</p>
+<figure>
+    <img src="/images/collision-engine-2d-detection/simplex-v2.svg">
+    <figcaption>The second vertex of the simplex is the support of the Minkowski difference in the opposite direction as before.</figcaption>
+</figure>
+<div class="highlight"><pre><span></span><span class="kd">public</span> <span class="kd">function</span> <span class="nf">evolveSimplex</span><span class="p">():</span><span class="n">Void</span> <span class="p">{</span>
+    <span class="k">switch</span><span class="p">(</span><span class="n">vertices</span><span class="p">.</span><span class="n">length</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="mi">0</span><span class="p">:</span> <span class="p">{</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="n">shapeB</span><span class="p">.</span><span class="n">centre</span><span class="p">()</span> <span class="o">-</span> <span class="n">shapeA</span><span class="p">.</span><span class="n">centre</span><span class="p">();</span>
+            <span class="n">vertices</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">shapeA</span><span class="p">.</span><span class="n">support</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span> <span class="o">-</span> <span class="n">shapeB</span><span class="p">.</span><span class="n">support</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">direction</span><span class="p">));</span>
+        <span class="p">}</span>
+        <span class="k">case</span> <span class="mi">1</span><span class="p">:</span> <span class="p">{</span>
+            <span class="c1">// flip the direction</span>
+            <span class="n">direction</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+            <span class="n">vertices</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">shapeA</span><span class="p">.</span><span class="n">support</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span> <span class="o">-</span> <span class="n">shapeB</span><span class="p">.</span><span class="n">support</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">direction</span><span class="p">));</span>
+        <span class="p">}</span>
+        <span class="k">case</span> <span class="mi">2</span><span class="p">:</span> <span class="p">{</span>
+            <span class="c1">// TODO: add the third vertex</span>
+        <span class="p">}</span>
+        <span class="k">case</span> <span class="mi">3</span><span class="p">:</span> <span class="p">{</span>
+            <span class="c1">// TODO: calculate if the simplex contains the origin</span>
+            <span class="c1">// if it does, we&#39;re done!</span>
+            <span class="c1">// if it doesn&#39;t, update the simplex!</span>
+        <span class="p">}</span>
+        <span class="k">case</span> <span class="n">_</span><span class="p">:</span> <span class="k">throw</span> <span class="s1">&#39;Can</span><span class="se">\&#39;</span><span class="s1">t have simplex with </span><span class="si">${</span><span class="n">vertices</span><span class="p">.</span><span class="n">length</span><span class="si">}</span><span class="s1"> verts!&#39;</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+<p>The third vertex should be chosen as the support in the direction <a href="https://en.wikipedia.org/wiki/Perpendicular">perpendicular</a> to the line formed by the first two vertices, in the direction of the origin, again maximizing the size of the simplex so that we can either complete or fail as early as possible.</p>
+<figure>
+    <img src="/images/collision-engine-2d-detection/simplex-v3.svg">
+    <figcaption>The third vertex of the simplex is the support of the Minkowski difference in the direction of the origin parallel to the line formed by the first two vertices.</figcaption>
+</figure>
+<div class="highlight"><pre><span></span><span class="kd">public</span> <span class="kd">function</span> <span class="nf">evolveSimplex</span><span class="p">():</span><span class="n">Void</span> <span class="p">{</span>
+    <span class="k">switch</span><span class="p">(</span><span class="n">vertices</span><span class="p">.</span><span class="n">length</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="mi">0</span><span class="p">:</span> <span class="p">{</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="n">shapeB</span><span class="p">.</span><span class="n">centre</span><span class="p">()</span> <span class="o">-</span> <span class="n">shapeA</span><span class="p">.</span><span class="n">centre</span><span class="p">();</span>
+            <span class="n">vertices</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">shapeA</span><span class="p">.</span><span class="n">support</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span> <span class="o">-</span> <span class="n">shapeB</span><span class="p">.</span><span class="n">support</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">direction</span><span class="p">));</span>
+        <span class="p">}</span>
+        <span class="k">case</span> <span class="mi">1</span><span class="p">:</span> <span class="p">{</span>
+            <span class="c1">// flip the direction</span>
+            <span class="n">direction</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+            <span class="n">vertices</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">shapeA</span><span class="p">.</span><span class="n">support</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span> <span class="o">-</span> <span class="n">shapeB</span><span class="p">.</span><span class="n">support</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">direction</span><span class="p">));</span>
+        <span class="p">}</span>
+        <span class="k">case</span> <span class="mi">2</span><span class="p">:</span> <span class="p">{</span>
+            <span class="kd">var</span> b<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+            <span class="kd">var</span> c<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+            
+            <span class="c1">// line cb is the line formed by the first two vertices</span>
+            <span class="kd">var</span> cb<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">b</span> <span class="o">-</span> <span class="n">c</span><span class="p">;</span>
+            <span class="c1">// line c0 is the line from the first vertex to the origin</span>
+            <span class="kd">var</span> c0<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">c</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+
+            <span class="c1">// use the triple-cross-product to calculate a direction perpendicular to line cb</span>
+            <span class="c1">// in the direction of the origin</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="n">tripleProduct</span><span class="p">(</span><span class="n">cb</span><span class="p">,</span> <span class="n">c0</span><span class="p">,</span> <span class="n">cb</span><span class="p">);</span>
+            <span class="n">vertices</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">shapeA</span><span class="p">.</span><span class="n">support</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span> <span class="o">-</span> <span class="n">shapeB</span><span class="p">.</span><span class="n">support</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">direction</span><span class="p">));</span>
+        <span class="p">}</span>
+        <span class="k">case</span> <span class="mi">3</span><span class="p">:</span> <span class="p">{</span>
+            <span class="c1">// TODO: calculate if the simplex contains the origin</span>
+            <span class="c1">// if it does, we&#39;re done!</span>
+            <span class="c1">// if it doesn&#39;t, update the simplex!</span>
+        <span class="p">}</span>
+        <span class="k">case</span> <span class="n">_</span><span class="p">:</span> <span class="k">throw</span> <span class="s1">&#39;Can</span><span class="se">\&#39;</span><span class="s1">t have simplex with </span><span class="si">${</span><span class="n">vertices</span><span class="p">.</span><span class="n">length</span><span class="si">}</span><span class="s1"> verts!&#39;</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+<h3><a href="#determining-if-the-simplex-contains-the-origin" aria-hidden="true" class="anchor" id="headerdetermining-if-the-simplex-contains-the-origin"></a>Determining if the Simplex Contains the Origin</h3>
+<p>To determine whether our simplex triangle contains the origin or not, we actually test whether the origin is on the “inside” or “outside” of each line segment of the triangle. We have three line segments composing the triangle, so three tests have to be done. If the origin is on the “outside” of any line segment, then we know the triangle doesn’t include the origin; on the other hand if all three tests say the origin is on the inside, we know we contain the origin.</p>
+<figure>
+    <img src="/images/collision-engine-2d-detection/inside-outside.svg">
+    <figcaption>Testing if a point is contained in a triangle is done by testing if it's on the "inside" or "outside" of each line segment.</figcaption>
+</figure>
+<p>We can actually streamline this process a little bit however, and only do two tests instead of the full three. Since we chose the third vertex of the simplex to be in the direction of the origin, we <strong>know</strong> that origin is definitely on the inside of the first line segment (formed by our first and second simplex vertices). All that’s left to do is test the lines \(v_2 \to v_1\) and \(v_2 \to v_0\).</p>
+<p>To check if a point is “inside” or “outside” the line segment, we can use the <a href="https://en.wikipedia.org/wiki/Triple_product">triple cross product</a> to generate a perpendicular line which points away from the vertex of the triangle which <strong>isn’t</strong> being used by this line segment. Then we test if that perpendicular line is in the same direction as the line from the new vertex to the origin using the <a href="https://en.wikipedia.org/wiki/Dot_product">dot product</a>. Recall that if the dot product of two vectors is \(&gt; 0\) then we know that they are in the same direction, and in opposite directions if the dot product is \(&lt; 0\).</p>
+<div class="highlight"><pre><span></span>        <span class="err">c</span><span class="n">ase</span> <span class="mi">3</span><span class="err">:</span> <span class="p">{</span>
+            <span class="c1">// calculate if the simplex contains the origin</span>
+            <span class="kd">var</span> a<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+            <span class="kd">var</span> b<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+            <span class="kd">var</span> c<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+
+            <span class="kd">var</span> a0<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="c1">// v2 to the origin</span>
+            <span class="kd">var</span> ab<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">;</span> <span class="c1">// v2 to v1</span>
+            <span class="kd">var</span> ac<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">c</span> <span class="o">-</span> <span class="n">a</span><span class="p">;</span> <span class="c1">// v2 to v0</span>
+
+            <span class="kd">var</span> abPerp<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">tripleProduct</span><span class="p">(</span><span class="n">ac</span><span class="p">,</span> <span class="n">ab</span><span class="p">,</span> <span class="n">ab</span><span class="p">);</span>
+            <span class="kd">var</span> acPerp<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">tripleProduct</span><span class="p">(</span><span class="n">ab</span><span class="p">,</span> <span class="n">ac</span><span class="p">,</span> <span class="n">ac</span><span class="p">);</span>
+
+            <span class="k">if</span><span class="p">(</span><span class="n">abPerp</span><span class="p">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="c1">// the origin is outside line ab</span>
+                <span class="c1">// TODO: evolve the simplex</span>
+            <span class="p">}</span>
+            <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">acPerp</span><span class="p">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="c1">// the origin is outside line ac</span>
+                <span class="c1">// TODO: evolve the simplex</span>
+            <span class="p">}</span>
+            <span class="k">else</span> <span class="p">{</span>
+                <span class="c1">// the origin is inside both ab and ac,</span>
+                <span class="c1">// so it must be inside the triangle!</span>
+                <span class="n">containsOrigin</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+</pre></div>
+<p>If we found that we did indeed contain the origin, we’re done! Otherwise, we have to evolve the simplex by removing one of the simplex vertices and adding a new one somewhere else.</p>
+<h3><a href="#evolving-the-simplex" aria-hidden="true" class="anchor" id="headerevolving-the-simplex"></a>Evolving the Simplex</h3>
+<p>If we found that the origin lies on the outside of one of the line segments, we know that the third vertex not participating in the line segment is useless, so we should remove it. We can add the next support in the “outside” perpendicular direction we calculated earlier to continue our search.</p>
+<figure>
+    <img src="/images/collision-engine-2d-detection/outside-ab.svg">
+    <figcaption>If the origin is on the "outside" of the `ab` line, vertex `c` should be removed so we can reform our simplex to hopefully overlap the origin.</figcaption>
+</figure>
+<div class="highlight"><pre><span></span>        <span class="err">c</span><span class="n">ase</span> <span class="mi">3</span><span class="err">:</span> <span class="p">{</span>
+            <span class="c1">// calculate if the simplex contains the origin</span>
+            <span class="kd">var</span> a<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+            <span class="kd">var</span> b<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+            <span class="kd">var</span> c<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+
+            <span class="kd">var</span> a0<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="c1">// v2 to the origin</span>
+            <span class="kd">var</span> ab<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">;</span> <span class="c1">// v2 to v1</span>
+            <span class="kd">var</span> ac<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">c</span> <span class="o">-</span> <span class="n">a</span><span class="p">;</span> <span class="c1">// v2 to v0</span>
+
+            <span class="kd">var</span> abPerp<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">tripleProduct</span><span class="p">(</span><span class="n">ac</span><span class="p">,</span> <span class="n">ab</span><span class="p">,</span> <span class="n">ab</span><span class="p">);</span>
+            <span class="kd">var</span> acPerp<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">tripleProduct</span><span class="p">(</span><span class="n">ab</span><span class="p">,</span> <span class="n">ac</span><span class="p">,</span> <span class="n">ac</span><span class="p">);</span>
+
+            <span class="k">if</span><span class="p">(</span><span class="n">abPerp</span><span class="p">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="c1">// the origin is outside line ab</span>
+                <span class="c1">// get rid of c and add a new support in the direction of abPerp</span>
+                <span class="n">vertices</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+                <span class="n">direction</span> <span class="o">=</span> <span class="n">abPerp</span><span class="p">;</span>
+                <span class="n">vertices</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">shapeA</span><span class="p">.</span><span class="n">support</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span> <span class="o">-</span> <span class="n">shapeB</span><span class="p">.</span><span class="n">support</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">direction</span><span class="p">));</span>
+            <span class="p">}</span>
+            <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">acPerp</span><span class="p">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="c1">// the origin is outside line ac</span>
+                <span class="c1">// get rid of b and add a new support in the direction of acPerp</span>
+                <span class="n">vertices</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="n">b</span><span class="p">);</span>
+                <span class="n">direction</span> <span class="o">=</span> <span class="n">acPerp</span><span class="p">;</span>
+                <span class="n">vertices</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">shapeA</span><span class="p">.</span><span class="n">support</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span> <span class="o">-</span> <span class="n">shapeB</span><span class="p">.</span><span class="n">support</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">direction</span><span class="p">));</span>
+            <span class="p">}</span>
+            <span class="k">else</span> <span class="p">{</span>
+                <span class="c1">// the origin is inside both ab and ac,</span>
+                <span class="c1">// so it must be inside the triangle!</span>
+                <span class="n">containsOrigin</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+</pre></div>
+<p>Once we’ve reformed the simplex this way, it’s time to check it again. If our simplex covers the origin, great—we’re done! Otherwise, evolve the simplex again and try again. And again. And again. And… wait. How do we exit if we <strong>aren’t</strong> colliding, meaning our simplex will <em>never</em> contain the origin?</p>
+<h3><a href="#determining-if-the-shapes-arent-colliding" aria-hidden="true" class="anchor" id="headerdetermining-if-the-shapes-arent-colliding"></a>Determining if the Shapes <em>Aren’t</em> Colliding</h3>
+<p>From geometry we know that if two shapes <em>aren’t</em> colliding, the Minkowski difference <em>will not</em> contain the origin. Up until this point, we’ve assumed that the shape we’re testing <em>does</em> contain the origin—we need to change that. Thankfully, this is a relatively easy change.</p>
+<p>Whenever we add a new vertex to the simplex, we can test whether the vertex <strong>went past</strong> the origin or not. If it did, we’re ok and can continue processing. If it <strong>didn’t</strong>, we know we won’t be intersecting at all, and can exit early. How do we know this? Because we’re using support functions. When we add a vertex in a given direction using the support functions, we <strong>know</strong> that that vertex is the vertex which lies the furthest in our direction. If that vertex <em>doesn’t</em> go past the origin, we will <em>never</em> get a simplex which goes past the origin, meaning it will <em>never</em> contain it.</p>
+<p>We can calculate whether the new vertex passes the origin by determining if <code>direction</code> and the line <code>a0</code> point in the same direction, meaning their dot product is \(&gt; 0\).</p>
+<figure>
+    <img src="/images/collision-engine-2d-detection/past-origin.svg">
+    <figcaption>If the new vertex <em>doesn't</em> pass the origin, no simplex we can create will contain the origin, meaning we <b>are not</b> intersecting.</figcaption>
+</figure>
+<p>To add this into our code, I’m going to modify things a little bit. Instead of blindly having a function <code>evolveSimplex</code> which never returns anything useful outside of itself, I will make it return some useful information—either we can’t possibly intersect, we need to keep evolving the simplex, or we found an intersection. We can also reduce a bit of the repetition by partitioning the new vertex addition into its own function which does the check for us.</p>
+<div class="highlight"><pre><span></span><span class="kd">enum</span> <span class="n">EvolveResult</span> <span class="p">{</span>
+    <span class="n">NoIntersection</span><span class="p">;</span>
+    <span class="n">FoundIntersection</span><span class="p">;</span>
+    <span class="n">StillEvolving</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// ...</span>
+
+<span class="kd">private</span> <span class="kd">function</span> <span class="nf">addSupport</span><span class="p">(</span><span class="n">direction</span><span class="p">:</span><span class="n">Vec2</span><span class="p">):</span><span class="n">Bool</span> <span class="p">{</span>
+    <span class="kd">var</span> newVertex<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">shapeA</span><span class="p">.</span><span class="n">support</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span> <span class="o">-</span> <span class="n">shapeB</span><span class="p">.</span><span class="n">support</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">direction</span><span class="p">);</span>
+    <span class="n">vertices</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">newVertex</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">Vec2</span><span class="p">.</span><span class="n">dot</span><span class="p">(</span><span class="n">direction</span><span class="p">,</span> <span class="n">newVertex</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">public</span> <span class="kd">function</span> <span class="nf">evolveSimplex</span><span class="p">():</span><span class="n">EvolveResult</span> <span class="p">{</span>
+    <span class="k">switch</span><span class="p">(</span><span class="n">vertices</span><span class="p">.</span><span class="n">length</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="mi">0</span><span class="p">:</span> <span class="p">{</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="n">shapeB</span><span class="p">.</span><span class="n">centre</span><span class="p">()</span> <span class="o">-</span> <span class="n">shapeA</span><span class="p">.</span><span class="n">centre</span><span class="p">();</span>
+        <span class="p">}</span>
+        <span class="k">case</span> <span class="mi">1</span><span class="p">:</span> <span class="p">{</span>
+            <span class="c1">// flip the direction</span>
+            <span class="n">direction</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">case</span> <span class="mi">2</span><span class="p">:</span> <span class="p">{</span>
+            <span class="kd">var</span> b<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+            <span class="kd">var</span> c<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+            
+            <span class="c1">// line cb is the line formed by the first two vertices</span>
+            <span class="kd">var</span> cb<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">b</span> <span class="o">-</span> <span class="n">c</span><span class="p">;</span>
+            <span class="c1">// line c0 is the line from the first vertex to the origin</span>
+            <span class="kd">var</span> c0<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">c</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+
+            <span class="c1">// use the triple-cross-product to calculate a direction perpendicular to line cb</span>
+            <span class="c1">// in the direction of the origin</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="n">tripleProduct</span><span class="p">(</span><span class="n">cb</span><span class="p">,</span> <span class="n">c0</span><span class="p">,</span> <span class="n">cb</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">case</span> <span class="mi">3</span><span class="p">:</span> <span class="p">{</span>
+            <span class="c1">// calculate if the simplex contains the origin</span>
+            <span class="kd">var</span> a<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+            <span class="kd">var</span> b<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+            <span class="kd">var</span> c<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+
+            <span class="kd">var</span> a0<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="c1">// v2 to the origin</span>
+            <span class="kd">var</span> ab<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">;</span> <span class="c1">// v2 to v1</span>
+            <span class="kd">var</span> ac<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">c</span> <span class="o">-</span> <span class="n">a</span><span class="p">;</span> <span class="c1">// v2 to v0</span>
+
+            <span class="kd">var</span> abPerp<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">tripleProduct</span><span class="p">(</span><span class="n">ac</span><span class="p">,</span> <span class="n">ab</span><span class="p">,</span> <span class="n">ab</span><span class="p">);</span>
+            <span class="kd">var</span> acPerp<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">tripleProduct</span><span class="p">(</span><span class="n">ab</span><span class="p">,</span> <span class="n">ac</span><span class="p">,</span> <span class="n">ac</span><span class="p">);</span>
+
+            <span class="k">if</span><span class="p">(</span><span class="n">abPerp</span><span class="p">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="c1">// the origin is outside line ab</span>
+                <span class="c1">// get rid of c and add a new support in the direction of abPerp</span>
+                <span class="n">vertices</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+                <span class="n">direction</span> <span class="o">=</span> <span class="n">abPerp</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">acPerp</span><span class="p">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="c1">// the origin is outside line ac</span>
+                <span class="c1">// get rid of b and add a new support in the direction of acPerp</span>
+                <span class="n">vertices</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="n">b</span><span class="p">);</span>
+                <span class="n">direction</span> <span class="o">=</span> <span class="n">acPerp</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">else</span> <span class="p">{</span>
+                <span class="c1">// the origin is inside both ab and ac,</span>
+                <span class="c1">// so it must be inside the triangle!</span>
+                <span class="k">return</span> <span class="n">EvolveResult</span><span class="p">.</span><span class="n">FoundIntersection</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">case</span> <span class="n">_</span><span class="p">:</span> <span class="k">throw</span> <span class="s1">&#39;Can</span><span class="se">\&#39;</span><span class="s1">t have simplex with </span><span class="si">${</span><span class="n">vertices</span><span class="p">.</span><span class="n">length</span><span class="si">}</span><span class="s1"> verts!&#39;</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">addSupport</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span> <span class="o">?</span> <span class="n">EvolveResult</span><span class="p">.</span><span class="n">StillEvolving</span> <span class="o">:</span> <span class="n">EvolveResult</span><span class="p">.</span><span class="n">NoIntersection</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+<h2><a href="#putting-it-all-together" aria-hidden="true" class="anchor" id="headerputting-it-all-together"></a>Putting it All Together</h2>
+<p>What we have so far is basically one function for checking the simplex, which needs to be called a variable number of times and can return various things. What we want is a simple function to check if two shapes are colliding. We can do that with a simple utility function, which is the only the thing the end user really needs to interact with. Here’s the whole kit and kaboodle so you can see how it all fits together:</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">collision</span><span class="p">.</span><span class="nn">twod</span><span class="p">.</span><span class="nn">GJK2D</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">collision</span><span class="p">.</span><span class="nn">twod</span><span class="p">.</span><span class="nn">Circle2D</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">collision</span><span class="p">.</span><span class="nn">twod</span><span class="p">.</span><span class="nn">Polygon2D</span><span class="p">;</span>
+
+<span class="kd">class</span> <span class="n">Main</span> <span class="p">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">function</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">var</span> a<span class="p">:</span><span class="n">Circle</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Circle2D</span><span class="p">(</span><span class="k">new</span> <span class="n">Vec2</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mf">0.5</span><span class="p">);</span>
+        <span class="kd">var</span> b<span class="p">:</span><span class="n">Polygon2D</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Polygon2D</span><span class="p">([</span>
+            <span class="k">new</span> <span class="n">Vec2</span><span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">),</span> <span class="k">new</span> <span class="n">Vec2</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="p">]);</span>
+        <span class="kd">var</span> c<span class="p">:</span><span class="n">Circle</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Circle2D</span><span class="p">(</span><span class="k">new</span> <span class="n">Vec2</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="mi">1</span><span class="p">);</span>
+
+        <span class="kd">var</span> gjk<span class="p">:</span><span class="n">GJK2D</span> <span class="o">=</span> <span class="k">new</span> <span class="n">GJK2D</span><span class="p">();</span>
+        <span class="n">trace</span><span class="p">(</span><span class="n">gjk</span><span class="p">.</span><span class="n">test</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">));</span> <span class="c1">// true</span>
+        <span class="n">trace</span><span class="p">(</span><span class="n">jgk</span><span class="p">.</span><span class="n">test</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">c</span><span class="p">));</span> <span class="c1">// false</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+<h4><a href="#shape2dhx" aria-hidden="true" class="anchor" id="headershape2dhx"></a>Shape2D.hx</h4>
+<div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">collision</span><span class="p">.</span><span class="nn">twod</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">glm</span><span class="p">.</span><span class="nn">Vec2</span><span class="p">;</span>
+
+<span class="kd">interface</span> <span class="n">Shape2D</span> <span class="p">{</span>
+    <span class="kd">public</span> <span class="kd">function</span> <span class="nf">centre</span><span class="p">():</span><span class="n">Vec2</span><span class="p">;</span>
+    <span class="kd">public</span> <span class="kd">function</span> <span class="nf">support</span><span class="p">(</span><span class="n">direction</span><span class="p">:</span><span class="n">Vec2</span><span class="p">):</span><span class="n">Vec2</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+<h4><a href="#gjk2dhx" aria-hidden="true" class="anchor" id="headergjk2dhx"></a>GJK2D.hx</h4>
+<div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">collision</span><span class="p">.</span><span class="nn">twod</span><span class="p">;</span>
+
+<span class="kn">using</span> <span class="nn">glm</span><span class="p">.</span><span class="nn">Vec2</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">glm</span><span class="p">.</span><span class="nn">Vec3</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">collision</span><span class="p">.</span><span class="nn">twod</span><span class="p">.</span><span class="nn">Shape2D</span><span class="p">;</span>
+
+<span class="kd">enum</span> <span class="n">EvolveResult</span> <span class="p">{</span>
+    <span class="n">NoIntersection</span><span class="p">;</span>
+    <span class="n">FoundIntersection</span><span class="p">;</span>
+    <span class="n">StillEvolving</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="n">GJK2D</span> <span class="p">{</span>
+    <span class="kd">private</span> <span class="kd">var</span> vertices<span class="p">:</span><span class="n">Array</span><span class="p">&lt;</span><span class="n">Vec2</span><span class="p">&gt;;</span>
+    <span class="kd">private</span> <span class="kd">var</span> direction<span class="p">:</span><span class="n">Vec2</span><span class="p">;</span>
+    <span class="kd">private</span> <span class="kd">var</span> shapeA<span class="p">:</span><span class="n">Shape2D</span><span class="p">;</span>
+    <span class="kd">private</span> <span class="kd">var</span> shapeB<span class="p">:</span><span class="n">Shape2D</span><span class="p">;</span>
+
+    <span class="kd">public</span> <span class="kd">function</span> <span class="nf">new</span><span class="p">()</span> <span class="p">{}</span>
+
+    <span class="kd">private</span> <span class="kd">function</span> <span class="nf">addSupport</span><span class="p">(</span><span class="n">direction</span><span class="p">:</span><span class="n">Vec2</span><span class="p">):</span><span class="n">Bool</span> <span class="p">{</span>
+        <span class="kd">var</span> newVertex<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">shapeA</span><span class="p">.</span><span class="n">support</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span> <span class="o">-</span> <span class="n">shapeB</span><span class="p">.</span><span class="n">support</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">direction</span><span class="p">);</span>
+        <span class="n">vertices</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">newVertex</span><span class="p">);</span>
+        <span class="k">return</span> <span class="n">Vec2</span><span class="p">.</span><span class="n">dot</span><span class="p">(</span><span class="n">direction</span><span class="p">,</span> <span class="n">newVertex</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kd">function</span> <span class="nf">tripleProduct</span><span class="p">(</span><span class="n">a</span><span class="p">:</span><span class="n">Vec2</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span><span class="n">Vec2</span><span class="p">,</span> <span class="n">c</span><span class="p">:</span><span class="n">Vec2</span><span class="p">):</span><span class="n">Vec2</span> <span class="p">{</span>
+        <span class="kd">var</span> A<span class="p">:</span><span class="n">Vec3</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Vec3</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">.</span><span class="n">y</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+        <span class="kd">var</span> B<span class="p">:</span><span class="n">Vec3</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Vec3</span><span class="p">(</span><span class="n">b</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">b</span><span class="p">.</span><span class="n">y</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+        <span class="kd">var</span> C<span class="p">:</span><span class="n">Vec3</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Vec3</span><span class="p">(</span><span class="n">c</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">c</span><span class="p">.</span><span class="n">y</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+
+        <span class="kd">var</span> first<span class="p">:</span><span class="n">Vec3</span> <span class="o">=</span> <span class="n">Vec3</span><span class="p">.</span><span class="n">cross</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="k">new</span> <span class="n">Vec3</span><span class="p">());</span>
+        <span class="kd">var</span> second<span class="p">:</span><span class="n">Vec3</span> <span class="o">=</span> <span class="n">Vec3</span><span class="p">.</span><span class="n">cross</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="k">new</span> <span class="n">Vec3</span><span class="p">());</span>
+
+        <span class="k">return</span> <span class="k">new</span> <span class="n">Vec2</span><span class="p">(</span><span class="n">second</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">second</span><span class="p">.</span><span class="n">y</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kd">private</span> <span class="kd">function</span> <span class="nf">evolveSimplex</span><span class="p">():</span><span class="n">EvolveResult</span> <span class="p">{</span>
+        <span class="k">switch</span><span class="p">(</span><span class="n">vertices</span><span class="p">.</span><span class="n">length</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">case</span> <span class="mi">0</span><span class="p">:</span> <span class="p">{</span>
+                <span class="n">direction</span> <span class="o">=</span> <span class="n">shapeB</span><span class="p">.</span><span class="n">centre</span><span class="p">()</span> <span class="o">-</span> <span class="n">shapeA</span><span class="p">.</span><span class="n">centre</span><span class="p">();</span>
+            <span class="p">}</span>
+            <span class="k">case</span> <span class="mi">1</span><span class="p">:</span> <span class="p">{</span>
+                <span class="c1">// flip the direction</span>
+                <span class="n">direction</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">case</span> <span class="mi">2</span><span class="p">:</span> <span class="p">{</span>
+                <span class="kd">var</span> b<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+                <span class="kd">var</span> c<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+                
+                <span class="c1">// line cb is the line formed by the first two vertices</span>
+                <span class="kd">var</span> cb<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">b</span> <span class="o">-</span> <span class="n">c</span><span class="p">;</span>
+                <span class="c1">// line c0 is the line from the first vertex to the origin</span>
+                <span class="kd">var</span> c0<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">c</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+
+                <span class="c1">// use the triple-cross-product to calculate a direction perpendicular</span>
+                <span class="c1">// to line cb in the direction of the origin</span>
+                <span class="n">direction</span> <span class="o">=</span> <span class="n">tripleProduct</span><span class="p">(</span><span class="n">cb</span><span class="p">,</span> <span class="n">c0</span><span class="p">,</span> <span class="n">cb</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="k">case</span> <span class="mi">3</span><span class="p">:</span> <span class="p">{</span>
+                <span class="c1">// calculate if the simplex contains the origin</span>
+                <span class="kd">var</span> a<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+                <span class="kd">var</span> b<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+                <span class="kd">var</span> c<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+
+                <span class="kd">var</span> a0<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="c1">// v2 to the origin</span>
+                <span class="kd">var</span> ab<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">;</span> <span class="c1">// v2 to v1</span>
+                <span class="kd">var</span> ac<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">c</span> <span class="o">-</span> <span class="n">a</span><span class="p">;</span> <span class="c1">// v2 to v0</span>
+
+                <span class="kd">var</span> abPerp<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">tripleProduct</span><span class="p">(</span><span class="n">ac</span><span class="p">,</span> <span class="n">ab</span><span class="p">,</span> <span class="n">ab</span><span class="p">);</span>
+                <span class="kd">var</span> acPerp<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="n">tripleProduct</span><span class="p">(</span><span class="n">ab</span><span class="p">,</span> <span class="n">ac</span><span class="p">,</span> <span class="n">ac</span><span class="p">);</span>
+
+                <span class="k">if</span><span class="p">(</span><span class="n">abPerp</span><span class="p">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="c1">// the origin is outside line ab</span>
+                    <span class="c1">// get rid of c and add a new support in the direction of abPerp</span>
+                    <span class="n">vertices</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+                    <span class="n">direction</span> <span class="o">=</span> <span class="n">abPerp</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">acPerp</span><span class="p">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="c1">// the origin is outside line ac</span>
+                    <span class="c1">// get rid of b and add a new support in the direction of acPerp</span>
+                    <span class="n">vertices</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="n">b</span><span class="p">);</span>
+                    <span class="n">direction</span> <span class="o">=</span> <span class="n">acPerp</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="k">else</span> <span class="p">{</span>
+                    <span class="c1">// the origin is inside both ab and ac,</span>
+                    <span class="c1">// so it must be inside the triangle!</span>
+                    <span class="k">return</span> <span class="n">EvolveResult</span><span class="p">.</span><span class="n">FoundIntersection</span><span class="p">;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            <span class="k">case</span> <span class="n">_</span><span class="p">:</span> <span class="k">throw</span> <span class="s1">&#39;Can</span><span class="se">\&#39;</span><span class="s1">t have simplex with </span><span class="si">${</span><span class="n">vertices</span><span class="p">.</span><span class="n">length</span><span class="si">}</span><span class="s1"> verts!&#39;</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">addSupport</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span>
+            <span class="o">?</span> <span class="n">EvolveResult</span><span class="p">.</span><span class="n">StillEvolving</span>
+            <span class="o">:</span> <span class="n">EvolveResult</span><span class="p">.</span><span class="n">NoIntersection</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kd">public</span> <span class="kd">function</span> <span class="nf">test</span><span class="p">(</span><span class="n">shapeA</span><span class="p">:</span><span class="n">Shape2D</span><span class="p">,</span> <span class="n">shapeB</span><span class="p">:</span><span class="n">Shape2D</span><span class="p">):</span><span class="n">Bool</span> <span class="p">{</span>
+        <span class="c1">// reset everything</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">vertices</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Array</span><span class="p">&lt;</span><span class="n">Vec2</span><span class="p">&gt;();</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">shapeA</span> <span class="o">=</span> <span class="n">shapeA</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">shapeB</span> <span class="o">=</span> <span class="n">shapeB</span><span class="p">;</span>
+
+        <span class="c1">// do the actual test</span>
+        <span class="kd">var</span> result<span class="p">:</span><span class="n">EvolveResult</span> <span class="o">=</span> <span class="n">EvolveResult</span><span class="p">.</span><span class="n">StillEvolving</span><span class="p">;</span>
+        <span class="k">while</span><span class="p">(</span><span class="n">result</span> <span class="o">==</span> <span class="n">EvolveResult</span><span class="p">.</span><span class="n">StillEvolving</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">evolveSimplex</span><span class="p">();</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">result</span> <span class="o">==</span> <span class="n">EvolveResult</span><span class="p">.</span><span class="n">FoundIntersection</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+<h4><a href="#circle2dhx" aria-hidden="true" class="anchor" id="headercircle2dhx"></a>Circle2D.hx</h4>
+<div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">collision</span><span class="p">.</span><span class="nn">twod</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">glm</span><span class="p">.</span><span class="nn">Vec2</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">collision</span><span class="p">.</span><span class="nn">twod</span><span class="p">.</span><span class="nn">Shape2D</span><span class="p">;</span>
+
+<span class="kd">class</span> <span class="n">Circle2D</span> <span class="kd">implements</span> <span class="n">Shape2D</span> <span class="p">{</span>
+    <span class="kd">public</span> <span class="kd">var</span> centre<span class="p">:</span><span class="n">Vec2</span><span class="p">;</span>
+    <span class="kd">public</span> <span class="kd">var</span> radius<span class="p">:</span><span class="n">Float</span><span class="p">;</span>
+
+    <span class="kd">public</span> <span class="kd">function</span> <span class="nf">new</span><span class="p">(</span><span class="n">centre</span><span class="p">:</span><span class="n">Vec2</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span><span class="n">Float</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">centre</span> <span class="o">=</span> <span class="n">centre</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">radius</span> <span class="o">=</span> <span class="n">radius</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kd">public</span> <span class="kd">function</span> <span class="nf">support</span><span class="p">(</span><span class="n">direction</span><span class="p">:</span><span class="n">Vec2</span><span class="p">):</span><span class="n">Vec2</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">centre</span> <span class="o">+</span> <span class="n">radius</span> <span class="o">*</span> <span class="n">direction</span><span class="p">.</span><span class="n">normalized</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+<h4><a href="#polygon2dhx" aria-hidden="true" class="anchor" id="headerpolygon2dhx"></a>Polygon2D.hx</h4>
+<div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">collision</span><span class="p">.</span><span class="nn">twod</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">glm</span><span class="p">.</span><span class="nn">Vec2</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">collision</span><span class="p">.</span><span class="nn">twod</span><span class="p">.</span><span class="nn">Shape2D</span><span class="p">;</span>
+
+<span class="kd">class</span> <span class="n">Polygon2D</span> <span class="kd">implements</span> <span class="n">Shape2D</span> <span class="p">{</span>
+    <span class="kd">public</span> <span class="kd">var</span> vertices<span class="p">:</span><span class="n">Array</span><span class="p">&lt;</span><span class="n">Vec2</span><span class="p">&gt;;</span>
+
+    <span class="kd">public</span> <span class="kd">function</span> <span class="nf">new</span><span class="p">(</span><span class="n">vertices</span><span class="p">:</span><span class="n">Array</span><span class="p">&lt;</span><span class="n">Vec2</span><span class="p">&gt;)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">vertices</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kd">public</span> <span class="kd">function</span> <span class="nf">support</span><span class="p">(</span><span class="n">direction</span><span class="p">:</span><span class="n">Vec2</span><span class="p">):</span><span class="n">Vec2</span> <span class="p">{</span>
+        <span class="k">if</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">vertices</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="n">vertices</span><span class="p">.</span><span class="n">length</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">throw</span> <span class="s1">&#39;Can</span><span class="se">\&#39;</span><span class="s1">t have a polygon with 0 vertices!&#39;</span><span class="p">;</span>
+
+        <span class="kd">var</span> furthestDistance<span class="p">:</span><span class="n">Float</span> <span class="o">=</span> <span class="n">Math</span><span class="p">.</span><span class="n">NEGATIVE_INFINITY</span><span class="p">;</span>
+        <span class="kd">var</span> furthestVertex<span class="p">:</span><span class="n">Vec2</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+
+        <span class="k">for</span><span class="p">(</span><span class="n">v</span> <span class="k">in</span> <span class="n">vertices</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">var</span> distance<span class="p">:</span><span class="n">Float</span> <span class="o">=</span> <span class="n">Vec2</span><span class="p">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">direction</span><span class="p">);</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">distance</span> <span class="o">&gt;</span> <span class="n">furthestDistance</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">furthestDistance</span> <span class="o">=</span> <span class="n">distance</span><span class="p">;</span>
+                <span class="n">furthestVertex</span> <span class="o">=</span> <span class="n">v</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">furthestVertex</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+<p>In my <a href="/posts/building-a-collision-engine-part-2-2d-penetration-vectors/">next post</a>, I will talk about how we can extend this to calculate the penetration vector of two intersecting shapes which is crucial in collision resolution.</p>
+<h2><a href="#demo" aria-hidden="true" class="anchor" id="headerdemo"></a>Demo</h2>
+<figure>
+    <iframe style="width: 100%; height: 200px; border: 0;" src="/images/collision-engine-2d-detection/demo.html"></iframe>
+</figure>
+<h2><a href="#headbutt" aria-hidden="true" class="anchor" id="headerheadbutt"></a>Headbutt</h2>
+<p>I’ve started rolling this code into it’s own library, tentatively called <em>Headbutt</em>, which you can follow along with if you’re interested on Github: <a href="https://github.com/hamaluik/headbutt">https://github.com/hamaluik/headbutt</a>.</p>
+
+    </article>
+    <footer>
+        <p><svg class="icon icon-ca">
+                <use xlink:href="#ca"></use>
+            </svg> Made in Canada.</p>
+    </footer>
+</body>
+
+</html>

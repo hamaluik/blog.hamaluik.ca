@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Better Beamer Themes</title>
+    <link href="https://fonts.googleapis.com/css?family=Crimson+Pro:400,400i,700|Eczar:800|Fira+Code&display=swap" rel="stylesheet">
+    <link href="/style.css" rel="stylesheet"> 
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="manifest" href="/assets/site.webmanifest">
+    <link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#bf616a">
+    <meta name="msapplication-TileColor" content="#bf616a">
+    <meta name="theme-color" content="#bf616a">
+</head>
+
+<body>
+    <svg style="position:absolute;width:0;height:0;display:none;" xmlns="http://www.w3.org/2000/svg" overflow="hidden">
+        <defs>
+            <symbol id="ca" viewBox="0 0 43 32">
+                <path fill="var(--color1, #fff)" d="M10.012 0h22.642v32H10.012z" />
+                <path fill="var(--color2, #bf616a)"
+                    d="M-1.309 0h11.321v32H-1.309zm33.963 0h11.321v32H32.654zM13.398 15.463l-.879.3 4.091 3.59c.309.923-.108 1.195-.373 1.679l4.441-.564-.116 4.47.92-.026-.201-4.432 4.446.527c-.275-.581-.52-.89-.265-1.819l4.088-3.402-.715-.259c-.585-.451.253-2.174.379-3.261 0 0-2.387.821-2.544.391l-.608-1.168-2.172 2.386c-.237.057-.338-.037-.394-.238l1.003-4.985-1.589.894c-.133.057-.266.008-.354-.147l-1.528-3.066-1.576 3.184c-.119.114-.238.127-.336.05l-1.513-.849.908 4.946c-.072.196-.245.252-.449.145l-2.076-2.359c-.272.435-.456 1.146-.815 1.305-.359.149-1.561-.301-2.367-.477.275.993 1.136 2.644.591 3.185z" />
+            </symbol>
+        </defs>
+    </svg>
+    <header>
+        <h1><a href="/">Kenton Hamaluik</a></h1>
+    </header>
+    <article>
+        <header>
+            <h1>Better Beamer Themes</h1>
+        </header>
+        <p>I love LaTeX for typesetting all my documents. A lot of people don’t understand why, but that’s a discussion for another time. One thing I’ve always been hesitant to use LaTeX for is presentations - the main LaTeX package for making presentations is <a href="http://en.wikipedia.org/wiki/Beamer_(LaTeX)">Beamer</a>, and although it is extremely functional, I am firmly of the opinion that all the default themes are <a href="http://www.hartwork.org/beamer-theme-matrix/">butt ugly</a> and there are barely any other themes out there. Thankfully, Beamer themes are very easy to create from scratch!</p>
+<!-- PELICAN_END_SUMMARY -->
+<p>For my thesis defence, I wanted to use LaTeX to beautifully typeset the technical content of my work. I also want my presentation to look good, and none of the default beamer themes nor any others I could find online did that for me. I really love the colour theme that I’m using now on this site (found on Adobe Kuler: <a href="https://kuler.adobe.com/userId%3A1738589-art-colors/">“Some Kind Of Execushares” by pickton</a>), so I decided to make a simple and “modern” theme using those colours. I think I did OK, as you can see by some sample shots:</p>
+<figure>
+	<img src="/images/better-beamer-themes/title.png">
+	<figcaption>The title slide</figcaption>
+</figure>
+<figure>
+	<img src="/images/better-beamer-themes/contents.png">
+	<figcaption>The table of contents</figcaption>
+</figure>
+<figure>
+	<img src="/images/better-beamer-themes/section.png">
+	<figcaption>A section "introduction" slide</figcaption>
+</figure>
+<figure>
+	<img src="/images/better-beamer-themes/slide.png">
+	<figcaption>A typical slide</figcaption>
+</figure>
+<p>If you just want to grab the theme now without taking a look into how it was made, you can check it out on <a href="https://github.com/hamaluik/Beamer-Theme-Execushares">Github</a>. Otherwise, let’s dig in!</p>
+<p>First things first, realize that Beamer “themes” are pretty much just <code>.sty</code> files, so we can go ahead and create a new <code>.sty</code> file. Since we want the theme to be called “Execushares”, the file must be named <code>beamerthemeExecushares.sty</code>, and we should put it in the same file as the main <code>.tex</code> document. We also want to use custom fonts, so for that I’m going to use <a href="http://en.wikipedia.org/wiki/XeTeX">XeLaTeX</a>. We can start off our sample file like so:</p>
+<div class="highlight"><pre><span></span><span class="c">%!TEX program = xelatex</span>
+<span class="k">\documentclass</span><span class="nb">{</span>beamer<span class="nb">}</span>
+
+<span class="k">\usetheme</span><span class="nb">{</span>Execushares<span class="nb">}</span>
+
+<span class="k">\title</span><span class="nb">{</span>A New Beamer Theme That Works Well and Looks Great: Execushares<span class="nb">}</span>
+<span class="k">\subtitle</span><span class="nb">{</span>A custom modern minimalist Beamer theme designed from scratch<span class="nb">}</span>
+<span class="k">\author</span><span class="nb">{</span>Kenton Hamaluik<span class="nb">}</span>
+<span class="k">\date</span><span class="nb">{</span>June 1, 2014<span class="nb">}</span>
+
+<span class="k">\setcounter</span><span class="nb">{</span>showSlideNumbers<span class="nb">}{</span>1<span class="nb">}</span>
+
+<span class="k">\begin</span><span class="nb">{</span>document<span class="nb">}</span>
+
+	<span class="k">\frame</span><span class="nb">{</span><span class="k">\titlepage</span><span class="nb">}</span>
+
+<span class="k">\end</span><span class="nb">{</span>document<span class="nb">}</span>
+</pre></div>
+<p>This will create a simple presentation with a single title slide using our custom theme (which we haven’t created yet). If we whip over to our empty <code>beamerthemeExecushares.sty</code> file, we can start setting up libraries and colours:</p>
+<div class="highlight"><pre><span></span><span class="c">% the various libraries we will be using</span>
+<span class="k">\usepackage</span><span class="nb">{</span>tikz<span class="nb">}</span>
+<span class="k">\usetikzlibrary</span><span class="nb">{</span>calc<span class="nb">}</span>
+<span class="k">\usepackage</span><span class="na">[none]</span><span class="nb">{</span>hyphenat<span class="nb">}</span>
+<span class="k">\usepackage</span><span class="nb">{</span>fontspec<span class="nb">}</span>
+<span class="k">\defaultfontfeatures</span><span class="nb">{</span>Ligatures=TeX<span class="nb">}</span>
+
+<span class="c">% define colours</span>
+<span class="c">% taken from pickton on Adobe Kuler:</span>
+<span class="c">% https://kuler.adobe.com/Some-Kind-Of-Execushares-color-theme-3837185/</span>
+<span class="k">\definecolor</span><span class="nb">{</span>ExecusharesRed<span class="nb">}{</span>RGB<span class="nb">}{</span>230,37,52<span class="nb">}</span>
+<span class="k">\definecolor</span><span class="nb">{</span>ExecusharesBlack<span class="nb">}{</span>RGB<span class="nb">}{</span>43,40,40<span class="nb">}</span>
+<span class="k">\definecolor</span><span class="nb">{</span>ExecusharesBlue<span class="nb">}{</span>RGB<span class="nb">}{</span>22,190,207<span class="nb">}</span>
+<span class="k">\definecolor</span><span class="nb">{</span>ExecusharesWhite<span class="nb">}{</span>RGB<span class="nb">}{</span>255,255,243<span class="nb">}</span>
+<span class="k">\definecolor</span><span class="nb">{</span>ExecusharesGrey<span class="nb">}{</span>RGB<span class="nb">}{</span>107,110,108<span class="nb">}</span>
+</pre></div>
+<p>We need the <em>tikz</em> library for all our fancy slide drawing, <em>hyphenat</em> to disable word hyphenating in the titles, and <em>fontspec</em> to use TTF fonts. Defining the colours here is useful and pretty standard. To enable the use of the lovely <a href="http://store1.adobe.com/cfusion/store/html/index.cfm?event=displayFontPackage&code=1959"><em>Source Pro</em></a> fonts from Adobe, we can add the following (which is rather self-explanatory).</p>
+<div class="highlight"><pre><span></span><span class="c">% use Adobe&#39;s Source Pro fonts:</span>
+<span class="c">% Source Serif Pro: http://store1.adobe.com/cfusion/store/html/index.cfm?store=OLS-US&amp;event=displayFontPackage&amp;code=1966</span>
+<span class="c">% Source Sans Pro: http://store1.adobe.com/cfusion/store/html/index.cfm?event=displayFontPackage&amp;code=1959</span>
+<span class="c">% Source Code Pro: http://store1.adobe.com/cfusion/store/html/index.cfm?store=OLS-US&amp;event=displayFontPackage&amp;code=1960</span>
+<span class="k">\setmainfont</span><span class="nb">{</span>Source Serif Pro<span class="nb">}</span>
+<span class="k">\setsansfont</span><span class="nb">{</span>Source Sans Pro<span class="nb">}</span>
+<span class="k">\setmonofont</span><span class="nb">{</span>Source Code Pro<span class="nb">}</span>
+</pre></div>
+<p>Remember those colours we just defined? We can start using them here, where we tell Beamer what to make lists look like (as well as <code>\alert</code>ed text):</p>
+<div class="highlight"><pre><span></span><span class="c">% set colours</span>
+<span class="k">\setbeamercolor</span><span class="nb">{</span>itemize item<span class="nb">}{</span>fg=ExecusharesBlue<span class="nb">}</span>
+<span class="k">\setbeamercolor</span><span class="nb">{</span>enumerate item<span class="nb">}{</span>fg=ExecusharesBlue<span class="nb">}</span>
+<span class="k">\setbeamercolor</span><span class="nb">{</span>alerted text<span class="nb">}{</span>fg=ExecusharesBlue<span class="nb">}</span>
+<span class="k">\setbeamercolor</span><span class="nb">{</span>section in toc<span class="nb">}{</span>fg=ExecusharesBlack<span class="nb">}</span>
+</pre></div>
+<p>Slides should not have too much text on them and any text should be easy to read. One of the easiest ways to do this is make all the text rather large, which is what we’re doing here:</p>
+<div class="highlight"><pre><span></span><span class="c">% set fonts</span>
+<span class="k">\setbeamerfont</span><span class="nb">{</span>itemize/enumerate body<span class="nb">}{</span>size=<span class="k">\large</span><span class="nb">}</span>
+<span class="k">\setbeamerfont</span><span class="nb">{</span>itemize/enumerate subbody<span class="nb">}{</span>size=<span class="k">\normalsize</span><span class="nb">}</span>
+<span class="k">\setbeamerfont</span><span class="nb">{</span>itemize/enumerate subsubbody<span class="nb">}{</span>size=<span class="k">\small</span><span class="nb">}</span>
+</pre></div>
+<p>Now to make the fancy pixelated-looking itemize bullet points (the <code>&gt;</code> shapes), we can use tikz:</p>
+<div class="highlight"><pre><span></span><span class="c">% make the itemize bullets pixelated &gt;</span>
+<span class="k">\setbeamertemplate</span><span class="nb">{</span>itemize item<span class="nb">}{</span>
+	<span class="k">\tikz</span><span class="nb">{</span>
+		<span class="k">\draw</span><span class="na">[fill=ExecusharesBlue,draw=none]</span> (0, 0) rectangle(0.1, 0.1);
+		<span class="k">\draw</span><span class="na">[fill=ExecusharesBlue,draw=none]</span> (0.1, 0.1) rectangle(0.2, 0.2);
+		<span class="k">\draw</span><span class="na">[fill=ExecusharesBlue,draw=none]</span> (0, 0.2) rectangle(0.1, 0.3);
+	<span class="nb">}</span>
+<span class="nb">}</span>
+</pre></div>
+<p>If you don’t know tikz, it can be very daunting. However it is certainly worth learning as it usually ends up being the most powerful and easy-to-use solution to get great graphics. I learned tikz by heavily utilizing <a href="http://tex.stackexchange.com/questions/tagged/tikz-pgf">Stack Exchange</a>, but if you can find any easy-to-digest tutorials out there I would love to hear about them! Basically all I’m doing here with tikz is drawing 3 squares in the desired pattern, filling them with the theme’s blue colour and making sure they have no outline (<code>draw=none</code>). We can do the same thing for subitems, just making them a bit smaller and red:</p>
+<div class="highlight"><pre><span></span><span class="c">% make the subitems also pixelated &gt;, but a little smaller and red</span>
+<span class="k">\setbeamertemplate</span><span class="nb">{</span>itemize subitem<span class="nb">}{</span>
+	<span class="k">\tikz</span><span class="nb">{</span>
+		<span class="k">\draw</span><span class="na">[fill=ExecusharesRed,draw=none]</span> (0, 0) rectangle(0.075, 0.075);
+		<span class="k">\draw</span><span class="na">[fill=ExecusharesRed,draw=none]</span> (0.075, 0.075) rectangle(0.15, 0.15);
+		<span class="k">\draw</span><span class="na">[fill=ExecusharesRed,draw=none]</span> (0, 0.15) rectangle(0.075, 0.225);
+	<span class="nb">}</span>
+<span class="nb">}</span>
+</pre></div>
+<p>Although I think the typical Beamer navigation buttons that includes are a neat idea, I never use them and almost always disable them because they can be such a distraction. To disable them completely, we can add the following to our style file:</p>
+<div class="highlight"><pre><span></span><span class="c">% disable navigation</span>
+<span class="k">\setbeamertemplate</span><span class="nb">{</span>navigation symbols<span class="nb">}{}</span>
+</pre></div>
+<p>I’m also not a fan of the “Figure:” that precedes caption text (in a presentation), so we can easily strip that as well:</p>
+<div class="highlight"><pre><span></span><span class="c">% disable &quot;Figure:&quot; in the captions</span>
+<span class="k">\setbeamertemplate</span><span class="nb">{</span>caption<span class="nb">}{</span><span class="k">\tiny\insertcaption</span><span class="nb">}</span>
+<span class="k">\setbeamertemplate</span><span class="nb">{</span>caption label separator<span class="nb">}{}</span>
+</pre></div>
+<p>That’s about it for Beamer-specific configuration! The rest is pretty much using tikz to draw the shapes and themes of our slides. Since I do this all manually (which is probably bad form but works well and is easy, so I don’t really care), we can prevent Beamer from doing its own thing with the title page and slide titles:</p>
+<div class="highlight"><pre><span></span><span class="c">% we&#39;re drawing the title page ourselves, so blank out Beamer&#39;s implementation</span>
+<span class="k">\setbeamertemplate</span><span class="nb">{</span>title page<span class="nb">}{}</span>
+
+<span class="c">% same thing with the frame titles</span>
+<span class="k">\setbeamertemplate</span><span class="nb">{</span>frametitle<span class="nb">}{}</span>
+</pre></div>
+<p>One last thing before I go on to the fun drawing bits: in order to customize the slides a bit, I use counters to enable / disable certain visual aspects. For example, I have included the option with this theme to have a progress bar on the bottom which indicates how far into the presentation you are. When it comes to the additional backup slides in your presentation however, the progress bar is superfluous and confusing. So for those slides, if you change the progress bar counter to 0, the progress bar will be turned off. This is rather hacky, so if anyone knows a better and easier way of setting up “toggles” like this in LaTeX, please let me know! This is how I define those “variables”:</p>
+<div class="highlight"><pre><span></span><span class="c">% since I don&#39;t know a better way to do this, these are all switches</span>
+<span class="c">% doing `\setcounter{showProgressBar}{0}` will turn the progress bar off (I turn it off for Appendix slides)</span>
+<span class="c">% etc</span>
+<span class="k">\newcounter</span><span class="nb">{</span>showProgressBar<span class="nb">}</span>
+<span class="k">\setcounter</span><span class="nb">{</span>showProgressBar<span class="nb">}{</span>1<span class="nb">}</span>
+<span class="k">\newcounter</span><span class="nb">{</span>showSlideNumbers<span class="nb">}</span>
+<span class="k">\setcounter</span><span class="nb">{</span>showSlideNumbers<span class="nb">}{</span>1<span class="nb">}</span>
+<span class="k">\newcounter</span><span class="nb">{</span>showSlideTotal<span class="nb">}</span>
+<span class="k">\setcounter</span><span class="nb">{</span>showSlideTotal<span class="nb">}{</span>1<span class="nb">}</span>
+</pre></div>
+<p>In any presentation it’s essential that you include slide numbers, and I think it’s a damned good idea to give your audience an indicator of how far along in the presentation you are, hence the progress bar. To achieve this I adapted a Stack Exchange <a href="http://tex.stackexchange.com/a/59749/44221">answer</a>:</p>
+<div class="highlight"><pre><span></span><span class="c">% use \makeatletter for our progress bar definitions</span>
+<span class="c">% progress bar idea from http://tex.stackexchange.com/a/59749/44221</span>
+<span class="c">% slightly adapted for visual purposes here</span>
+<span class="k">\makeatletter</span>
+<span class="k">\newcount\progressbar</span>@tmpcounta<span class="c">% auxiliary counter</span>
+<span class="k">\newcount\progressbar</span>@tmpcountb<span class="c">% auxiliary counter</span>
+<span class="k">\newdimen\progressbar</span>@pbwidth <span class="c">%progressbar width</span>
+<span class="k">\newdimen\progressbar</span>@tmpdim <span class="c">% auxiliary dimension</span>
+
+<span class="c">% make the progress bar go across the screen</span>
+<span class="k">\progressbar</span>@pbwidth=12.8cm
+</pre></div>
+<p>Basically, this defines some variables which relate to the current slide number and the total number of slides. We will use these to calculate the width of the progress bar being the appropriate percentage of each slide that it’s on. Now we can start to define the “background” (design) of our slides:</p>
+<div class="highlight"><pre><span></span><span class="c">% use tikz to draw everything</span>
+<span class="c">% it may not be the best, but it&#39;s easy to work with</span>
+<span class="c">% and looks good</span>
+<span class="c">% TODO: base title slide and contents slide on something other than slide numbers :/</span>
+<span class="k">\setbeamertemplate</span><span class="nb">{</span>background<span class="nb">}{</span>
+	<span class="c">% deal with progress bar stuff</span>
+	<span class="c">% (calculate where it should go)</span>
+	<span class="k">\progressbar</span>@tmpcounta=<span class="k">\insertframenumber</span>
+	<span class="k">\progressbar</span>@tmpcountb=<span class="k">\inserttotalframenumber</span>
+	<span class="k">\progressbar</span>@tmpdim=<span class="k">\progressbar</span>@pbwidth
+	<span class="k">\multiply\progressbar</span>@tmpdim by <span class="k">\progressbar</span>@tmpcounta
+	<span class="k">\divide\progressbar</span>@tmpdim by <span class="k">\progressbar</span>@tmpcountb
+
+	<span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
+		<span class="c">% set up the entire slide as the canvas</span>
+		<span class="k">\useasboundingbox</span> (0,0) rectangle(<span class="k">\the\paperwidth</span>,<span class="k">\the\paperheight</span>);
+
+		<span class="c">% the background</span>
+		<span class="k">\fill</span><span class="na">[color=ExecusharesWhite]</span> (0,0) rectangle(12.8cm,9.6cm);
+</pre></div>
+<p>This is where we actually calculate width of the progress bar (making use of the <em>calc</em> tikz library). We then start a tikz environment and define the entire area of the slide as our bounding box. I also draw a big rectangle across the entire slide, making it my desired background colour.</p>
+<p>Next up we can draw the title page:</p>
+<div class="highlight"><pre><span></span>		<span class="c">% separate the drawing based on if we&#39;re the first (title) slide or not</span>
+		<span class="k">\ifnum\thepage</span>=1<span class="k">\relax</span>
+			<span class="c">% the title page</span>
+			<span class="c">% draw the fills</span>
+			<span class="k">\fill</span><span class="na">[color=ExecusharesRed]</span> (0, 4cm) rectangle(12.8cm, 9.6cm);
+
+			<span class="c">% draw the actual text</span>
+			<span class="k">\node</span><span class="na">[anchor=south,text width=11.8cm,inner xsep=0.5cm]</span> at (6.4cm,4cm) <span class="nb">{</span><span class="k">\color</span><span class="nb">{</span>ExecusharesWhite<span class="nb">}</span><span class="k">\Huge\textbf</span><span class="nb">{</span><span class="k">\inserttitle</span><span class="nb">}}</span>;
+			<span class="k">\node</span><span class="na">[anchor=north east,text width=11.8cm,align=right]</span> at (12.3cm,4cm) <span class="nb">{</span><span class="k">\color</span><span class="nb">{</span>ExecusharesBlack<span class="nb">}</span><span class="k">\tiny\insertsubtitle</span><span class="nb">}</span>;
+			<span class="k">\node</span><span class="na">[above]</span> at(6.4cm,2.25cm) <span class="nb">{</span><span class="k">\color</span><span class="nb">{</span>ExecusharesBlack<span class="nb">}</span><span class="k">\tiny</span> by<span class="nb">}</span>;
+			<span class="k">\node</span> at (6.4cm,2cm) <span class="nb">{</span><span class="k">\color</span><span class="nb">{</span>ExecusharesBlack<span class="nb">}</span><span class="k">\LARGE\insertauthor</span><span class="nb">}</span>;
+
+			<span class="c">% add the date in the corner</span>
+			<span class="k">\node</span><span class="na">[anchor=south east]</span> at(12.8cm,0cm) <span class="nb">{</span><span class="k">\color</span><span class="nb">{</span>ExecusharesGrey<span class="nb">}</span><span class="k">\tiny\insertdate</span><span class="nb">}</span>;
+</pre></div>
+<p>Here, we know that we’re drawing the title page if it’s the first page in the document. A little hacky, but that’s ok. We promptly draw the white and red rectangles of the slide design, noting that Beamer slides default to 12.8 cm wide and 9.6 cm tall. In tikz you can easily place text using nodes, so that’s what I used to place all the text on the slides. By changing the <em>anchor</em> location of each node, I can align the text above or below a certain point. For each text block I set the colour that it should be as well as the font size. Time to move on to drawing the rest of the slides:</p>
+<div class="highlight"><pre><span></span>		<span class="k">\else</span>
+			<span class="c">% NOT the title page</span>
+			<span class="c">% title bar</span>
+			<span class="k">\fill</span><span class="na">[color=ExecusharesRed]</span> (0, 8.6cm) rectangle(12.8cm,9.6cm);
+
+			<span class="c">% swap the comment on these to add section titles to slide titles</span>
+			<span class="c">%\node[anchor=north,text width=11.8cm,inner xsep=0.5cm,inner ysep=0.25cm] at (6.4cm,9.6cm) {\color{ExecusharesWhite}\Large\textbf{\insertsectionhead: \insertframetitle}};</span>
+			<span class="k">\node</span><span class="na">[anchor=north,text width=11.8cm,inner xsep=0.5cm,inner ysep=0.25cm]</span> at (6.4cm,9.6cm) <span class="nb">{</span><span class="k">\color</span><span class="nb">{</span>ExecusharesWhite<span class="nb">}</span><span class="k">\huge\textbf</span><span class="nb">{</span><span class="k">\insertframetitle</span><span class="nb">}}</span>;
+</pre></div>
+<p>The above snippet draws the red title bar across the top and draws the slide’s title text across it. This is effectively replacing Beamer’s <strong>frametitle</strong> template.</p>
+<p>Next up, we draw the progress bar on the bottom of the screen:</p>
+<div class="highlight"><pre><span></span>			<span class="c">% if we&#39;re showing a progress bar, show it</span>
+			<span class="c">% (I disable the progress bar and slide numbers for the &quot;Appendix&quot; slides)</span>
+			<span class="k">\ifnum</span> <span class="k">\value</span><span class="nb">{</span>showProgressBar<span class="nb">}</span>&gt;0<span class="k">\relax</span><span class="c">%</span>
+				<span class="c">% the the progress bar icon in the middle of the screen</span>
+				<span class="k">\draw</span><span class="na">[fill=ExecusharesGrey,draw=none]</span> (0cm,0cm) rectangle(12.8cm,0.25cm);
+				<span class="k">\draw</span><span class="na">[fill=ExecusharesRed,draw=none]</span> (0cm,0cm) rectangle(<span class="k">\progressbar</span>@tmpdim,0.25cm);
+
+				<span class="c">% bottom information</span>
+				<span class="k">\node</span><span class="na">[anchor=south west]</span> at(0cm,0.25cm) <span class="nb">{</span><span class="k">\color</span><span class="nb">{</span>ExecusharesGrey<span class="nb">}</span><span class="k">\tiny\insertsection</span><span class="nb">}</span>;
+				<span class="c">% if slide numbers are active</span>
+				<span class="k">\ifnum</span> <span class="k">\value</span><span class="nb">{</span>showSlideNumbers<span class="nb">}</span>&gt;0<span class="k">\relax</span><span class="c">%</span>
+					<span class="c">% if slide totals are active</span>
+					<span class="k">\ifnum</span> <span class="k">\value</span><span class="nb">{</span>showSlideTotal<span class="nb">}</span>&gt;0<span class="k">\relax</span><span class="c">%</span>
+						<span class="c">% draw both slide number and slide total</span>
+						<span class="k">\node</span><span class="na">[anchor=south east]</span> at(12.8cm,0.25cm) <span class="nb">{</span><span class="k">\color</span><span class="nb">{</span>ExecusharesGrey<span class="nb">}</span><span class="k">\tiny\insertframenumber</span>/<span class="k">\inserttotalframenumber</span><span class="nb">}</span>;
+					<span class="k">\else</span>
+						<span class="c">% slide totals aren&#39;t active, don&#39;t draw them</span>
+						<span class="k">\node</span><span class="na">[anchor=south east]</span> at(12.8cm,0.25cm) <span class="nb">{</span><span class="k">\color</span><span class="nb">{</span>ExecusharesGrey<span class="nb">}</span><span class="k">\tiny\insertframenumber</span><span class="nb">}</span>;
+					<span class="k">\fi</span>
+				<span class="k">\fi</span>
+</pre></div>
+<p>This is a rather large chunk, so bare with me as I go through it. This block of commands is executed if the <code>showProgressBar</code> counter is greater than 0, meaning we want to draw the progress bar. If so, we actually draw two bars - the grey background bar that stretches across the entire slide, and a red bar which only fills the “already presented” portion of the progress bar, so it looks like the red bar is filling up the grey one.</p>
+<p>After that, I draw the section title in the bottom left corner just above the progress bar, then after another two switches determining whether or not to show slide numbers and slide totals I draw those numbers in the bottom right of the slide.</p>
+<p>The code for drawing things without the progress bar is almost identical:</p>
+<div class="highlight"><pre><span></span>			<span class="c">% don&#39;t show the progress bar?</span>
+			<span class="k">\else</span>
+				<span class="c">% section title in the bottom left</span>
+				<span class="k">\node</span><span class="na">[anchor=south west]</span> at(0cm,0cm) <span class="nb">{</span><span class="k">\color</span><span class="nb">{</span>ExecusharesGrey<span class="nb">}</span><span class="k">\tiny\insertsection</span><span class="nb">}</span>;
+				<span class="c">% if we&#39;re showing slide numbers</span>
+				<span class="k">\ifnum</span> <span class="k">\value</span><span class="nb">{</span>showSlideNumbers<span class="nb">}</span>&gt;0<span class="k">\relax</span><span class="c">%</span>
+					<span class="c">% if slide totals are active</span>
+					<span class="k">\ifnum</span> <span class="k">\value</span><span class="nb">{</span>showSlideTotal<span class="nb">}</span>&gt;0<span class="k">\relax</span><span class="c">%</span>
+						<span class="c">% draw both slide number and slide total</span>
+						<span class="k">\node</span><span class="na">[anchor=south east]</span> at(12.8cm,0cm) <span class="nb">{</span><span class="k">\color</span><span class="nb">{</span>ExecusharesGrey<span class="nb">}</span><span class="k">\tiny\insertframenumber</span>/<span class="k">\inserttotalframenumber</span><span class="nb">}</span>;
+					<span class="k">\else</span>
+						<span class="c">% slide totals aren&#39;t active, don&#39;t draw them</span>
+						<span class="k">\node</span><span class="na">[anchor=south east]</span> at(12.8cm,0cm) <span class="nb">{</span><span class="k">\color</span><span class="nb">{</span>ExecusharesGrey<span class="nb">}</span><span class="k">\tiny\insertframenumber</span><span class="nb">}</span>;
+					<span class="k">\fi</span>
+				<span class="k">\fi</span>
+			<span class="k">\fi</span>
+</pre></div>
+<p>And with that, we’re done drawing the main slides and can close up:</p>
+<div class="highlight"><pre><span></span>		<span class="k">\fi</span>
+	<span class="k">\end</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
+<span class="nb">}</span>
+<span class="k">\makeatother</span>
+</pre></div>
+<p>There’s just one thing left to do: create the section title slides. I like to have these to keep the audience up-to-date on where we are and what I’m talking about. They’re certainly not necessary, but nice little additions that don’t really cost anything. We can insert these into the slide document using the following:</p>
+<div class="highlight"><pre><span></span><span class="c">% add section titles</span>
+<span class="k">\AtBeginSection</span><span class="nb">{</span><span class="k">\frame</span><span class="nb">{</span><span class="k">\sectionpage</span><span class="nb">}}</span>
+<span class="k">\setbeamertemplate</span><span class="nb">{</span>section page<span class="nb">}</span>
+<span class="nb">{</span>
+	<span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
+		<span class="c">% set up the entire slide as the canvas</span>
+		<span class="k">\useasboundingbox</span> (0,0) rectangle(<span class="k">\the\paperwidth</span>,<span class="k">\the\paperheight</span>);
+		<span class="k">\fill</span><span class="na">[color=ExecusharesWhite]</span> (-1cm, 1cm) rectangle(11.8cm, 9.8cm);
+		<span class="k">\fill</span><span class="na">[color=ExecusharesRed]</span> (-1cm, 3.9cm) rectangle(11.8cm, 5.9cm);
+		<span class="k">\node</span><span class="na">[text width=11.8cm,align=center]</span> at (5.4cm, 4.9cm) <span class="nb">{</span><span class="k">\color</span><span class="nb">{</span>ExecusharesWhite<span class="nb">}</span><span class="k">\Huge\textbf</span><span class="nb">{</span><span class="k">\insertsection</span><span class="nb">}}</span>;
+	<span class="k">\end</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
+<span class="nb">}</span>
+</pre></div>
+<p>What this does is just before every single <code>\section</code> command in the document, it will insert a <code>section page</code> slide. We then proceed to define what that section page looks like. Since I’ve already draw the frame title at the top of the slide, I need to get rid of it. The easiest way to do that is to draw the background colour overtop of it. Super duper hacky, but it gets the job done. Then I just draw the red rectangle through the middle of the slide and plop the section title text on top of it. One thing of note here is that instead of the bottom left corner of the slide being at <code>(0cm, 0cm)</code> like we were using for the backgrounds, the bottom-left of the slide is at <code>(-1cm, 0cm)</code> for this template. It certainly has something to do with Beamer’s margins, but I haven’t looked too deeply into it and using the negative numbers doesn’t bother me at all.</p>
+<p>And there you have it! A fully functioning, nice-looking Beamer template in 183 lines and half an hour. You can check the theme out on GitHub: <a href="https://github.com/hamaluik/Beamer-Theme-Execushares">Beamer-Theme-Execushares</a> where I encourage you to use and abuse it to your heart’s content. Also, please fork it if you wish! We can all benefit from more Beamer themes to be had out there!</p>
+
+    </article>
+    <footer>
+        <p><svg class="icon icon-ca">
+                <use xlink:href="#ca"></use>
+            </svg> Made in Canada.</p>
+    </footer>
+</body>
+
+</html>
