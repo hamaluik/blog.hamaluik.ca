@@ -33,27 +33,31 @@ fn main() {
 
     let posts = load_posts("posts").expect("can load posts from posts/ folder");
     println!("Found {} posts, rendering them...", posts.len());
-    posts
+    let errors: Vec<String> = posts
         .par_iter()
-        .for_each(|post| {
-            print!("  Rendering `{}`...", post.front.title);
-            use std::io::Write;
-            std::io::stdout().flush().expect("can flush stdout");
-    
+        .filter_map(|post| {
             let html = match post.render() {
                 Ok(h) => h,
                 Err(e) => {
-                    eprintln!(" failed: {:?}", e);
-                    return;
+                    return Some(format!("failed to render `{}`: {:?}", post.source.display(), e));
                 }
             };
             let outdir = outdir.join(&post.front.slug);
             std::fs::create_dir_all(&outdir).expect("can create dir for post");
             let outfile = outdir.join("index.html");
             std::fs::write(outfile, html).expect("can write post to index.html file");
-    
-            println!(" done!");
-        });
+            return None;
+        })
+        .collect();
+    if errors.len() > 0 {
+        eprintln!("Failed to render some posts:");
+        for error in errors.iter() {
+            eprintln!("  {}", error);
+        }
+    }
+    else {
+        println!("Posts rendered!");
+    }
 
     println!("Copying assets...");
     let outdir = PathBuf::from("docs");
