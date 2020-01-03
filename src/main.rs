@@ -12,15 +12,20 @@ fn load_posts<P: AsRef<Path>>(src: P) -> Result<Vec<Post>, Box<dyn std::error::E
         let path = entry.path();
         if let Some("md") = path.extension().map(std::ffi::OsStr::to_str).flatten() {
             let name = path.file_stem().map(std::ffi::OsStr::to_str).flatten();
-            if name.is_none() { continue; }
+            if name.is_none() {
+                continue;
+            }
             match Post::load(&path) {
                 Ok(Some(p)) => posts.push(p),
                 Ok(None) => (),
-                Err(e) => eprintln!("skipping `{}` as it failed to parse: {:?}", path.display(), e),
+                Err(e) => eprintln!(
+                    "skipping `{}` as it failed to parse: {:?}",
+                    path.display(),
+                    e
+                ),
             };
         }
     }
-    
     posts.sort_by(|a, b| b.front.date.cmp(&a.front.date));
     Ok(posts)
 }
@@ -39,7 +44,11 @@ fn main() {
             let html = match post.render() {
                 Ok(h) => h,
                 Err(e) => {
-                    return Some(format!("failed to render `{}`: {:?}", post.source.display(), e));
+                    return Some(format!(
+                        "failed to render `{}`: {:?}",
+                        post.source.display(),
+                        e
+                    ));
                 }
             };
             let outdir = outdir.join(&post.front.slug);
@@ -54,10 +63,25 @@ fn main() {
         for error in errors.iter() {
             eprintln!("  {}", error);
         }
-    }
-    else {
+    } else {
         println!("Posts rendered!");
     }
+
+    println!("Generating index...");
+    {
+        let mut context = tera::Context::new();
+        context.insert("title", "Kenton Hamaluik");
+        context.insert("posts", &posts);
+        context.insert("include_katex_css", &false);
+
+        let rendered = post::TEMPLATES
+            .render("index.html", &context)
+            .expect("can render index");
+        let minified = html_minifier::HTMLMinifier::minify(rendered).expect("can minify index");
+        let outpath = PathBuf::from("docs").join("index.html");
+        std::fs::write(outpath, minified).expect("can write index to index.html file");
+    }
+    println!("Index generated!");
 
     println!("Copying assets...");
     let outdir = PathBuf::from("docs");
@@ -66,25 +90,28 @@ fn main() {
         let entry = entry.expect("can get path entry");
         if let Some(t) = entry.file_type() {
             if t.is_file() {
-                if let Some("md") = entry.path().extension().map(std::ffi::OsStr::to_str).flatten() {
+                if let Some("md") = entry
+                    .path()
+                    .extension()
+                    .map(std::ffi::OsStr::to_str)
+                    .flatten()
+                {
                     // ignore markdown files
-                }
-                else {
+                } else {
                     // we found an asset to copy!
                     paths.push(entry.path().to_owned());
                 }
             }
         }
     }
-    paths
-        .par_iter()
-        .for_each(|path| {
-            let dest_path: PathBuf = outdir.join(path.iter().skip(1).map(PathBuf::from).collect::<PathBuf>());
-            if let Some(parent) = dest_path.parent() {
-                if !parent.exists() {
-                    std::fs::create_dir_all(parent).expect("can create directory");
-                }
+    paths.par_iter().for_each(|path| {
+        let dest_path: PathBuf =
+            outdir.join(path.iter().skip(1).map(PathBuf::from).collect::<PathBuf>());
+        if let Some(parent) = dest_path.parent() {
+            if !parent.exists() {
+                std::fs::create_dir_all(parent).expect("can create directory");
             }
-            std::fs::copy(path, &dest_path).expect("can copy file");
-        });
+        }
+        std::fs::copy(path, &dest_path).expect("can copy file");
+    });
 }

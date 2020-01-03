@@ -5,7 +5,7 @@ author: kenton
 published: 2012-07-28T19:52:00-07:00
 tags: [Math]
 preview_image: /images/smw-physics/motioncapture.png
-preview_summary: Arguably one of the greatest video game series of all time, I spent countless hours playing these games as a kid. One thing I always particularly loved about the games is that the kinematics / physics of Mario's motion were just so.. fun! Not necessarily that they felt real, but when you ran, you ran fast. When you jumped, you jumped high, etc. I think this is a problem that I have with numerous other platforming games.. yea, sure, the gameplay can be fun, but moving around just seems so... boring in comparison to Mario.
+summary: Arguably one of the greatest video game series of all time, I spent countless hours playing these games as a kid. One thing I always particularly loved about the games is that the kinematics / physics of Mario's motion were just so.. fun! Not necessarily that they felt real, but when you ran, you ran fast. When you jumped, you jumped high, etc. I think this is a problem that I have with numerous other platforming games.. yea, sure, the gameplay can be fun, but moving around just seems so... boring in comparison to Mario.
 ---
 
 Super Mario!

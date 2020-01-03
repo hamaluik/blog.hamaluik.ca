@@ -1,5 +1,5 @@
-use serde::Deserialize;
 use chrono::prelude::*;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize)]
 pub struct RawFrontMatter {
@@ -7,39 +7,35 @@ pub struct RawFrontMatter {
     pub slug: String,
     pub tags: Vec<String>,
     pub published: Option<String>,
-    #[serde(rename = "meta-image")]
-    pub meta_image: Option<String>,
-    #[serde(rename = "")]
-    pub large_meta_image: Option<bool>,
-    #[serde(rename = "preview-image")]
-    pub preview_image: Option<String>,
-    #[serde(rename = "preview-summary")]
-    pub preview_summary: Option<String>,
+    pub summary: String,
 }
 
+#[derive(Serialize)]
 pub struct FrontMatter {
     pub title: String,
     pub slug: String,
     pub tags: Vec<String>,
     pub date: DateTime<Utc>,
+    pub summary: String,
 }
 
 impl From<RawFrontMatter> for Option<FrontMatter> {
     fn from(raw: RawFrontMatter) -> Option<FrontMatter> {
         #[allow(unused)]
         let RawFrontMatter {
-            title, 
-            slug, 
-            tags, 
-            published, 
-            meta_image, 
-            large_meta_image, 
-            preview_image, 
-            preview_summary, 
+            title,
+            slug,
+            tags,
+            published,
+            summary,
         } = raw;
-        if published.is_none() { return None; }
-        
-        let date: DateTime<FixedOffset> = match DateTime::parse_from_rfc3339(published.as_ref().unwrap()) {
+        if published.is_none() {
+            return None;
+        }
+
+        let date: DateTime<FixedOffset> = match DateTime::parse_from_rfc3339(
+            published.as_ref().unwrap(),
+        ) {
             Ok(d) => d,
             Err(e) => {
                 eprintln!("unexpected published date format `{}` for slug `{}` (expected %Y-%m-%dT%H:%M:%S%z): {:?}", published.unwrap(), slug, e);
@@ -53,6 +49,7 @@ impl From<RawFrontMatter> for Option<FrontMatter> {
             slug,
             tags,
             date,
+            summary,
         })
     }
 }

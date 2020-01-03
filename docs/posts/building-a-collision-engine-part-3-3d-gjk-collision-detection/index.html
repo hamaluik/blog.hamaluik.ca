@@ -1,63 +1,8 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Building a Collision Engine Part 3: 3D GJK Collision Detection</title>
-    <link href="https://fonts.googleapis.com/css?family=Crimson+Pro:400,400i,700|Eczar:800|Fira+Code&display=swap" rel="stylesheet">
-    <link href="/style.css" rel="stylesheet"> 
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
-    <link rel="manifest" href="/assets/site.webmanifest">
-    <link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#bf616a">
-    <meta name="msapplication-TileColor" content="#bf616a">
-    <meta name="theme-color" content="#bf616a">
-</head>
-
-<body>
-    <svg style="position:absolute;width:0;height:0;display:none;" xmlns="http://www.w3.org/2000/svg" overflow="hidden">
-        <defs>
-            <symbol id="ca" viewBox="0 0 43 32">
-                <path fill="var(--color1, #fff)" d="M10.012 0h22.642v32H10.012z" />
-                <path fill="var(--color2, #bf616a)"
-                    d="M-1.309 0h11.321v32H-1.309zm33.963 0h11.321v32H32.654zM13.398 15.463l-.879.3 4.091 3.59c.309.923-.108 1.195-.373 1.679l4.441-.564-.116 4.47.92-.026-.201-4.432 4.446.527c-.275-.581-.52-.89-.265-1.819l4.088-3.402-.715-.259c-.585-.451.253-2.174.379-3.261 0 0-2.387.821-2.544.391l-.608-1.168-2.172 2.386c-.237.057-.338-.037-.394-.238l1.003-4.985-1.589.894c-.133.057-.266.008-.354-.147l-1.528-3.066-1.576 3.184c-.119.114-.238.127-.336.05l-1.513-.849.908 4.946c-.072.196-.245.252-.449.145l-2.076-2.359c-.272.435-.456 1.146-.815 1.305-.359.149-1.561-.301-2.367-.477.275.993 1.136 2.644.591 3.185z" />
-            </symbol>
-        </defs>
-    </svg>
-    <header>
-        <h1><a href="/">Kenton Hamaluik</a></h1>
-    </header>
-    <article>
-        <header>
-            <h1>Building a Collision Engine Part 3: 3D GJK Collision Detection</h1>
-        </header>
-        <p>Now that I’ve conquered 2D collision detection and intersection calculation, it’s time to move onto 3D. Thankfully, GJK is relatively easy to extend into 3D once we have the base framework that we developed before. There are three main changes / additions we have to make to the original collision detection code to get it to work for 3D:</p>
-<ol>
-<li>Change all the 2D data-types into 3D ones (<code>Vec2 -&gt; Vec3</code>)</li>
-<li>Change the case when the simplex has 3 vertices to add a new vertex instead of checking for collision</li>
-<li>Add a case when the simplex has 4 vertices to check for collision &amp; evolve the simplex</li>
-</ol>
-<p>The first bit is fairly obvious, so I won’t go into it here. For the rest, it’s important to note that the overall collision detection process is the same as before, we just calculate the normal of a triangle instead of the normal of a line.</p>
-<p>For the rest of this post, I’ll refer to the following tetrahedral simplex and corresponding points <code>A</code>, <code>B</code>, <code>C</code>, <code>D</code> which comprise the simplex:</p>
-<figure>
-    <img src="/images/collision-engine-3d-detection/3d-simplex.svg">
-    <figcaption>The simplex we'll be testing. It is made of 4 points and 4 corresponding planes.</figcaption>
-</figure>
-<p>This simplex defines 4 planes, each defined by 3 of the points of the simplex: <code>ABC</code>, <code>ABD</code>, <code>BCD</code>, <code>CAD</code>.</p>
-<h2><a href="#building-a-3d-simplex" aria-hidden="true" class="anchor" id="headerbuilding-a-3d-simplex"></a>Building a 3D Simplex</h2>
-<p>Whereas in 2D we had a 2D simplex (a triangle), in 3D we have a 3D simplex (a tetrahedron). This means that when we have a simplex with 3 vertices, we’re not done building the simplex yet (we have a triangle where we need a tetrahedron). This is easy to rectify—we can simply add another vertex in the support direction of the normal of the triangle in the direction of the origin. That’s a bit of a mouthful, so let’s unpack it.</p>
-<p>We need the normal of the triangle. This can be calculated using the cross product of two edges of the triangle:</p>
-<div class="highlight"><pre><span></span><span class="kd">var</span> ac<span class="p">:</span><span class="n">Vec3</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Building a Collision Engine Part 3: 3D GJK Collision Detection</title><link href="https://fonts.googleapis.com/css?family=Crimson+Pro:400,400i,700|Eczar:700|Source+Code+Pro:400,400i&display=swap" rel="stylesheet"><link href="/style.css" rel="stylesheet"> <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#bf616a"><meta name="msapplication-TileColor" content="#bf616a"><meta name="theme-color" content="#bf616a"> <meta property="og:title" content="Building a Collision Engine Part 3: 3D GJK Collision Detection"/><meta property="og:url" content="http://blog.hamaluik.ca/posts/building-a-collision-engine-part-3-3d-gjk-collision-detection/"/><meta property="og:image" content="https://og-image.now.sh/Building%20a%20Collision%20Engine%20Part%203%3A%203D%20GJK%20Collision%20Detection.png?theme=light&md=0&fontSize=75px&images=https%3A%2F%2Fassets.zeit.co%2Fimage%2Fupload%2Ffront%2Fassets%2Fdesign%2Fhyper-color-logo.svg&widths=350&heights=350"/><meta property="og:description" content="&lt;p&gt;Now that I’ve conquered 2D collision detection and intersection calculation, it’s time to move onto 3D. Thankfully, GJK is relatively easy to extend into 3D once we have the base framework that we developed before.&lt;&#x2F;p&gt; "/><meta property="og:type" content="article"/><meta property="og:locale" content="en_CA"/><meta property="og:site_name" content="Kenton Hamaluik"/><meta property="article:published_time" content=" 2017-06-30T07:00:00+00:00 "/><meta property="article:author" content="http://blog.hamaluik.ca/kenton/"/> <meta property="article:tag" content="Math"/> <meta property="article:tag" content="Haxe"/> <meta name="twitter:card" content="summary_large_image"> </head><body><svg style="position:absolute;width:0;height:0;display:none;" xmlns="http://www.w3.org/2000/svg" overflow="hidden"><defs><symbol id="ca" viewBox="0 0 43 32"><path fill="var(--color1, #fff)" d="M10.012 0h22.642v32H10.012z"/><path fill="var(--color2, #bf616a)" d="M-1.309 0h11.321v32H-1.309zm33.963 0h11.321v32H32.654zM13.398 15.463l-.879.3 4.091 3.59c.309.923-.108 1.195-.373 1.679l4.441-.564-.116 4.47.92-.026-.201-4.432 4.446.527c-.275-.581-.52-.89-.265-1.819l4.088-3.402-.715-.259c-.585-.451.253-2.174.379-3.261 0 0-2.387.821-2.544.391l-.608-1.168-2.172 2.386c-.237.057-.338-.037-.394-.238l1.003-4.985-1.589.894c-.133.057-.266.008-.354-.147l-1.528-3.066-1.576 3.184c-.119.114-.238.127-.336.05l-1.513-.849.908 4.946c-.072.196-.245.252-.449.145l-2.076-2.359c-.272.435-.456 1.146-.815 1.305-.359.149-1.561-.301-2.367-.477.275.993 1.136 2.644.591 3.185z"/></symbol></defs></svg><header><h1><a href="/">Kenton Hamaluik</a></h1></header><article><header><h1>Building a Collision Engine Part 3: 3D GJK Collision Detection <time datetime='2017-06-30T07:00:00+00:00'>(2017-06-30)</time></h1></header><p>Now that I’ve conquered 2D collision detection and intersection calculation, it’s time to move onto 3D. Thankfully, GJK is relatively easy to extend into 3D once we have the base framework that we developed before. There are three main changes / additions we have to make to the original collision detection code to get it to work for 3D:</p><ol><li>Change all the 2D data-types into 3D ones (<code>Vec2 -&gt; Vec3</code>)</li><li>Change the case when the simplex has 3 vertices to add a new vertex instead of checking for collision</li><li>Add a case when the simplex has 4 vertices to check for collision &amp; evolve the simplex</li></ol><p>The first bit is fairly obvious, so I won’t go into it here. For the rest, it’s important to note that the overall collision detection process is the same as before, we just calculate the normal of a triangle instead of the normal of a line.</p><p>For the rest of this post, I’ll refer to the following tetrahedral simplex and corresponding points <code>A</code>, <code>B</code>, <code>C</code>, <code>D</code> which comprise the simplex:</p><figure><img src="/images/collision-engine-3d-detection/3d-simplex.svg"><figcaption>The simplex we'll be testing. It is made of 4 points and 4 corresponding planes.</figcaption></figure><p>This simplex defines 4 planes, each defined by 3 of the points of the simplex: <code>ABC</code>, <code>ABD</code>, <code>BCD</code>, <code>CAD</code>.</p><h2><a href="#building-a-3d-simplex" aria-hidden="true" class="anchor" id="headerbuilding-a-3d-simplex"></a>Building a 3D Simplex</h2><p>Whereas in 2D we had a 2D simplex (a triangle), in 3D we have a 3D simplex (a tetrahedron). This means that when we have a simplex with 3 vertices, we’re not done building the simplex yet (we have a triangle where we need a tetrahedron). This is easy to rectify—we can simply add another vertex in the support direction of the normal of the triangle in the direction of the origin. That’s a bit of a mouthful, so let’s unpack it.</p><p>We need the normal of the triangle. This can be calculated using the cross product of two edges of the triangle:</p><div class="highlight"><pre><span></span><span class="kd">var</span> ac<span class="p">:</span><span class="n">Vec3</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
 <span class="kd">var</span> ab<span class="p">:</span><span class="n">Vec3</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
 <span class="n">direction</span> <span class="o">=</span> <span class="n">ac</span><span class="p">.</span><span class="n">cross</span><span class="p">(</span><span class="n">ab</span><span class="p">,</span> <span class="k">new</span> <span class="n">Vec3</span><span class="p">());</span>
-</pre></div>
-<p>The normal should be in the direction of the origin. The direction of the normal we calculated above depends on which edges we used and how they were oriented. We can ensure that the normal we calculated above points in the direction of the origin by checking it’s dot product with a line to the origin and flipping it if the result is negative, as so:</p>
-<div class="highlight"><pre><span></span><span class="k">if</span><span class="p">(</span><span class="n">direction</span><span class="p">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a0</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="n">direction</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
-</pre></div>
-<p>And that’s all we need for evolving our simplex from a triangle to a tetrahedron! The new code for evolving the simplex looks like this:</p>
-<div class="highlight"><pre><span></span><span class="k">switch</span><span class="p">(</span><span class="n">vertices</span><span class="p">.</span><span class="n">length</span><span class="p">)</span> <span class="p">{</span>
+</pre></div><p>The normal should be in the direction of the origin. The direction of the normal we calculated above depends on which edges we used and how they were oriented. We can ensure that the normal we calculated above points in the direction of the origin by checking it’s dot product with a line to the origin and flipping it if the result is negative, as so:</p><div class="highlight"><pre><span></span><span class="k">if</span><span class="p">(</span><span class="n">direction</span><span class="p">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a0</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="n">direction</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</pre></div><p>And that’s all we need for evolving our simplex from a triangle to a tetrahedron! The new code for evolving the simplex looks like this:</p><div class="highlight"><pre><span></span><span class="k">switch</span><span class="p">(</span><span class="n">vertices</span><span class="p">.</span><span class="n">length</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">case</span> <span class="mi">0</span><span class="p">:</span> <span class="p">{</span>
         <span class="n">direction</span> <span class="o">=</span> <span class="n">shapeB</span><span class="p">.</span><span class="n">centre</span> <span class="o">-</span> <span class="n">shapeA</span><span class="p">.</span><span class="n">centre</span><span class="p">;</span>
     <span class="p">}</span>
@@ -90,35 +35,18 @@
     <span class="p">}</span>
     <span class="k">case</span> <span class="n">_</span><span class="p">:</span> <span class="k">throw</span> <span class="s1">&#39;Can</span><span class="se">\&#39;</span><span class="s1">t have simplex with </span><span class="si">${</span><span class="n">vertices</span><span class="p">.</span><span class="n">length</span><span class="si">}</span><span class="s1"> verts!&#39;</span><span class="p">;</span>
 <span class="p">}</span>
-</pre></div>
-<h2><a href="#checking-for-a-collision-in-3d" aria-hidden="true" class="anchor" id="headerchecking-for-a-collision-in-3d"></a>Checking for a Collision in 3D</h2>
-<p>The process for checking for a collision here is basically identical to the <a href="/posts/building-a-collision-engine-part-1-2d-gjk-collision-detection/#determining-if-the-simplex-contains-the-origin">2D version</a>, with the exception that we have to check plane (triangle) normals instead of edge normals, and we have to check 3 things instead of two (as we have one more dimension). Similar to before, we can ignore the base plane as if we’ve made it this far, we’ve ensure that the origin is on the simplex side of the plane <code>ABC</code>.</p>
-<figure>
-    <img src="/images/collision-engine-3d-detection/inside-outside-triangle.svg">
-    <figcaption>We need to check whether the origin is 'inside' or 'outside' plane <code>ABD</code> (then again for <code>BCD</code> and <code>CAD</code>).</figcaption>
-</figure>
-<p>Just like before, we check whether the origin is ‘inside’ or ‘outside’ the plane by comparing the direction of the plane’s normal with the direction to the origin. If they’re in the same direction, the origin is outside the plane and we need to evolve the simplex. Otherwise, the origin is inside the plane and we can test the other planes (or conclude the origin <em>must</em> be inside the simplex).</p>
-<figure>
-    <img src="/images/collision-engine-3d-detection/triangle-normal.svg">
-    <figcaption>Calculating the normal of a triangle using the cross product of two of it's edges using the right hand rule.</figcaption>
-</figure>
-<p>Let’s get started by declaring the edges we’re interested in (<code>d</code> being the apex of the simplex and the most recent vertex that was added):</p>
-<div class="highlight"><pre><span></span><span class="c1">// calculate the three edges of interest</span>
+</pre></div><h2><a href="#checking-for-a-collision-in-3d" aria-hidden="true" class="anchor" id="headerchecking-for-a-collision-in-3d"></a>Checking for a Collision in 3D</h2><p>The process for checking for a collision here is basically identical to the <a href="/posts/building-a-collision-engine-part-1-2d-gjk-collision-detection/#determining-if-the-simplex-contains-the-origin">2D version</a>, with the exception that we have to check plane (triangle) normals instead of edge normals, and we have to check 3 things instead of two (as we have one more dimension). Similar to before, we can ignore the base plane as if we’ve made it this far, we’ve ensure that the origin is on the simplex side of the plane <code>ABC</code>.</p><figure><img src="/images/collision-engine-3d-detection/inside-outside-triangle.svg"><figcaption>We need to check whether the origin is 'inside' or 'outside' plane <code>ABD</code> (then again for <code>BCD</code> and <code>CAD</code>).</figcaption></figure><p>Just like before, we check whether the origin is ‘inside’ or ‘outside’ the plane by comparing the direction of the plane’s normal with the direction to the origin. If they’re in the same direction, the origin is outside the plane and we need to evolve the simplex. Otherwise, the origin is inside the plane and we can test the other planes (or conclude the origin <em>must</em> be inside the simplex).</p><figure><img src="/images/collision-engine-3d-detection/triangle-normal.svg"><figcaption>Calculating the normal of a triangle using the cross product of two of it's edges using the right hand rule.</figcaption></figure><p>Let’s get started by declaring the edges we’re interested in (<code>d</code> being the apex of the simplex and the most recent vertex that was added):</p><div class="highlight"><pre><span></span><span class="c1">// calculate the three edges of interest</span>
 <span class="kd">var</span> da <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
 <span class="kd">var</span> db <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
 <span class="kd">var</span> dc <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
 
 <span class="c1">// and the direction to the origin</span>
 <span class="kd">var</span> d0 <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
-</pre></div>
-<p>Now we calculate the normals of the three triangle planes, ensuring that the normal is in the “outside” direction (using the <a href="https://en.wikipedia.org/wiki/Right-hand_rule">right hand rule</a>:</p>
-<div class="highlight"><pre><span></span><span class="c1">// check triangles a-b-d, b-c-d, and c-a-d</span>
+</pre></div><p>Now we calculate the normals of the three triangle planes, ensuring that the normal is in the “outside” direction (using the <a href="https://en.wikipedia.org/wiki/Right-hand_rule">right hand rule</a>:</p><div class="highlight"><pre><span></span><span class="c1">// check triangles a-b-d, b-c-d, and c-a-d</span>
 <span class="kd">var</span> abdNorm<span class="p">:</span><span class="n">Vec3</span> <span class="o">=</span> <span class="n">da</span><span class="p">.</span><span class="n">cross</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="k">new</span> <span class="n">Vec3</span><span class="p">());</span>
 <span class="kd">var</span> bcdNorm<span class="p">:</span><span class="n">Vec3</span> <span class="o">=</span> <span class="n">db</span><span class="p">.</span><span class="n">cross</span><span class="p">(</span><span class="n">dc</span><span class="p">,</span> <span class="k">new</span> <span class="n">Vec3</span><span class="p">());</span>
 <span class="kd">var</span> cadNorm<span class="p">:</span><span class="n">Vec3</span> <span class="o">=</span> <span class="n">dc</span><span class="p">.</span><span class="n">cross</span><span class="p">(</span><span class="n">da</span><span class="p">,</span> <span class="k">new</span> <span class="n">Vec3</span><span class="p">());</span>
-</pre></div>
-<p>And finally, we can check them against the direction to the origin:</p>
-<div class="highlight"><pre><span></span><span class="k">if</span><span class="p">(</span><span class="n">abdNorm</span><span class="p">.</span><span class="n">dot</span><span class="p">(</span><span class="n">d0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</pre></div><p>And finally, we can check them against the direction to the origin:</p><div class="highlight"><pre><span></span><span class="k">if</span><span class="p">(</span><span class="n">abdNorm</span><span class="p">.</span><span class="n">dot</span><span class="p">(</span><span class="n">d0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// the origin is on the outside of triangle a-b-d</span>
 <span class="p">}</span>
 <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bcdNorm</span><span class="p">.</span><span class="n">dot</span><span class="p">(</span><span class="n">d0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
@@ -131,15 +59,11 @@
     <span class="c1">// the origin is inside all of the triangles!</span>
     <span class="k">return</span> <span class="n">EvolveResult</span><span class="p">.</span><span class="n">FoundIntersection</span><span class="p">;</span>
 <span class="p">}</span>
-</pre></div>
-<p>If the origin is found to be on the ‘outside’ of any of the planes, we know that we can eliminate the vertex of the simplex that is not on that plane, and add a new vertex in the support direction of the plane’s normal:</p>
-<div class="highlight"><pre><span></span><span class="c1">// the origin is on the outside of triangle a-b-d</span>
+</pre></div><p>If the origin is found to be on the ‘outside’ of any of the planes, we know that we can eliminate the vertex of the simplex that is not on that plane, and add a new vertex in the support direction of the plane’s normal:</p><div class="highlight"><pre><span></span><span class="c1">// the origin is on the outside of triangle a-b-d</span>
 <span class="c1">// eliminate c!</span>
 <span class="n">vertices</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="n">vertices</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>
 <span class="n">direction</span> <span class="o">=</span> <span class="n">abdNorm</span><span class="p">;</span>
-</pre></div>
-<p>So that altogether, this step looks like:</p>
-<div class="highlight"><pre><span></span><span class="err">c</span><span class="n">ase</span> <span class="mi">4</span><span class="err">:</span> <span class="p">{</span>
+</pre></div><p>So that altogether, this step looks like:</p><div class="highlight"><pre><span></span><span class="err">c</span><span class="n">ase</span> <span class="mi">4</span><span class="err">:</span> <span class="p">{</span>
     <span class="c1">// calculate the three edges of interest</span>
     <span class="kd">var</span> da <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
     <span class="kd">var</span> db <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">vertices</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
@@ -176,11 +100,7 @@
         <span class="k">return</span> <span class="n">EvolveResult</span><span class="p">.</span><span class="n">FoundIntersection</span><span class="p">;</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</pre></div>
-<h2><a href="#putting-it-all-together" aria-hidden="true" class="anchor" id="headerputting-it-all-together"></a>Putting it All Together</h2>
-<p>3D collision detection with GJk is definitely a lot easier than I originally thought it was, especially after you get all the concepts figured out in 2D. For reference, here is the complete 3D collision detection class at the time of writing from my <a href="https://github.com/hamaluik/headbutt">Headbutt</a> library:</p>
-<h3><a href="#headbutt3dhx" aria-hidden="true" class="anchor" id="headerheadbutt3dhx"></a>Headbutt3D.hx</h3>
-<div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">headbutt</span><span class="p">;</span>
+</pre></div><h2><a href="#putting-it-all-together" aria-hidden="true" class="anchor" id="headerputting-it-all-together"></a>Putting it All Together</h2><p>3D collision detection with GJk is definitely a lot easier than I originally thought it was, especially after you get all the concepts figured out in 2D. For reference, here is the complete 3D collision detection class at the time of writing from my <a href="https://github.com/hamaluik/headbutt">Headbutt</a> library:</p><h3><a href="#headbutt3dhx" aria-hidden="true" class="anchor" id="headerheadbutt3dhx"></a>Headbutt3D.hx</h3><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">headbutt</span><span class="p">;</span>
 
 <span class="kn">using</span> <span class="nn">glm</span><span class="p">.</span><span class="nn">Vec3</span><span class="p">;</span>
 
@@ -318,20 +238,4 @@
         <span class="k">return</span> <span class="n">result</span> <span class="o">==</span> <span class="n">EvolveResult</span><span class="p">.</span><span class="n">FoundIntersection</span><span class="p">;</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</pre></div>
-<h2><a href="#demo" aria-hidden="true" class="anchor" id="headerdemo"></a>Demo</h2>
-<figure>
-    <iframe style="width: 100%; height: 200px; border: 0;" src="/images/collision-engine-3d-detection/demo.html"></iframe>
-</figure>
-<h2><a href="#headbutt" aria-hidden="true" class="anchor" id="headerheadbutt"></a>Headbutt</h2>
-<p>I’ve started rolling this code into it’s own library, tentatively called <em>Headbutt</em>, which you can follow along with if you’re interested on Github: <a href="https://github.com/hamaluik/headbutt">https://github.com/hamaluik/headbutt</a>.</p>
-
-    </article>
-    <footer>
-        <p><svg class="icon icon-ca">
-                <use xlink:href="#ca"></use>
-            </svg> Made in Canada.</p>
-    </footer>
-</body>
-
-</html>
+</pre></div><h2><a href="#demo" aria-hidden="true" class="anchor" id="headerdemo"></a>Demo</h2><figure><iframe style="width: 100%; height: 200px; border: 0;" src="/images/collision-engine-3d-detection/demo.html"></iframe></figure><h2><a href="#headbutt" aria-hidden="true" class="anchor" id="headerheadbutt"></a>Headbutt</h2><p>I’ve started rolling this code into it’s own library, tentatively called <em>Headbutt</em>, which you can follow along with if you’re interested on Github: <a href="https://github.com/hamaluik/headbutt">https://github.com/hamaluik/headbutt</a>.</p></article><footer><p><svg class="icon icon-ca"><use xlink:href="#ca"></use></svg> Made in Canada.</p></footer></body></html>

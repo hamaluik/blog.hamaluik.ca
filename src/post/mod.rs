@@ -1,9 +1,10 @@
 use super::frontmatter::{FrontMatter, RawFrontMatter};
+use serde::Serialize;
 use std::path::{Path, PathBuf};
 use tera::Tera;
 
 mod katex;
-mod markdown;
+pub mod markdown;
 mod plantuml;
 mod pygments;
 
@@ -21,6 +22,7 @@ lazy_static::lazy_static! {
     };
 }
 
+#[derive(Serialize)]
 pub struct Post {
     pub front: FrontMatter,
     pub source: PathBuf,
@@ -79,7 +81,13 @@ impl Post {
             );
             return Ok(None);
         }
-        let front = front.unwrap();
+        // format the summary as markdown
+        let mut front = front.unwrap();
+        {
+            let markdown::FormatResponse { output, .. } =
+                markdown::format_markdown(&front.summary)?;
+            front.summary = output;
+        }
 
         let url = format!("/posts/{}/", front.slug);
 
@@ -99,6 +107,7 @@ impl Post {
 
         let mut context = tera::Context::new();
         context.insert("title", &self.front.title);
+        context.insert("front", &self.front);
         context.insert("content", &output);
         context.insert("include_katex_css", &include_katex_css);
 

@@ -1,43 +1,4 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>A Platform Agnostic Thread Pool for Haxe &#x2F; OpenFL</title>
-    <link href="https://fonts.googleapis.com/css?family=Crimson+Pro:400,400i,700|Eczar:800|Fira+Code&display=swap" rel="stylesheet">
-    <link href="/style.css" rel="stylesheet"> 
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
-    <link rel="manifest" href="/assets/site.webmanifest">
-    <link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#bf616a">
-    <meta name="msapplication-TileColor" content="#bf616a">
-    <meta name="theme-color" content="#bf616a">
-</head>
-
-<body>
-    <svg style="position:absolute;width:0;height:0;display:none;" xmlns="http://www.w3.org/2000/svg" overflow="hidden">
-        <defs>
-            <symbol id="ca" viewBox="0 0 43 32">
-                <path fill="var(--color1, #fff)" d="M10.012 0h22.642v32H10.012z" />
-                <path fill="var(--color2, #bf616a)"
-                    d="M-1.309 0h11.321v32H-1.309zm33.963 0h11.321v32H32.654zM13.398 15.463l-.879.3 4.091 3.59c.309.923-.108 1.195-.373 1.679l4.441-.564-.116 4.47.92-.026-.201-4.432 4.446.527c-.275-.581-.52-.89-.265-1.819l4.088-3.402-.715-.259c-.585-.451.253-2.174.379-3.261 0 0-2.387.821-2.544.391l-.608-1.168-2.172 2.386c-.237.057-.338-.037-.394-.238l1.003-4.985-1.589.894c-.133.057-.266.008-.354-.147l-1.528-3.066-1.576 3.184c-.119.114-.238.127-.336.05l-1.513-.849.908 4.946c-.072.196-.245.252-.449.145l-2.076-2.359c-.272.435-.456 1.146-.815 1.305-.359.149-1.561-.301-2.367-.477.275.993 1.136 2.644.591 3.185z" />
-            </symbol>
-        </defs>
-    </svg>
-    <header>
-        <h1><a href="/">Kenton Hamaluik</a></h1>
-    </header>
-    <article>
-        <header>
-            <h1>A Platform Agnostic Thread Pool for Haxe &#x2F; OpenFL</h1>
-        </header>
-        <p>With modern hardware utilizing multiple cores, it can be highly advantageous to do as much <a href="http://en.wikipedia.org/wiki/Parallel_computing">parallel processing</a> as possible. I think the most elegant way of doing this is to use <a href="http://en.wikipedia.org/wiki/Thread_pool_pattern">thread pools</a> which allocate tasks to a limited number of threads. Unfortunately, multi-threading support isn’t fully implemented in Haxe—but it is on the neko and cpp targets, so I wrote a simple thread pool to take advantage of multi-threading on those platforms!</p>
-<!-- PELICAN_END_SUMMARY -->
-<p>The <code>ThreadPools</code> class is pretty easy to use, and I’ve added some features which enable you to leave it in your source code despite what platform you’re compiling against—if you compile against neko or cpp, full multi-threading will be enabled; if you compile against anything else, the class will still work &amp; compile fine, it just won’t run multi-threaded.</p>
-<p>Here’s some sample code which runs two tasks which take a different amount of time to run:</p>
-<div class="highlight"><pre><span></span><span class="c1">// this will create a thread pool with 8 threads on neko and cpp platforms</span>
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>A Platform Agnostic Thread Pool for Haxe &#x2F; OpenFL</title><link href="https://fonts.googleapis.com/css?family=Crimson+Pro:400,400i,700|Eczar:700|Source+Code+Pro:400,400i&display=swap" rel="stylesheet"><link href="/style.css" rel="stylesheet"> <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#bf616a"><meta name="msapplication-TileColor" content="#bf616a"><meta name="theme-color" content="#bf616a"> <meta property="og:title" content="A Platform Agnostic Thread Pool for Haxe &#x2F; OpenFL"/><meta property="og:url" content="http://blog.hamaluik.ca/posts/a-platform-agnostic-thread-pool-for-haxe-openfl/"/><meta property="og:image" content="https://og-image.now.sh/A%20Platform%20Agnostic%20Thread%20Pool%20for%20Haxe%20&#x2F;%20OpenFL.png?theme=light&md=0&fontSize=75px&images=https%3A%2F%2Fassets.zeit.co%2Fimage%2Fupload%2Ffront%2Fassets%2Fdesign%2Fhyper-color-logo.svg&widths=350&heights=350"/><meta property="og:description" content="&lt;p&gt;With modern hardware utilizing multiple cores, it can be highly advantageous to do as much parallel processing as possible. I think the most elegant way of doing this is to use thread pools which allocate tasks to a limited number of threads. Unfortunately, multi-threading support isn’t fully implemented in Haxe—but it is on the neko and cpp targets, so I wrote a simple thread pool to take advantage of multi-threading on those platforms!&lt;&#x2F;p&gt; "/><meta property="og:type" content="article"/><meta property="og:locale" content="en_CA"/><meta property="og:site_name" content="Kenton Hamaluik"/><meta property="article:published_time" content=" 2014-10-08T02:44:11+00:00 "/><meta property="article:author" content="http://blog.hamaluik.ca/kenton/"/> <meta property="article:tag" content="Haxe"/> <meta name="twitter:card" content="summary_large_image"> </head><body><svg style="position:absolute;width:0;height:0;display:none;" xmlns="http://www.w3.org/2000/svg" overflow="hidden"><defs><symbol id="ca" viewBox="0 0 43 32"><path fill="var(--color1, #fff)" d="M10.012 0h22.642v32H10.012z"/><path fill="var(--color2, #bf616a)" d="M-1.309 0h11.321v32H-1.309zm33.963 0h11.321v32H32.654zM13.398 15.463l-.879.3 4.091 3.59c.309.923-.108 1.195-.373 1.679l4.441-.564-.116 4.47.92-.026-.201-4.432 4.446.527c-.275-.581-.52-.89-.265-1.819l4.088-3.402-.715-.259c-.585-.451.253-2.174.379-3.261 0 0-2.387.821-2.544.391l-.608-1.168-2.172 2.386c-.237.057-.338-.037-.394-.238l1.003-4.985-1.589.894c-.133.057-.266.008-.354-.147l-1.528-3.066-1.576 3.184c-.119.114-.238.127-.336.05l-1.513-.849.908 4.946c-.072.196-.245.252-.449.145l-2.076-2.359c-.272.435-.456 1.146-.815 1.305-.359.149-1.561-.301-2.367-.477.275.993 1.136 2.644.591 3.185z"/></symbol></defs></svg><header><h1><a href="/">Kenton Hamaluik</a></h1></header><article><header><h1>A Platform Agnostic Thread Pool for Haxe &#x2F; OpenFL <time datetime='2014-10-08T02:44:11+00:00'>(2014-10-08)</time></h1></header><p>With modern hardware utilizing multiple cores, it can be highly advantageous to do as much <a href="http://en.wikipedia.org/wiki/Parallel_computing">parallel processing</a> as possible. I think the most elegant way of doing this is to use <a href="http://en.wikipedia.org/wiki/Thread_pool_pattern">thread pools</a> which allocate tasks to a limited number of threads. Unfortunately, multi-threading support isn’t fully implemented in Haxe—but it is on the neko and cpp targets, so I wrote a simple thread pool to take advantage of multi-threading on those platforms!</p><p>The <code>ThreadPools</code> class is pretty easy to use, and I’ve added some features which enable you to leave it in your source code despite what platform you’re compiling against—if you compile against neko or cpp, full multi-threading will be enabled; if you compile against anything else, the class will still work &amp; compile fine, it just won’t run multi-threaded.</p><p>Here’s some sample code which runs two tasks which take a different amount of time to run:</p><div class="highlight"><pre><span></span><span class="c1">// this will create a thread pool with 8 threads on neko and cpp platforms</span>
 <span class="c1">// on all other platforms, no threads will be created</span>
 <span class="c1">// and the pool will use the main thread</span>
 <span class="kd">var</span> threadPool<span class="p">:</span><span class="n">ThreadPool</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ThreadPool</span><span class="p">(</span><span class="mi">8</span><span class="p">);</span>
@@ -70,25 +31,8 @@
 <span class="p">{</span>
     <span class="n">trace</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
 <span class="p">}</span>
-</pre></div>
-<p>On neko or cpp, this will output:</p>
-<div class="highlight"><pre><span></span><span class="err">herp derp</span>
+</pre></div><p>On neko or cpp, this will output:</p><div class="highlight"><pre><span></span><span class="err">herp derp</span>
 <span class="err">45</span>
-</pre></div>
-<p>Since the “herp derp”-returning class will finish much sooner than the summing task when they’re both running in parallel.</p>
-<p>On all other platforms, this will output:</p>
-<div class="highlight"><pre><span></span><span class="err">45</span>
+</pre></div><p>Since the “herp derp”-returning class will finish much sooner than the summing task when they’re both running in parallel.</p><p>On all other platforms, this will output:</p><div class="highlight"><pre><span></span><span class="err">45</span>
 <span class="err">herp derp</span>
-</pre></div>
-<p>Since the tasks will be executed in the order they were added.</p>
-<p>The code is available in a Gist: <a href="https://gist.github.com/hamaluik/80fb81f84ecedbe2a6af">hamaluik / ThreadPool.hx</a>.</p>
-
-    </article>
-    <footer>
-        <p><svg class="icon icon-ca">
-                <use xlink:href="#ca"></use>
-            </svg> Made in Canada.</p>
-    </footer>
-</body>
-
-</html>
+</pre></div><p>Since the tasks will be executed in the order they were added.</p><p>The code is available in a Gist: <a href="https://gist.github.com/hamaluik/80fb81f84ecedbe2a6af">hamaluik / ThreadPool.hx</a>.</p></article><footer><p><svg class="icon icon-ca"><use xlink:href="#ca"></use></svg> Made in Canada.</p></footer></body></html>

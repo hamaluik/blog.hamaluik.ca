@@ -1,0 +1,9 @@
+{% extends "base.html" %} {% block content %}
+<ul class='postlist'>
+    {% for post in posts %}
+    <li>
+        <a href='{{ post.url }}'>{{ post.front.title }}</a> <time datetime='{{ post.front.date | date(format="%+") }}'>({{ post.front.date | date(format="%Y-%m-%d") }})</time>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock content %}
