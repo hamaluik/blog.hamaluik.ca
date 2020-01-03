@@ -81,13 +81,13 @@ impl Post {
             );
             return Ok(None);
         }
+        let front = front.unwrap();
         // format the summary as markdown
-        let mut front = front.unwrap();
-        {
-            let markdown::FormatResponse { output, .. } =
-                markdown::format_markdown(&front.summary)?;
-            front.summary = output;
-        }
+        //{
+        //    let markdown::FormatResponse { output, .. } =
+        //        markdown::format_markdown(&front.summary)?;
+        //    front.summary = output;
+        //}
 
         let url = format!("/posts/{}/", front.slug);
 
