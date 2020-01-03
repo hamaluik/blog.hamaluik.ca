@@ -1,7 +1,7 @@
-use comrak::ComrakOptions;
 use super::katex::create_katex_inline;
 use super::plantuml::create_plantuml_svg;
 use super::pygments::create_code_block;
+use comrak::ComrakOptions;
 
 lazy_static::lazy_static! {
     static ref COMRAK_OPTIONS: ComrakOptions = ComrakOptions {
@@ -32,7 +32,10 @@ fn format_code(lang: &str, src: &str) -> Result<FormatResponse, Box<dyn std::err
     // render plantuml code blocks into an inline svg
     if lang == "plantuml" {
         let svg = create_plantuml_svg(src)?;
-        let svg = svg.replace(r#"<?xml version="1.0" encoding="UTF-8" standalone="no"?>"#, "");
+        let svg = svg.replace(
+            r#"<?xml version="1.0" encoding="UTF-8" standalone="no"?>"#,
+            "",
+        );
 
         return Ok(FormatResponse {
             output: format!("<figure>{}</figure>", svg),
@@ -56,30 +59,37 @@ fn format_code(lang: &str, src: &str) -> Result<FormatResponse, Box<dyn std::err
     })
 }
 
-fn wrap_image_in_figure(link: &comrak::nodes::NodeLink, alt: &str) -> Result<String, Box<dyn std::error::Error>> {
+fn wrap_image_in_figure(
+    link: &comrak::nodes::NodeLink,
+    alt: &str,
+) -> Result<String, Box<dyn std::error::Error>> {
     let title = String::from_utf8_lossy(link.title.as_ref());
     let url = String::from_utf8_lossy(link.url.as_ref());
     if title.len() > 0 {
-        Ok(format!(r#"<figure><img src="{}" alt="{}" title="{}"><figcaption>{}</figcaption></figure>"#, url, alt, title, title))
-    }
-    else {
-        Ok(format!(r#"<figure><img src="{}" alt="{}"></figure>"#, url, alt))
+        Ok(format!(
+            r#"<figure><img src="{}" alt="{}" title="{}"><figcaption>{}</figcaption></figure>"#,
+            url, alt, title, title
+        ))
+    } else {
+        Ok(format!(
+            r#"<figure><img src="{}" alt="{}"></figure>"#,
+            url, alt
+        ))
     }
 }
 
 pub fn format_markdown(src: &str) -> Result<FormatResponse, Box<dyn std::error::Error>> {
-    use comrak::{Arena, parse_document, format_html};
     use comrak::nodes::{AstNode, NodeValue};
+    use comrak::{format_html, parse_document, Arena};
 
     let arena = Arena::new();
 
-    let root = parse_document(
-        &arena,
-        src,
-        &COMRAK_OPTIONS);
+    let root = parse_document(&arena, src, &COMRAK_OPTIONS);
 
     fn iter_nodes<'a, F>(node: &'a AstNode<'a>, f: &mut F) -> Result<(), Box<dyn std::error::Error>>
-        where F : FnMut(&'a AstNode<'a>) -> Result<(), Box<dyn std::error::Error>> {
+    where
+        F: FnMut(&'a AstNode<'a>) -> Result<(), Box<dyn std::error::Error>>,
+    {
         f(node)?;
         for c in node.children() {
             iter_nodes(c, f)?;
@@ -94,13 +104,16 @@ pub fn format_markdown(src: &str) -> Result<FormatResponse, Box<dyn std::error::
             NodeValue::CodeBlock(ref block) => {
                 let lang = String::from_utf8_lossy(block.info.as_ref());
                 let source = String::from_utf8_lossy(block.literal.as_ref());
-                let FormatResponse { output, include_katex_css } = format_code(&lang, &source)?;
+                let FormatResponse {
+                    output,
+                    include_katex_css,
+                } = format_code(&lang, &source)?;
                 if include_katex_css {
                     use_katex_css = true;
                 }
                 let highlighted: Vec<u8> = Vec::from(output.into_bytes());
                 *value = NodeValue::HtmlInline(highlighted);
-            },
+            }
             NodeValue::Paragraph => {
                 if node.children().count() == 1 {
                     let first_child = &node.first_child().unwrap();
@@ -121,7 +134,7 @@ pub fn format_markdown(src: &str) -> Result<FormatResponse, Box<dyn std::error::
                         }
                     }
                 }
-            },
+            }
             _ => {}
         }
         Ok(())

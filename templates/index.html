@@ -1,4 +1,19 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %}
+
+{% block meta %}
+<meta property="og:type" content="profile">
+<meta property="og:title" content="Kenton Hamaluik">
+<meta property="og:url" content="https://blog.hamaluik.ca/">
+<meta property="og:image" content="https://avatars2.githubusercontent.com/u/894782?s=400&u=ea734cdedb7441cc5640df57c742a9a33d91dbe2&v=4">
+<meta property="profile:first_name" content="Kenton">
+<meta property="profile:last_name" content="Hamaluik">
+<meta property="profile:username" content="hamaluik" />
+<meta property="profile:gender" content="male" />
+{% endblock meta %}
+
+{% block content %}
+<p>Hi there! I used to be a biomechanical engineer but now I develop software for a living (and for fun!) Occasionally I write about things that have captured my attention and I think others might find interesting. You can learn more about me at <a href="https://hamaluik.ca">https://hamaluik.ca</a>.</p>
+
 <ul class='postlist'>
     {% for post in posts %}
     <li>

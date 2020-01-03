@@ -1,6 +1,6 @@
 pub fn create_katex_inline(src: &str) -> Result<String, Box<dyn std::error::Error>> {
-    use std::process::{Command, Stdio};
     use std::io::Write;
+    use std::process::{Command, Stdio};
 
     let mut child = match Command::new("katex")
         .arg("-d")
@@ -8,20 +8,24 @@ pub fn create_katex_inline(src: &str) -> Result<String, Box<dyn std::error::Erro
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
-        .spawn() {
-            Ok(c) => c,
-            Err(e) => {
-                eprintln!("failed to launch katex, not rendering math block: {:?}", e);
-                return Err(Box::from(e));
-            }
-        };
+        .spawn()
+    {
+        Ok(c) => c,
+        Err(e) => {
+            eprintln!("failed to launch katex, not rendering math block: {:?}", e);
+            return Err(Box::from(e));
+        }
+    };
 
     let stdin = child.stdin.as_mut().expect("valid katex stdin");
     stdin.write_all(src.as_ref())?;
 
     let output = child.wait_with_output()?;
     if !output.status.success() {
-        eprintln!("failed to generate katex, exit code: {:?}", output.status.code());
+        eprintln!(
+            "failed to generate katex, exit code: {:?}",
+            output.status.code()
+        );
         eprintln!("katex STDOUT:");
         eprintln!("{}", String::from_utf8_lossy(output.stdout.as_ref()));
         eprintln!("katex STDERR:");
