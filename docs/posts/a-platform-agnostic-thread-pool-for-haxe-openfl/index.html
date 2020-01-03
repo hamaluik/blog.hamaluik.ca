@@ -2,7 +2,7 @@
 <span class="c1">// on all other platforms, no threads will be created</span>
 <span class="c1">// and the pool will use the main thread</span>
 <span class="kd">var</span> threadPool<span class="p">:</span><span class="n">ThreadPool</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ThreadPool</span><span class="p">(</span><span class="mi">8</span><span class="p">);</span>
- 
+
 <span class="c1">// add a task that will take a while to complete</span>
 <span class="n">threadPool</span><span class="p">.</span><span class="n">addTask</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="n">x</span><span class="p">:</span><span class="n">Dynamic</span><span class="p">):</span><span class="n">Int</span> <span class="p">{</span>
     <span class="kd">var</span> li<span class="p">:</span><span class="n">Int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
@@ -13,7 +13,7 @@
     <span class="p">}</span>
     <span class="k">return</span> <span class="n">li</span><span class="p">;</span>
 <span class="p">},</span> <span class="kc">null</span><span class="p">,</span> <span class="n">onFinish</span><span class="p">);</span>
- 
+
 <span class="c1">// add a task that returns right away</span>
 <span class="n">threadPool</span><span class="p">.</span><span class="n">addTask</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="n">x</span><span class="p">:</span><span class="n">Dynamic</span><span class="p">):</span><span class="n">String</span> <span class="p">{</span>
     <span class="k">return</span> <span class="s2">&quot;herp derp&quot;</span><span class="p">;</span>
@@ -23,9 +23,9 @@
 <span class="c1">// across the pool&#39;s threads</span>
 <span class="c1">// or just in the main thread if not on neko or cpp</span>
 <span class="n">threadPool</span><span class="p">.</span><span class="n">blockRunAllTasks</span><span class="p">();</span>
- 
+
 <span class="c1">// ...</span>
- 
+
 <span class="c1">// report the results of the above tasks</span>
 <span class="kd">private</span> <span class="kd">function</span> <span class="nf">onFinish</span><span class="p">(</span><span class="n">x</span><span class="p">:</span><span class="n">Dynamic</span><span class="p">):</span><span class="n">Void</span>
 <span class="p">{</span>

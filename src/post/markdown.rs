@@ -1,4 +1,4 @@
-use super::katex::create_katex_inline;
+use super::katex::{create_katex_block, create_katex_inline};
 use super::plantuml::create_plantuml_svg;
 use super::pygments::create_code_block;
 use comrak::ComrakOptions;
@@ -21,6 +21,8 @@ lazy_static::lazy_static! {
         ext_description_lists: true,
         ..ComrakOptions::default()
     };
+    static ref INLINE_MATH_REGEX: regex::Regex = regex::Regex::new(r#"(\$|\\\()(.*?)(\$|\\\))"#).expect("valid regex");
+    //static ref INLINE_MATH_REGEX: regex::Regex = regex::Regex::new(r#"\$(.*?)\$"#).expect("valid regex");
 }
 
 pub struct FormatResponse {
@@ -45,7 +47,7 @@ fn format_code(lang: &str, src: &str) -> Result<FormatResponse, Box<dyn std::err
     // render katex code blocks into an inline math
     if lang == "katex" {
         return Ok(FormatResponse {
-            output: create_katex_inline(src)?,
+            output: create_katex_block(src)?,
             include_katex_css: true,
         });
     }
@@ -84,7 +86,25 @@ pub fn format_markdown(src: &str) -> Result<FormatResponse, Box<dyn std::error::
 
     let arena = Arena::new();
 
-    let root = parse_document(&arena, src, &COMRAK_OPTIONS);
+    // parse math
+    // TODO: move into markdown only when in paragraphs
+    let mut found_inline_tex: bool = false;
+    let src =
+        INLINE_MATH_REGEX.replace_all(src, |caps: &regex::Captures| {
+            match create_katex_inline(caps.get(2).expect("3 capture groups").as_str()) {
+                Ok(s) => {
+                    found_inline_tex = true;
+                    s.trim().to_owned()
+                }
+                Err(e) => {
+                    let s = caps.get(2).expect("3 capture groups").as_str().to_owned();
+                    eprintln!("Failed to parse `{}` as inline KaTeX: {:?}", s, e);
+                    s
+                }
+            }
+        });
+
+    let root = parse_document(&arena, src.as_ref(), &COMRAK_OPTIONS);
 
     fn iter_nodes<'a, F>(node: &'a AstNode<'a>, f: &mut F) -> Result<(), Box<dyn std::error::Error>>
     where
@@ -97,7 +117,7 @@ pub fn format_markdown(src: &str) -> Result<FormatResponse, Box<dyn std::error::
         Ok(())
     }
 
-    let mut use_katex_css = false;
+    let mut use_katex_css = found_inline_tex;
     iter_nodes(root, &mut |node| {
         let value = &mut node.data.borrow_mut().value;
         match value {
@@ -135,6 +155,23 @@ pub fn format_markdown(src: &str) -> Result<FormatResponse, Box<dyn std::error::
                     }
                 }
             }
+            // TODO: this shit breaks everything
+            //NodeValue::Text(ref text) => {
+            //    // convert inline math
+            //    let text = std::str::from_utf8(text).expect("valid utf-8 text");
+            //    let text = INLINE_MATH_REGEX.replace_all(text, |caps: &regex::Captures| {
+            //        match create_katex_inline(caps.get(2).expect("3 capture groups").as_str()) {
+            //            Ok(s) => s.trim().to_owned(),
+            //            Err(e) => {
+            //                let s = caps.get(2).expect("3 capture groups").as_str().to_owned();
+            //                eprintln!("Failed to parse `{}` as inline KaTeX: {:?}", s, e);
+            //                s
+            //            }
+            //        }
+            //    });
+            //    let text: String = text.as_ref().to_owned();
+            //    *value = NodeValue::Text(text.into_bytes());
+            //}
             _ => {}
         }
         Ok(())

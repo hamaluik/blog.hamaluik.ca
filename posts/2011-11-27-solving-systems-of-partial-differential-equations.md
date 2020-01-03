@@ -12,16 +12,15 @@ Systems of partial differential equations crop up all the time in engineering, e
 An example system of partial differential equations may be given as:
 
 ```katex
-\frac{\partial x}{\partial t} = 5xy + \sqrt{xt} + y^2
-```
-
-```katex
-\frac{\partial y}{\partial t} = -2 \pi \cos(xt)
+\begin{aligned}
+\frac{\partial x}{\partial t} &= 5xy + \sqrt{xt} + y^2 \\
+\frac{\partial y}{\partial t} &= -2 \pi \cos(xt)
+\end{aligned}
 ```
 
 While these functions might look damn-near impossible to solve (and probably are analytically), these functions are a breeze for Matlab using the function `ode45` (at least, when numerically solving them). In order to use this function, you must first create a function in Matlab which emulates the above system of equations.
 
-To do this, you'll have have to make some slight changes in notation to what you have above, since all the inputs (\\(x\\) _and_ \\(y\\) will be input in a single variable and all the outputs (\\(dx/dt\\), \\(dy/dt\\) will be output in a single variable. How is this done? Essentially all you do is group the variables into column matrices and then input / return those matrices. The input to the function becomes:
+To do this, you'll have have to make some slight changes in notation to what you have above, since all the inputs (\(x\) _and_ \(y\) will be input in a single variable and all the outputs (\(dx/dt\), \(dy/dt\) will be output in a single variable. How is this done? Essentially all you do is group the variables into column matrices and then input / return those matrices. The input to the function becomes:
 
 ```katex
 X = \left[x,y\right]
@@ -33,7 +32,7 @@ While the output from the function becomes:
 \dot{X} = \left[\frac{\partial x}{\partial t},\frac{\partial y}{\partial t}\right]
 ```
 
-We then simply create a function which takes in the matrix X and outputs the matrix Xdot. Now when we're writing our function, whenever we need to write x, we will just replace it with X (1) (which is the first element in the X matrix); whenever we want to write y, we will replace it with X (2) (which is the second element in the X matrix, which is y); whenever we want to write dx/dt, we will just replace it with Xdot(1), etc. But what about the t input you ask? Well that's an additional parameter that gets input into our function, but we don't need to worry about packaging it into a function as it gets it's own parameter.
+We then simply create a function which takes in the matrix \(X\) and outputs the matrix \(\dot{X}\). Now when we're writing our function, whenever we need to write \(x\), we will just replace it with \(X\) (1) (which is the first element in the X matrix); whenever we want to write y, we will replace it with \(X\) (2) (which is the second element in the \(X\) matrix, which is y); whenever we want to write \(dx/dt\), we will just replace it with \(\dot{X}(1)\), etc. But what about the t input you ask? Well that's an additional parameter that gets input into our function, but we don't need to worry about packaging it into a function as it gets it's own parameter.
 
 Without further ado, let's take a look at the function that we'll create to solve this set of differential equations:
 
@@ -53,7 +52,7 @@ end
 
 Save this code in the file `FunkySystem.m` in the current Matlab working directory.
 
-See how this function takes in the parameters x, y (in \\(X\\)), and t? It then takes those parameters and calculates the differentials we're looking for an returns them in \\(\dot{X}\\). So, how do we now take this and calculate \\(x\\) and \\(y\\) over a given time frame? Using the aforementioned `ode45` of course! `ode45` takes the form:
+See how this function takes in the parameters $x$, $y$ (in $X$), and $t$? It then takes those parameters and calculates the differentials we're looking for an returns them in $\dot{X}$. So, how do we now take this and calculate $x$ and $y$ over a given time frame? Using the aforementioned `ode45` of course! `ode45` takes the form:
 
 ```matlab
 [t, x] = ode45(@function_name, [t0 tf], [initial_values])
@@ -62,10 +61,7 @@ See how this function takes in the parameters x, y (in \\(X\\)), and t? It then 
 So, for our functions above, we need the initial conditions, that is, what are the values of x and y at time t=0? For simplicity's sake, lets use the following initial conditions:
 
 ```katex
-x(0) = 0
-```
-
-```katex
+x(0) = 0 \\
 y(0) = 1
 ```
 
@@ -81,14 +77,14 @@ Notice how we input the initial conditions (at t0) combined together as a 1x2 ma
 % plot the x curve
 subplot(2, 1, 1);
 plot(t, x(:,1));
-xlabel('Time, $$t$$ (s)', 'interpreter', 'latex');
-ylabel('$$x(t)$$', 'interpreter', 'latex')
+xlabel('Time, t (s)', 'interpreter', 'latex');
+ylabel('x(t)', 'interpreter', 'latex')
 
 % plot the y curve
 subplot(2, 1, 2);
 plot(t, x(:,2));
-xlabel('Time, $$t$$ (s)', 'interpreter', 'latex');
-ylabel('$$y(t)$$', 'interpreter', 'latex')
+xlabel('Time, t (s)', 'interpreter', 'latex');
+ylabel('y(t)', 'interpreter', 'latex')
 ```
 
 Matlab solved this almost isntantly, and as you can see, they're rather weird functions. This is simply becuase I made up two partial differential functions completely randomly.
@@ -101,7 +97,7 @@ For systems with second-order partial differential equations as in the function:
 m \ddot{x} + c \dot{x} + k x = f(t)
 ```
 
-This method does not work straight away (we need first-order differential equations to be solved with `ode45`. Luckily, it is easy and possible to write a second-order differential in terms of a system of first order differentials by using a simple substitution. That is, create a new variable, \\(u\\), and define it as such:
+This method does not work straight away (we need first-order differential equations to be solved with `ode45`. Luckily, it is easy and possible to write a second-order differential in terms of a system of first order differentials by using a simple substitution. That is, create a new variable, $u$, and define it as such:
 
 ```katex
 u = \dot{x}

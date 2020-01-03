@@ -7,11 +7,11 @@ tags: [Haxe]
 summary: With modern hardware utilizing multiple cores, it can be highly advantageous to do as much parallel processing as possible. I think the most elegant way of doing this is to use thread pools which allocate tasks to a limited number of threads. Unfortunately, multi-threading support isn’t fully implemented in Haxe—but it is on the neko and cpp targets, so I wrote a simple thread pool to take advantage of multi-threading on those platforms!
 ---
 
-With modern hardware utilizing multiple cores, it can be highly advantageous to do as much [parallel processing](http://en.wikipedia.org/wiki/Parallel_computing) as possible. I think the most elegant way of doing this is to use [thread pools](http://en.wikipedia.org/wiki/Thread_pool_pattern) which allocate tasks to a limited number of threads. Unfortunately, multi-threading support isn't fully implemented in Haxe&mdash;but it is on the neko and cpp targets, so I wrote a simple thread pool to take advantage of multi-threading on those platforms!
+With modern hardware utilizing multiple cores, it can be highly advantageous to do as much [parallel processing](http://en.wikipedia.org/wiki/Parallel_computing) as possible. I think the most elegant way of doing this is to use [thread pools](http://en.wikipedia.org/wiki/Thread_pool_pattern) which allocate tasks to a limited number of threads. Unfortunately, multi-threading support isn't fully implemented in Haxe—but it is on the neko and cpp targets, so I wrote a simple thread pool to take advantage of multi-threading on those platforms!
 
 <!-- PELICAN_END_SUMMARY -->
 
-The `ThreadPools` class is pretty easy to use, and I've added some features which enable you to leave it in your source code despite what platform you're compiling against&mdash;if you compile against neko or cpp, full multi-threading will be enabled; if you compile against anything else, the class will still work & compile fine, it just won't run multi-threaded.
+The `ThreadPools` class is pretty easy to use, and I've added some features which enable you to leave it in your source code despite what platform you're compiling against—if you compile against neko or cpp, full multi-threading will be enabled; if you compile against anything else, the class will still work & compile fine, it just won't run multi-threaded.
 
 Here's some sample code which runs two tasks which take a different amount of time to run:
 
@@ -20,7 +20,7 @@ Here's some sample code which runs two tasks which take a different amount of ti
 // on all other platforms, no threads will be created
 // and the pool will use the main thread
 var threadPool:ThreadPool = new ThreadPool(8);
- 
+
 // add a task that will take a while to complete
 threadPool.addTask(function(x:Dynamic):Int {
     var li:Int = 0;
@@ -31,7 +31,7 @@ threadPool.addTask(function(x:Dynamic):Int {
     }
     return li;
 }, null, onFinish);
- 
+
 // add a task that returns right away
 threadPool.addTask(function(x:Dynamic):String {
     return "herp derp";
@@ -41,9 +41,9 @@ threadPool.addTask(function(x:Dynamic):String {
 // across the pool's threads
 // or just in the main thread if not on neko or cpp
 threadPool.blockRunAllTasks();
- 
+
 // ...
- 
+
 // report the results of the above tasks
 private function onFinish(x:Dynamic):Void
 {

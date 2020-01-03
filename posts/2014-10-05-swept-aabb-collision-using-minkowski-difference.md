@@ -13,7 +13,7 @@ Continuing on from [yesterday's post](http://blog.hamaluik.ca/posts/simple-aabb-
 
 <!-- PELICAN_END_SUMMARY -->
 
-If you aren't already familiar with performing discrete collision detection using Minkowski differences, I suggest you [read up on that now](http://blog.hamaluik.ca/posts/simple-aabb-collision-using-the-minkowski-difference/)&mdash;what I'm talking about here is an extension of that work. Probably the biggest reason to use swept/continuous collision detection rather than discrete detection is to prevent what is called _tunneling_, which is shown below.
+If you aren't already familiar with performing discrete collision detection using Minkowski differences, I suggest you [read up on that now](http://blog.hamaluik.ca/posts/simple-aabb-collision-using-the-minkowski-difference/)—what I'm talking about here is an extension of that work. Probably the biggest reason to use swept/continuous collision detection rather than discrete detection is to prevent what is called _tunneling_, which is shown below.
 
 <figure>
     <img src="/images/swept-aabb-collision-minkowski/tunneling.png">
@@ -56,13 +56,13 @@ Conversely, if you were in the blue box looking at the red one, your perception 
     <img src="/images/swept-aabb-collision-minkowski/velocity_a_relative_to_b.png">
 </figure>
 
-So; relative velocity&mdash;simple. But what does it have to do with continuous collision detection? Well, since the Minkowski AABB is the Minkowski _difference_ of our two AABBs, it would make sense that the vector which moves the Minkowski AABB over the origin is the _difference_ (relative velocity) of our two AABB's velocities:
+So; relative velocity—simple. But what does it have to do with continuous collision detection? Well, since the Minkowski AABB is the Minkowski _difference_ of our two AABBs, it would make sense that the vector which moves the Minkowski AABB over the origin is the _difference_ (relative velocity) of our two AABB's velocities:
 
 ```haxe
 var relativeMotion:Vector = (boxB.velocity - boxA.velocity) * dt;
 ```
 
-However note that we aren't calculating this vector based on how much we need to move the Minkowski AABB to cover the origin&mdash;we're calculating it based on the current velocities of each of the input boxes. Thus, there is _no_ guarantee that this vector will cause the Minkowski AABB to cover the origin and cause the AABBs to collide. However, **if it does**, we know that the two objects will collide during this frame! Kinda sneaky, eh?
+However note that we aren't calculating this vector based on how much we need to move the Minkowski AABB to cover the origin—we're calculating it based on the current velocities of each of the input boxes. Thus, there is _no_ guarantee that this vector will cause the Minkowski AABB to cover the origin and cause the AABBs to collide. However, **if it does**, we know that the two objects will collide during this frame! Kinda sneaky, eh?
 
 <figure>
     <img src="/images/swept-aabb-collision-minkowski/relativeMotion_noCollide.png">
@@ -74,13 +74,13 @@ However note that we aren't calculating this vector based on how much we need to
     <figcaption>However, if moving the Minkowski AABB by the relative motion vector <b>does</b> cause it to cover the origin, the objects <b>will</b> collide during this frame!</figcaption>
 </figure>
 
-This is fine and dandy if all we want to do is check whether or not the objects _will_ or _won't_ collide&mdash;but if we want to **prevent** those objects from colliding, we're going to have to do things a little bit different. We'll still use the relative velocity, but this time we'll change the perspective:
+This is fine and dandy if all we want to do is check whether or not the objects _will_ or _won't_ collide—but if we want to **prevent** those objects from colliding, we're going to have to do things a little bit different. We'll still use the relative velocity, but this time we'll change the perspective:
 
 ```haxe
 var relativeMotion:Vector = (boxA.velocity - boxB.velocity) * dt;
 ```
 
-Now, we can ray-trace this relative motion vector from the origin, and see if it collides with our Minkowski AABB (see below). If it does, we get the same result as before with an added bonus&mdash;the point on the ray which first touches the AABB defines the point in time when the two objects will start colliding.
+Now, we can ray-trace this relative motion vector from the origin, and see if it collides with our Minkowski AABB (see below). If it does, we get the same result as before with an added bonus—the point on the ray which first touches the AABB defines the point in time when the two objects will start colliding.
 
 <figure>
     <img src="/images/swept-aabb-collision-minkowski/raytrace_nohit.png">
@@ -161,10 +161,10 @@ private function getRayIntersectionFractionOfFirstRay(originA:Vector, endA:Vecto
 {
     var r:Vector = endA - originA;
     var s:Vector = endB - originB;
-    
+
     var numerator:Float = (originB - originA) * r;
     var denominator:Float = r * s;
-    
+
     if (numerator == 0 && denominator == 0)
     {
         // the lines are co-linear
@@ -177,7 +177,7 @@ private function getRayIntersectionFractionOfFirstRay(originA:Vector, endA:Vecto
         // lines are parallel
         return Math.POSITIVE_INFINITY;
     }
-    
+
     var u:Float = numerator / denominator;
     var t:Float = ((originB - originA) * s) / denominator;
     if ((t >= 0) && (t <= 1) && (u >= 0) && (u <= 1))
@@ -190,11 +190,11 @@ private function getRayIntersectionFractionOfFirstRay(originA:Vector, endA:Vecto
 public function getRayIntersectionFraction(origin:Vector, direction:Vector):Float
 {
     var end:Vector = origin + direction;
- 
+
     // for each of the AABB's four edges
     // calculate the minimum fraction of "direction"
     // in order to find where the ray FIRST intersects
-    // the AABB (if it ever does)   
+    // the AABB (if it ever does)
     var minT:Float = getRayIntersectionFractionOfFirstRay(origin, end, new Vector(min.x, min.y), new Vector(min.x, max.y));
     var x:Float;
     x = getRayIntersectionFractionOfFirstRay(origin, end, new Vector(min.x, max.y), new Vector(max.x, max.y));
@@ -206,7 +206,7 @@ public function getRayIntersectionFraction(origin:Vector, direction:Vector):Floa
     x = getRayIntersectionFractionOfFirstRay(origin, end, new Vector(max.x, min.y), new Vector(min.x, min.y));
     if (x < minT)
         minT = x;
-    
+
     // ok, now we should have found the fractional component along the ray where we collided
     return minT;
 }

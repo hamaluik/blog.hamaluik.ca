@@ -15,7 +15,7 @@ Like has been said many times before, [Haxe](http://haxe.org/) macros are incred
 2. A [**build macro**](#buildmacros) for providing easy auto-completion of asset filenames (a la [HaxeFlixel](http://haxeflixel.com/)'s `AssetPaths`)
 3. An [**expression macro**](#exprmacros) for grabbing the build date as a `Date` object.
 
-Before I dive into the macros, it may help to define exactly what Haxe macros are&mdash;basically, Haxe macros are just Haxe code that gets run at compile time, rather than run time. Because the code is executed during your project's compilation phase, macros thus have the ability to transform the code that is getting compiled (generally by modifying the abstract syntax tree). Macros allow you to create, programmatically, anything that you could create manually in normal Haxe source code files. For example, if you are really ambitious, you could create macros to create entire classes based off of a `.json` (or whatever other format floats your boat) description file. Or, you can automatically inject function calls into your code to create a [rudimentary profiler](https://blog.hamaluik.ca/posts/creating-a-code-profiler-in-haxe-using-macros/), or even implement [aspect-oriented programming](https://en.wikipedia.org/wiki/Aspect-oriented_programming). Or you can just use them to translate some definition variables into a string that gets used without runtime overhead. Haxe macros are similar-_ish_ to [C/C++ Macros](https://msdn.microsoft.com/en-us/library/503x3e3s.aspx), just _orders of magnitude_ more powerful.
+Before I dive into the macros, it may help to define exactly what Haxe macros are—basically, Haxe macros are just Haxe code that gets run at compile time, rather than run time. Because the code is executed during your project's compilation phase, macros thus have the ability to transform the code that is getting compiled (generally by modifying the abstract syntax tree). Macros allow you to create, programmatically, anything that you could create manually in normal Haxe source code files. For example, if you are really ambitious, you could create macros to create entire classes based off of a `.json` (or whatever other format floats your boat) description file. Or, you can automatically inject function calls into your code to create a [rudimentary profiler](https://blog.hamaluik.ca/posts/creating-a-code-profiler-in-haxe-using-macros/), or even implement [aspect-oriented programming](https://en.wikipedia.org/wiki/Aspect-oriented_programming). Or you can just use them to translate some definition variables into a string that gets used without runtime overhead. Haxe macros are similar-_ish_ to [C/C++ Macros](https://msdn.microsoft.com/en-us/library/503x3e3s.aspx), just _orders of magnitude_ more powerful.
 
 ## <a name="initmacros"></a>Initialization Macros
 
@@ -53,7 +53,7 @@ Now, to call this function in your `.hxml` file, simply include the line `--macr
 Compiling this now won't do much other than notify you that we did indeed run the function:
 
 ```bash
-$ haxe init.hxml 
+$ haxe init.hxml
 src/macros/AssetManagement.hx:5: Hello from copyProjectAssets()!
 ```
 
@@ -82,14 +82,14 @@ class AssetManagement {
 Which when compiled, results in:
 
 ```bash
-$ haxe init.hxml 
+$ haxe init.hxml
 I am going to copy files from:
   /home/kenton/Projects/macro-demos/src/assets
 to:
   /home/kenton/Projects/macro-demos/bin/assets
 ```
 
-Our function can also call other static functions in the class&mdash;in this case, a recursive file copy function (which simply uses the standard library to copy an entire directory somewhere, including all subdirectories):
+Our function can also call other static functions in the class—in this case, a recursive file copy function (which simply uses the standard library to copy an entire directory somewhere, including all subdirectories):
 
 ```haxe
 private static function copy(sourceDir:String, targetDir:String):Int {
@@ -161,13 +161,13 @@ class AssetManagement {
 And there we go! Now whenever we build, our assets folder will be copied in full:
 
 ```bash
-$ haxe init.hxml 
+$ haxe init.hxml
 Copied 5 project assets to /home/kenton/Projects/macro-demos/bin/assets!
 ```
 
 ## <a name="buildmacros"></a>Build Macros
 
-Build macros are special macros that automatically get executed by the compiler when compiling `class`es, `enum`s, and `abstract`s. Their purpose is generally to modify the structure of the compiled code as it is compiled&mdash;think adding, removing, and changing the fields of a class. I previously wrote about build macros in my post about [creating a code profiler](https://blog.hamaluik.ca/posts/creating-a-code-profiler-in-haxe-using-macros/), but in short a build macro could dynamically convert a class that looks like this:
+Build macros are special macros that automatically get executed by the compiler when compiling `class`es, `enum`s, and `abstract`s. Their purpose is generally to modify the structure of the compiled code as it is compiled—think adding, removing, and changing the fields of a class. I previously wrote about build macros in my post about [creating a code profiler](https://blog.hamaluik.ca/posts/creating-a-code-profiler-in-haxe-using-macros/), but in short a build macro could dynamically convert a class that looks like this:
 
 ```haxe
 package;
@@ -178,7 +178,9 @@ class MyClass {
     private var b:Int;
 }
 ```
+
 into this:
+
 ```haxe
 package;
 
@@ -188,6 +190,7 @@ class MyClass {
     public function squared():Int x*x;
 }
 ```
+
 (in this example we removed `a`, changed `b` to be public and static, and added a function named `squared`).
 
 Aside from contrived examples such as this, I find that I most commonly use build macros in my own projects to tie into the asset copying system described above. When developing game code, I found myself often needing to include specific asset files, and ended up with constants like `public static var enemySpriteFileName:String = "assets/sprites/enemy.png";` littered throughout my code. When you start getting a lot of assets this very quickly becomes not feasible. Further, you don't get any protection from all-too-common things like mistyping that one file name and inexplicably having some broken system. To remedy some of these issues, HaxeFlixel has a handy utility which I fell in love with and copy in all of my projects these days. Basically, a macro adds a list of `public static` strings to a class which point to specific asset file names. No more typos, and you even benefit from auto-completion.
@@ -233,7 +236,7 @@ package;
 
 class AssetFiles {
    public static var asset___sprites___enemy__png:String = "assets/sprites/enemy.png";
-   public static var asset___sounds___hut__ogg:String = "assets/sounds/hit.ogg"; 
+   public static var asset___sounds___hut__ogg:String = "assets/sounds/hit.ogg";
 }
 ```
 
@@ -295,7 +298,7 @@ In the `Field` typedef,
     <dd>is an array of <a href="http://api.haxe.org/haxe/macro/MetadataEntry.html">metadata entries</a> for the field</dd>
 </dl>
 
-Here's how we can construct the field (note that we don't include a `meta` field; this is because it is `@:optional` in the typedef, and we don't need it&mdash;not including it is equivalent to passing `null` for it):
+Here's how we can construct the field (note that we don't include a `meta` field; this is because it is `@:optional` in the typedef, and we don't need it—not including it is equivalent to passing `null` for it):
 
 ```haxe
 // add the fields to the class
@@ -317,15 +320,15 @@ for(file in files) {
 
 Now we're basically done, however I think the `kind` field deserves a bit more attention before we move on. The `kind` field is of type [`FieldType`](http://api.haxe.org/haxe/macro/FieldType.html), which is an `enum` which can take the following types:
 
-* `FVar` (variable)
-* `FFun` (function)
-* `FProp` (property)
+- `FVar` (variable)
+- `FFun` (function)
+- `FProp` (property)
 
 Using Haxe's [`enum instances`](https://haxe.org/manual/types-enum-instance.html), each of these gets their own constructor:
 
-* `FVar(type:ComplexType, expression:Expr)`
-* `FFun(function:Function)`
-* `FProp(get:String, set:String, type:ComplexType, expression:Expr)`
+- `FVar(type:ComplexType, expression:Expr)`
+- `FFun(function:Function)`
+- `FProp(get:String, set:String, type:ComplexType, expression:Expr)`
 
 In our case, we're creating variables (we could create read-only properties, but I'll leave that as an exercise to the reader), so create an `FVar`. We provide the type through [class reification](https://haxe.org/manual/macro-reification-class.html) (we basically just say use the `String` class / type). We then provide the initialization expression using [expression reification](https://haxe.org/manual/macro-reification-expression.html) (we just use the compile-time value of `relativePath`).
 
@@ -414,4 +417,4 @@ Context.makeExpr(date.getFullYear(), Context.currentPos())
 
 ## Conclusions
 
-Well, hopefully this rather long post helped introduce you to Haxe macros, or at least cleared things up a little bit. Please feel free to use any of the examples I've provided in your own code, and as always&mdash;don't hesitate to ask if you have any questions!
+Well, hopefully this rather long post helped introduce you to Haxe macros, or at least cleared things up a little bit. Please feel free to use any of the examples I've provided in your own code, and as always—don't hesitate to ask if you have any questions!

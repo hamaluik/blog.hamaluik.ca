@@ -9,7 +9,7 @@ summary: Although I still have reservations about using Java for publishing larg
 
 Although I still have reservations about using Java for publishing large projects (I find these inevitably become slow and clunky due to the JVM), Java is great from a programming standpoint. One thing I especially love about Java is the ability to do run-time "reflections" which allow you to hook into all the loaded classes at run time and do all kinds of crazy things. Combine this with custom Java annotations, and you get a very easy way to write a scriptable interface for a program for example.
 
-This is exactly what I needed / wanted for a project I'm currently working on&mdash;I want the user to be able to call certain internal java functions at will through a console or script. One way you might do this is to write an interface that takes all the functions you want the user to be able to access, keeps them in a mapped list, then when the user calls a function do a lookup an call the method a certain command is linked to. As it turns out, this is long, boring, and can be especially cumbersome when I want to add a new function: I would have to go back into that mapping for each function I add an add a call definition. What I want is just to mark each function as I write is as "scriptable" and let my program take care of the scripting business from there. If you don't get what I mean, here is an example function that will be auto-detected by my code, and will be callable by the user (**all** I would have to include is the following!):
+This is exactly what I needed / wanted for a project I'm currently working on—I want the user to be able to call certain internal java functions at will through a console or script. One way you might do this is to write an interface that takes all the functions you want the user to be able to access, keeps them in a mapped list, then when the user calls a function do a lookup an call the method a certain command is linked to. As it turns out, this is long, boring, and can be especially cumbersome when I want to add a new function: I would have to go back into that mapping for each function I add an add a call definition. What I want is just to mark each function as I write is as "scriptable" and let my program take care of the scripting business from there. If you don't get what I mean, here is an example function that will be auto-detected by my code, and will be callable by the user (**all** I would have to include is the following!):
 
 ```java
 @ScriptInfo(alias = "quit", args = {}, description = "exits the game")
@@ -41,7 +41,7 @@ private static Class[] getClasses(String packageName) throws ClassNotFoundExcept
 	}
 	return classes.toArray(new Class[classes.size()]);
 }
- 
+
 @SuppressWarnings("rawtypes")
 private static List findClasses(File directory, String packageName) throws ClassNotFoundException {
 	List classes = new ArrayList();
@@ -93,7 +93,7 @@ public static void registerCommands(Class cls) {
 			if(annotations[j] instanceof ScriptInfo) {
 				// we found our annotation
 				ScriptInfo si = (ScriptInfo)annotations[j];
- 
+
 				// create the command name
 				String commandName = si.alias();
 				// get the command args
@@ -102,7 +102,7 @@ public static void registerCommands(Class cls) {
 					// append the arguments to it so that each one is unique
 					commandName += ":" + params[k].getSimpleName();
 				}
- 
+
 				// create the command info
 				CommandInfo ci = new CommandInfo();
 				ci.alias = si.alias();
@@ -116,7 +116,7 @@ public static void registerCommands(Class cls) {
 					ci.longDescription = si.longDescription();
 				}
 				ci.method = methods[i];
- 
+
 				// and add the command!
 				commands.put(commandName, ci);
 			}
@@ -127,13 +127,13 @@ public static void registerCommands(Class cls) {
 
 Note that here I am storing each command in a hashmap with a key that includes both the function name and it's argument signature (since there can be multiple functions with the same name, but different argument signatures). I then store all the information about the function in a container class so I can get information about it later.
 
-Note that after calling all of this, I have a list of all functions in my package that have been marked as user-callable at their definition. Nowhere did I have to explicitely define functions&mdash;if I want to change the description of a function, I change it at the definition of the function; if I want to add an extra user-callable function, I make sure that the class it exists in extends `Scriptable` then I add the `@Scriptinfo` annotation definition before the method definition, and I'm done!
+Note that after calling all of this, I have a list of all functions in my package that have been marked as user-callable at their definition. Nowhere did I have to explicitely define functions—if I want to change the description of a function, I change it at the definition of the function; if I want to add an extra user-callable function, I make sure that the class it exists in extends `Scriptable` then I add the `@Scriptinfo` annotation definition before the method definition, and I'm done!
 
 In order to get this running properly, you'll need a couple more things including actually parsing what the user types in and calling the appropriate method (I'll put this into a separate post later), and the ScriptInfo annotation definition and CommandInfo container definitions, both of which are included below:
 
 ```java
 import java.lang.reflect.Method;
- 
+
 public class CommandInfo {
 	public String alias;
 	public String[] argNames;
@@ -149,7 +149,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
- 
+
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface ScriptInfo {

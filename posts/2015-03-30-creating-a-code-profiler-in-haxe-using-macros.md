@@ -7,13 +7,13 @@ tags: [Haxe]
 summary: Haxe macros are said by many to be “black magic”, and in some ways they are—macros in Haxe are actual Haxe code (rather than macros in C/C++ for example, which are just fancy pre-processor directives). Macros are undoubtedly the most advanced feature of Haxe and probably the hardest to grasp, however I think a major reason for that is a lack of really solid documentation on the subject. To me, the Haxe docs regarding macros are somewhat obfuscated and leave something to be desired, and unfortunately there’s not a lot of other resources online. This is what led me to embark on my own journey of learning Haxe macros, and hopefully starting to shed a little more light on their mystery.
 ---
 
-[Haxe macros](http://haxe.org/manual/macro.html) are said by many to be "black magic", and in some ways they are&mdash;macros in Haxe are actual Haxe code (rather than macros in C/C++ for example, which are just fancy pre-processor directives). Macros are undoubtedly the most advanced feature of Haxe and probably the hardest to grasp, however I think a major reason for that is a lack of really solid documentation on the subject. To me, the Haxe docs regarding macros are somewhat obfuscated and leave something to be desired, and unfortunately there's not a lot of other resources online. This is what led me to embark on my own journey of learning Haxe macros, and hopefully starting to shed a little more light on their mystery.
+[Haxe macros](http://haxe.org/manual/macro.html) are said by many to be "black magic", and in some ways they are—macros in Haxe are actual Haxe code (rather than macros in C/C++ for example, which are just fancy pre-processor directives). Macros are undoubtedly the most advanced feature of Haxe and probably the hardest to grasp, however I think a major reason for that is a lack of really solid documentation on the subject. To me, the Haxe docs regarding macros are somewhat obfuscated and leave something to be desired, and unfortunately there's not a lot of other resources online. This is what led me to embark on my own journey of learning Haxe macros, and hopefully starting to shed a little more light on their mystery.
 
-I had some trouble getting this example off the ground, so I would like to thank [ousado](https://github.com/ousado) for helping me out on the [Haxe IRC](http://webchat.freenode.net/?channels=haxe). Haxe is truly a great and supportive community, and if you're ever stuck with something I strongly encourage you to pop on the IRC&mdash;you're bound to have someone help you out!
+I had some trouble getting this example off the ground, so I would like to thank [ousado](https://github.com/ousado) for helping me out on the [Haxe IRC](http://webchat.freenode.net/?channels=haxe). Haxe is truly a great and supportive community, and if you're ever stuck with something I strongly encourage you to pop on the IRC—you're bound to have someone help you out!
 
 <!-- PELICAN_END_SUMMARY -->
 
-I think I first realized the potential of Haxe macros after reading [underscorediscovery](http://underscorediscovery.com/)'s [post](http://notes.underscorediscovery.com/haxe-compile-time-macros/) on the subject&mdash;before that I had largely ignored macros as I got on just fine without them. Then I saw something that caught my eye: _profiling and instrumentation_. I'm currently working on formalizing my personal game engine ([Woolli](https://github.com/BlazingMammothGames/Woolli)) that I've somewhat developed during the course of some projects. The engine is an entity-component-system engine. Right now there is very limited profiling support through inheritence on the systems that are used (but _none_ of the engine code is profiled). Although this isn't much of a problem yet as things _seem_ to run smoothly, I just know that one day things are going to break down and when that day comes, a profiler will be an invaluable tool to have. Anyway: back to [underscorediscovery](http://underscorediscovery.com/)'s post. In it, he mentions the possibility for doing such a thing but declines to dig into any code. What a shame! Naturally, I've attempted to bridge that gap by writing some code which I will present here.
+I think I first realized the potential of Haxe macros after reading [underscorediscovery](http://underscorediscovery.com/)'s [post](http://notes.underscorediscovery.com/haxe-compile-time-macros/) on the subject—before that I had largely ignored macros as I got on just fine without them. Then I saw something that caught my eye: _profiling and instrumentation_. I'm currently working on formalizing my personal game engine ([Woolli](https://github.com/BlazingMammothGames/Woolli)) that I've somewhat developed during the course of some projects. The engine is an entity-component-system engine. Right now there is very limited profiling support through inheritence on the systems that are used (but _none_ of the engine code is profiled). Although this isn't much of a problem yet as things _seem_ to run smoothly, I just know that one day things are going to break down and when that day comes, a profiler will be an invaluable tool to have. Anyway: back to [underscorediscovery](http://underscorediscovery.com/)'s post. In it, he mentions the possibility for doing such a thing but declines to dig into any code. What a shame! Naturally, I've attempted to bridge that gap by writing some code which I will present here.
 
 Since I also want this to be a bit of a learning experience rather than just a code dump, I will attempt to walk you through what I achieved, how I achieved it, and why I did the things that I did. I'll also show you some of my false starts so you can hopefully learn from my mistakes!
 
@@ -25,7 +25,7 @@ There are three main types of Haxe macros:
 2. Build macros (these are applied at compilation time using the `@:build` metadata and are generally used for modifying code in-place)
 3. Initialization macros (these use the `--macro` command line parameter)
 
-So far I've only used expression and build macros, so I can't comment much on initialization macros. Expression and build macros are easy to set up&mdash;the trick lies in thinking like the compiler to get things done properly. For the profiling code I'm writing, a **build** macro is the most suitable as I want to go through all of a class' functions and modify them (rather than have to explicitely call a function like I would with an expression macro).
+So far I've only used expression and build macros, so I can't comment much on initialization macros. Expression and build macros are easy to set up—the trick lies in thinking like the compiler to get things done properly. For the profiling code I'm writing, a **build** macro is the most suitable as I want to go through all of a class' functions and modify them (rather than have to explicitely call a function like I would with an expression macro).
 
 ### Build Macros
 
@@ -78,7 +78,7 @@ class ProfiledClassC extends ProfiledClassB
 }
 
 /**
- * When this class or any class that inherits from it gets compiled, the 
+ * When this class or any class that inherits from it gets compiled, the
  * Profiler.profile() function will be called
  */
 @:build(Profiler.profile())
@@ -141,7 +141,7 @@ typedef MethodProfile = {
 class Profiler
 {
 	private static var profiles:StringMap<StringMap<MethodProfile>> = new StringMap<StringMap<MethodProfile>>();
-	
+
 	/**
 	 * Reset all the profiling information. Doing this before reading / printing the information will
 	 * cause all the data collected since the beginning (or last reset) to be lost
@@ -150,7 +150,7 @@ class Profiler
 	{
 		profiles = new StringMap<StringMap<MethodProfile>>();
 	}
-	
+
 	/**
 	 * Called at the start of a function to record when in time the method was called. This must always
 	 * be called BEFORE an endProfile() call is made
@@ -164,13 +164,13 @@ class Profiler
 			profiles.set(className, new StringMap<MethodProfile>());
 		if (!profiles.get(className).exists(methodName))
 			profiles.get(className).set(methodName, { calls: 0, startTime: 0, elapsedTime: 0 } );
-		
+
 		#if DEBUG_PROFILING Lib.println("> Starting " + className + "." + methodName); #end
-		
+
 		profiles.get(className).get(methodName).calls++;
 		profiles.get(className).get(methodName).startTime = Sys.cpuTime();
 	}
-	
+
 	/**
 	 * Called at the end of a function to calculate the method's execution time. This must always
 	 * be called AFTER a startProfile() call
@@ -180,14 +180,14 @@ class Profiler
 	public static function endProfile(className:String, methodName:String)
 	{
 		var t:Float = Sys.cpuTime();
-		
+
 		if (!profiles.exists(className) || !profiles.get(className).exists(methodName))
 			throw "EndProfile was called on a function that was never started!";
-			
+
 		profiles.get(className).get(methodName).elapsedTime += t - profiles.get(className).get(methodName).startTime;
 		#if DEBUG_PROFILING Lib.println("< Ending " + className + "." + methodName); #end
 	}
-	
+
 	/**
 	 * Just a utility function to print the profiling data, separated by class.
 	 */
@@ -207,18 +207,18 @@ class Profiler
 			Lib.println("  " + classTime + "s");
 			totalTime += classTime;
 		}
-		
+
 		Lib.println("");
 		Lib.println("Total time: " + totalTime + "s");
 	}
 }
 ```
 
-I made the above fairly verbose so it's easy to see what's going on. The `startProfile` and `endProfile` functions should work exactly as I've described them to, and we could use them exactly like I've already mentioned: calling `startProfile` at the start of the function and `endProfile` at the end of the function&mdash;but that would be tedious and prone to errors (what if we forgot to include those function calls somewhere else?). It would also tend to clutter our code up something fierce and then the profiling code would still be there on a release build (which would be entirely unnecessary!). This is where a Haxe macro will come very much in handy, as it will automatically transform our code for us to insert those profiling calls for debug builds and do nothing for release builds.
+I made the above fairly verbose so it's easy to see what's going on. The `startProfile` and `endProfile` functions should work exactly as I've described them to, and we could use them exactly like I've already mentioned: calling `startProfile` at the start of the function and `endProfile` at the end of the function—but that would be tedious and prone to errors (what if we forgot to include those function calls somewhere else?). It would also tend to clutter our code up something fierce and then the profiling code would still be there on a release build (which would be entirely unnecessary!). This is where a Haxe macro will come very much in handy, as it will automatically transform our code for us to insert those profiling calls for debug builds and do nothing for release builds.
 
 ## Bringing in the Macro
 
-What we want the macro to do is loop through every function in a given class, and before any other statement in the class, we want to add the [expression](http://haxe.org/manual/expression.html) `Profiler.startProfile(className, methodName);`. The end the profiling, we have to be a little bit more careful about how we deal with return statements&mdash;if we were to simply tack on a call to `Profiler.endProfile(className, methodName);` at the end of the function it would never be reached for any function that has a return statement anywhere, for example:
+What we want the macro to do is loop through every function in a given class, and before any other statement in the class, we want to add the [expression](http://haxe.org/manual/expression.html) `Profiler.startProfile(className, methodName);`. The end the profiling, we have to be a little bit more careful about how we deal with return statements—if we were to simply tack on a call to `Profiler.endProfile(className, methodName);` at the end of the function it would never be reached for any function that has a return statement anywhere, for example:
 
 ```haxe
 /**
@@ -329,7 +329,7 @@ case FFun(func):
 {
 	// get the name of the method
 	var methodName:String = field.name;
-	
+
 	// prepend the start code to the function
 	func.expr = macro {
 		Profiler.startProfile($v { clsName }, $v { methodName } );
@@ -379,7 +379,7 @@ function example(x:Bool):Float
 
 ### Injecting the `endProfile` Code
 
-Injecting the `endProfile` code is a little bit more complicated than simply prepending (or in the "end" case: appending) a statement as we did for the `startProfile` code, though the principle is largely the same. The difference is that now we have to loop through the remaining expressions and replace return expressions by the special `endProfile` block we defined earlier. However this involves more than simply iterating through the expressions&mdash;some expressions within the function will more than likely be blocks, or if statements, or some other encapsulating expression that we will need to step into to search for a return statement. This is a perfect candidate for [recursion](http://en.wikipedia.org/wiki/Recursion). To perform this recursive search, we will create a function called `replaceExpressionReturn` (I'm terrible at names, I get it). It will be called to replace the entire function's expression as such:
+Injecting the `endProfile` code is a little bit more complicated than simply prepending (or in the "end" case: appending) a statement as we did for the `startProfile` code, though the principle is largely the same. The difference is that now we have to loop through the remaining expressions and replace return expressions by the special `endProfile` block we defined earlier. However this involves more than simply iterating through the expressions—some expressions within the function will more than likely be blocks, or if statements, or some other encapsulating expression that we will need to step into to search for a return statement. This is a perfect candidate for [recursion](http://en.wikipedia.org/wiki/Recursion). To perform this recursive search, we will create a function called `replaceExpressionReturn` (I'm terrible at names, I get it). It will be called to replace the entire function's expression as such:
 
 ```haxe
 // yup, found a method!
@@ -387,7 +387,7 @@ case FFun(func):
 {
 	// get the name of the method
 	var methodName:String = field.name;
-	
+
 	// prepend the start code to the function
 	func.expr = macro {
 		Profiler.startProfile($v { clsName }, $v { methodName } );
@@ -422,7 +422,7 @@ private static function replaceExpressionsReturn(clsName:String, methodName:Stri
 		{
 			// TODO: transform the return expression!
 		}
-		
+
 		// don't transform anything else
 		default: { }
 	}
@@ -501,12 +501,12 @@ According to the API documentation, a block is represented by [EBlock](http://ap
 
 Filling out the block expression case helps us solve our problem above, but we still have several other cases when a `return` expression could be nested away. Namely, this is a problem in the following classes:
 
-* [Blocks](http://haxe.org/manual/expression-block.html): [EBlock](http://api.haxe.org/haxe/macro/ExprDef.html#EBlock)
-* [For loops](http://haxe.org/manual/expression-for.html): [EFor](http://api.haxe.org/haxe/macro/ExprDef.html#EFor)
-* [While loops](http://haxe.org/manual/expression-while.html) / [Do-While loops](http://haxe.org/manual/expression-do-while.html): [EWhile](http://api.haxe.org/haxe/macro/ExprDef.html#EWhile)
-* [Ifs](http://haxe.org/manual/expression-if.html): [EIf](http://api.haxe.org/haxe/macro/ExprDef.html#EIf)
-* [Switches](http://haxe.org/manual/expression-switch.html): [ESwitch](http://api.haxe.org/haxe/macro/ExprDef.html#ESwitch)
-* [Try / Catches](http://haxe.org/manual/expression-try-catch.html): [ETry](http://api.haxe.org/haxe/macro/ExprDef.html#ETry)
+- [Blocks](http://haxe.org/manual/expression-block.html): [EBlock](http://api.haxe.org/haxe/macro/ExprDef.html#EBlock)
+- [For loops](http://haxe.org/manual/expression-for.html): [EFor](http://api.haxe.org/haxe/macro/ExprDef.html#EFor)
+- [While loops](http://haxe.org/manual/expression-while.html) / [Do-While loops](http://haxe.org/manual/expression-do-while.html): [EWhile](http://api.haxe.org/haxe/macro/ExprDef.html#EWhile)
+- [Ifs](http://haxe.org/manual/expression-if.html): [EIf](http://api.haxe.org/haxe/macro/ExprDef.html#EIf)
+- [Switches](http://haxe.org/manual/expression-switch.html): [ESwitch](http://api.haxe.org/haxe/macro/ExprDef.html#ESwitch)
+- [Try / Catches](http://haxe.org/manual/expression-try-catch.html): [ETry](http://api.haxe.org/haxe/macro/ExprDef.html#ETry)
 
 All that's left to do to deal with these situations is to handle their cases and recursively call the function on each expression found within each situation. I won't go through the details of doing this for every sitatution as it's all pretty much the same as the block case. I'll just list how I handled those cases here:
 
@@ -605,12 +605,12 @@ case ETry(tryExpr, catches):
 }
 ```
 
-Now we're most of the way&mdash;just two relatively small things stand in our way:
+Now we're most of the way—just two relatively small things stand in our way:
 
 1. Void functions with a return statement but no expression, ie `return;`.
-   * This will cause an error the way things are currently handled as we don't account for the fact that `retExpr` may be null.
+   - This will cause an error the way things are currently handled as we don't account for the fact that `retExpr` may be null.
 2. Void functions without a return statement
-   * This is a problem because we're only modifying return statements. If there isn't a return statement to modify, our `endProfile` code will never get called.
+   - This is a problem because we're only modifying return statements. If there isn't a return statement to modify, our `endProfile` code will never get called.
 
 #### Dealing With Empty Return Statements
 
@@ -661,10 +661,10 @@ I know that describing things this way isn't ideal, but instead of essentially d
 
 There are a couple issues with this profiler that are still outstanding, namely:
 
-* It only deals with class-level functions
-* It provides no mechanism for investigating _parts_ of a function (though I would argue that you shouldn't have a function with multiple "parts" anyway)
-* It doesn't profile the getters and setters of properties (which should be fairly insubstantial anyway)
-* It relies on the `Sys.cpuTime()` function to calculate run time, which for many fast functions will return `0` (even when it was't truly non-zero) due to the resolution of the function. I'm not sure how to get higher resolution timing information in Haxe yet.
+- It only deals with class-level functions
+- It provides no mechanism for investigating _parts_ of a function (though I would argue that you shouldn't have a function with multiple "parts" anyway)
+- It doesn't profile the getters and setters of properties (which should be fairly insubstantial anyway)
+- It relies on the `Sys.cpuTime()` function to calculate run time, which for many fast functions will return `0` (even when it was't truly non-zero) due to the resolution of the function. I'm not sure how to get higher resolution timing information in Haxe yet.
 
 ## Conclusions
 

@@ -11,7 +11,7 @@ summary: Since I’ve started on an adventure to start creating my games with Ha
 
 Since I've started on an adventure to start creating my games with [Haxe](http://haxe.org/) and [OpenFL](http://www.openfl.org/), I found myself in need of some collision detection. I don't really need anything as fancy or extensive as [Nape](http://napephys.com/), and although the [HxCollision](https://github.com/underscorediscovery/hxcollision) library is a pretty solid Separating Axis Theorem implementation, it doesn't deal with swept-collisions, which is a bit of an issue for games (without swept collisions, any lag spikes can easily cause objects to pass right through objects!).
 
-With some simple requirements in mind, I started Googling, and came across a method of using [Minkowski addition](http://en.wikipedia.org/wiki/Minkowski_addition) to detect collisions. It turns out this method is *super* fast and *very* easy to compute for axis-aligned bounding-boxes (AABBs), which is all I'm going to focus on for now. This point is also only going to focus on discrete detection (whether or not an AABB is penetrating another object, regardless of velocity). I'll do another post on using this method with swept collisions when I have that sorted out.
+With some simple requirements in mind, I started Googling, and came across a method of using [Minkowski addition](http://en.wikipedia.org/wiki/Minkowski_addition) to detect collisions. It turns out this method is _super_ fast and _very_ easy to compute for axis-aligned bounding-boxes (AABBs), which is all I'm going to focus on for now. This point is also only going to focus on discrete detection (whether or not an AABB is penetrating another object, regardless of velocity). I'll do another post on using this method with swept collisions when I have that sorted out.
 
 <!-- PELICAN_END_SUMMARY -->
 
@@ -22,7 +22,7 @@ $$AABB_{top}^{MD} = AABB_{top}^A - AABB_{bottom}^B$$
 $$AABB_{width}^{MD} = AABB_{width}^A + AABB_{width}^B$$
 $$AABB_{height}^{MD} = AABB_{height}^A + AABB_{height}^B$$
 
-This tells us that when you compute the Minkowski difference of two AABBs, not only is the result bigger (its width and height are the sum of the input widths and heights, respectively), but its position is in some new weird location. Due to some fancy math that I won't get into here, it turns out that if the resulting Minkowkski-differenced AABB is encompasses the origin&mdash;$(0, 0)$&mdash;the two input AABBs are colliding! Thankfully, this is incredibly easy to calculate:
+This tells us that when you compute the Minkowski difference of two AABBs, not only is the result bigger (its width and height are the sum of the input widths and heights, respectively), but its position is in some new weird location. Due to some fancy math that I won't get into here, it turns out that if the resulting Minkowkski-differenced AABB is encompasses the origin—$(0, 0)$—the two input AABBs are colliding! Thankfully, this is incredibly easy to calculate:
 
 ```haxe
 var boundsPoint:Vector = null;
@@ -71,12 +71,12 @@ class AABB
         return new Vector(extents.x * 2, extents.y * 2);
     }
 
-    public function new(center:Vector, extents:Vector) 
+    public function new(center:Vector, extents:Vector)
     {
         this.center = center;
         this.extents = extents;
     }
-    
+
     public function minkowskiDifference(other:AABB):AABB
     {
         var topLeft:Vector = min - other.max;

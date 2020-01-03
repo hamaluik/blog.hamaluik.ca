@@ -9,7 +9,7 @@ summary: "Now that I've conquered 2D collision detection and intersection calcul
 
 Now that I've conquered 2D collision detection and intersection calculation, it's time to move onto 3D. Thankfully, GJK is relatively easy to extend into 3D once we have the base framework that we developed before. There are three main changes / additions we have to make to the original collision detection code to get it to work for 3D:
 
-1. Change all the 2D data-types into 3D ones (`Vec2 -> Vec3`)
+1. Change all the 2D data-types into 3D ones (`Vec2` ➜ `Vec3`)
 2. Change the case when the simplex has 3 vertices to add a new vertex instead of checking for collision
 3. Add a case when the simplex has 4 vertices to check for collision & evolve the simplex
 
@@ -88,7 +88,6 @@ The process for checking for a collision here is basically identical to the [2D 
     <img src="/images/collision-engine-3d-detection/inside-outside-triangle.svg">
     <figcaption>We need to check whether the origin is 'inside' or 'outside' plane <code>ABD</code> (then again for <code>BCD</code> and <code>CAD</code>).</figcaption>
 </figure>
-
 
 Just like before, we check whether the origin is 'inside' or 'outside' the plane by comparing the direction of the plane's normal with the direction to the origin. If they're in the same direction, the origin is outside the plane and we need to evolve the simplex. Otherwise, the origin is inside the plane and we can test the other planes (or conclude the origin _must_ be inside the simplex).
 

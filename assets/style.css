@@ -124,6 +124,14 @@ figure {
   overflow-x: auto;
 }
 
+.katex {
+  font-size: 1em !important;
+}
+
+.katex-display > .katex {
+  font-size: 1.21em !important;
+}
+
 body > header {
   margin-bottom: 1em;
 }
@@ -133,6 +141,12 @@ footer {
   margin-top: 1em;
   border-top: 3px dotted #6272a4;
   padding-top: 0.5em;
+}
+
+blockquote {
+  border-left: 4px solid #6272a4;
+  margin: 1em;
+  padding: 0 calc(0.5em + 4px) 0 0.5em;
 }
 
 footer > span {
@@ -304,6 +318,10 @@ e end .highlight .ch,
 
   footer {
     border-top: 3px dotted #8be9fd;
+  }
+
+  blockquote {
+    border-left: 4px solid #8be9fd;
   }
 
   img {

@@ -7,9 +7,7 @@ published: 2017-04-23T00:00:00-07:00
 summary: "I've previously written about using the Minkowski Difference to detect collisions of 2D AABBs, but I now want to expand this into creating a fully fleshed out and flexible collision engine for my own purposes. The engine will detect collisions using the GJK method, and calculate intersections using the EPA method. This post details how 2D GJK works, which will serve as a basis for getting the rest of the engine up and running."
 ---
 
-I've previously written about [using the Minkowski Difference to detect collisions of 2D AABBs](http://blog.hamaluik.ca/posts/simple-aabb-collision-using-minkowski-difference/), but I now want to expand that into creating a fully fleshed out and _flexible_ collision engine for my own purposes (in [Haxe](http://haxe.org/) of course!). I recommend you read up on the [Minkowski difference](https://en.wikipedia.org/wiki/Minkowski_addition) and the overall technique of using to calculate the intersection of shapes before diving into things here as hopefully things will make much more sense then. Full credit also goes to [William Bittle](https://github.com/wnbittle) who created [dyn4j](http://www.dyn4j.org/) (which is a collision detection and physics engine written in Java) for his blog posts on [GJK](http://www.dyn4j.org/2010/04/gjk-gilbert-johnson-keerthi/) and [EPA](http://www.dyn4j.org/2010/05/epa-expanding-polytope-algorithm/), which this work is heavily based on.
-
-Before I get any further, let me define what I want this collision engine to do:
+I've previously written about [using the Minkowski Difference to detect collisions of 2D AABBs](http://blog.hamaluik.ca/posts/simple-aabb-collision-using-minkowski-difference/), but I now want to expand that into creating a fully fleshed out and _flexible_ collision engine for my own purposes (in [Haxe](http://haxe.org/) of course!). I recommend you read up on the [Minkowski difference](https://en.wikipedia.org/wiki/Minkowski_addition) and the overall technique of using to calculate the intersection of shapes before diving into things here as hopefully things will make much more sense then. Full credit also goes to [William Bittle](https://github.com/wnbittle) who created [dyn4j](http://www.dyn4j.org/) (which is a collision detection and physics engine written in Java) for his blog posts on [GJK](http://www.dyn4j.org/2010/04/gjk-gilbert-johnson-keerthi/) and [EPA](http://www.dyn4j.org/2010/05/epa-expanding-polytope-algorithm/), which this work is heavily based on. Before I get any further, let me define what I want this collision engine to do:
 
 1. Detect whether a collision occurred or not
 2. Calculate a penetration vector if a collision did occur
@@ -42,9 +40,7 @@ This engine _will not_ be responsible for:
 
 Since I want this to be as flexible as possible (while being limited to convex shapes), I'll be developing the collision engine using [GJK (Gilbert-Johnson-Keerthi)](https://en.wikipedia.org/wiki/Gilbert%E2%80%93Johnson%E2%80%93Keerthi_distance_algorithm) for collision detection and [EPA](http://www.dyn4j.org/2010/05/epa-expanding-polytope-algorithm/) for intersection calculation.
 
-With that out of the way, let's get started with the simplest bit first: 2D collision detection using GJK.
-
-The GJK algorithm is a way of determining if two shapes are intersecting (meaning their Minkowski difference overlaps with the origin), without having to calculate the entire Minkowski difference like I did in my [previous posts](http://blog.hamaluik.ca/posts/simple-aabb-collision-using-minkowski-difference/). When you're just colliding AABBs with each other, the Minkowski difference is also an AABB and is very simple and quick to calculate, so you don't need this "shortcut", and can just calculate the entire thing and be on your way. When shapes start to rotate or have "weird" geometries however, this becomes less tenuous.
+With that out of the way, let's get started with the simplest bit first: 2D collision detection using GJK. The GJK algorithm is a way of determining if two shapes are intersecting (meaning their Minkowski difference overlaps with the origin), without having to calculate the entire Minkowski difference like I did in my [previous posts](http://blog.hamaluik.ca/posts/simple-aabb-collision-using-minkowski-difference/). When you're just colliding AABBs with each other, the Minkowski difference is also an AABB and is very simple and quick to calculate, so you don't need this "shortcut", and can just calculate the entire thing and be on your way. When shapes start to rotate or have "weird" geometries however, this becomes less tenuous.
 
 <figure>
     <img src="/images/collision-engine-2d-detection/md_aabb_vs_polys.svg">
@@ -134,7 +130,7 @@ class Polygon implements Shape2D {
 
 ### Simplexes
 
-A [simplex](https://en.wikipedia.org/wiki/Simplex) is a somewhat special shape in the dimension we're working in. For a given dimension \\(k\\), the simplex in that dimension is a shape with \\(k + 1\\) vertices. Or, in the real world: In 2D, a simplex is a **triangle** and in 3D, a simplex is a **tetrahedron**. The simplex represents the most basic solid shape that can exist in a dimension, which is helpful for calculating whether it covers the origin or not.
+A [simplex](https://en.wikipedia.org/wiki/Simplex) is a somewhat special shape in the dimension we're working in. For a given dimension \(k\), the simplex in that dimension is a shape with \(k + 1\) vertices. Or, in the real world: In 2D, a simplex is a **triangle** and in 3D, a simplex is a **tetrahedron**. The simplex represents the most basic solid shape that can exist in a dimension, which is helpful for calculating whether it covers the origin or not.
 
 <figure>
     <img src="/images/collision-engine-2d-detection/simplex.svg">
@@ -236,7 +232,7 @@ public function evolveSimplex():Void {
         case 2: {
             var b:Vec2 = vertices[1];
             var c:Vec2 = vertices[0];
-            
+
             // line cb is the line formed by the first two vertices
             var cb:Vec2 = b - c;
             // line c0 is the line from the first vertex to the origin
@@ -266,9 +262,9 @@ To determine whether our simplex triangle contains the origin or not, we actuall
     <figcaption>Testing if a point is contained in a triangle is done by testing if it's on the "inside" or "outside" of each line segment.</figcaption>
 </figure>
 
-We can actually streamline this process a little bit however, and only do two tests instead of the full three. Since we chose the third vertex of the simplex to be in the direction of the origin, we **know** that origin is definitely on the inside of the first line segment (formed by our first and second simplex vertices). All that's left to do is test the lines \\(v_2 \to v_1\\) and \\(v_2 \to v_0\\).
+We can actually streamline this process a little bit however, and only do two tests instead of the full three. Since we chose the third vertex of the simplex to be in the direction of the origin, we **know** that origin is definitely on the inside of the first line segment (formed by our first and second simplex vertices). All that's left to do is test the lines \(v_2 \to v_1\) and \(v_2 \to v_0\).
 
-To check if a point is "inside" or "outside" the line segment, we can use the [triple cross product](https://en.wikipedia.org/wiki/Triple_product) to generate a perpendicular line which points away from the vertex of the triangle which **isn't** being used by this line segment. Then we test if that perpendicular line is in the same direction as the line from the new vertex to the origin using the [dot product](https://en.wikipedia.org/wiki/Dot_product). Recall that if the dot product of two vectors is \\(> 0\\) then we know that they are in the same direction, and in opposite directions if the dot product is \\(< 0\\).
+To check if a point is "inside" or "outside" the line segment, we can use the [triple cross product](https://en.wikipedia.org/wiki/Triple_product) to generate a perpendicular line which points away from the vertex of the triangle which **isn't** being used by this line segment. Then we test if that perpendicular line is in the same direction as the line from the new vertex to the origin using the [dot product](https://en.wikipedia.org/wiki/Dot_product). Recall that if the dot product of two vectors is \(> 0\) then we know that they are in the same direction, and in opposite directions if the dot product is \(< 0\).
 
 ```haxe
         case 3: {
@@ -308,7 +304,7 @@ If we found that the origin lies on the outside of one of the line segments, we 
 
 <figure>
     <img src="/images/collision-engine-2d-detection/outside-ab.svg">
-    <figcaption>If the origin is on the "outside" of the `ab` line, vertex `c` should be removed so we can reform our simplex to hopefully overlap the origin.</figcaption>
+    <figcaption>If the origin is on the "outside" of the $ab$ line, vertex $c$ should be removed so we can reform our simplex to hopefully overlap the origin.</figcaption>
 </figure>
 
 ```haxe
@@ -347,22 +343,22 @@ If we found that the origin lies on the outside of one of the line segments, we 
         }
 ```
 
-Once we've reformed the simplex this way, it's time to check it again. If our simplex covers the origin, great&mdash;we're done! Otherwise, evolve the simplex again and try again. And again. And again. And&hellip; wait. How do we exit if we **aren't** colliding, meaning our simplex will _never_ contain the origin?
+Once we've reformed the simplex this way, it's time to check it again. If our simplex covers the origin, great—we're done! Otherwise, evolve the simplex again and try again. And again. And again. And&hellip; wait. How do we exit if we **aren't** colliding, meaning our simplex will _never_ contain the origin?
 
 ### Determining if the Shapes _Aren't_ Colliding
 
-From geometry we know that if two shapes _aren't_ colliding, the Minkowski difference _will not_ contain the origin. Up until this point, we've assumed that the shape we're testing _does_ contain the origin&mdash;we need to change that. Thankfully, this is a relatively easy change.
+From geometry we know that if two shapes _aren't_ colliding, the Minkowski difference _will not_ contain the origin. Up until this point, we've assumed that the shape we're testing _does_ contain the origin—we need to change that. Thankfully, this is a relatively easy change.
 
 Whenever we add a new vertex to the simplex, we can test whether the vertex **went past** the origin or not. If it did, we're ok and can continue processing. If it **didn't**, we know we won't be intersecting at all, and can exit early. How do we know this? Because we're using support functions. When we add a vertex in a given direction using the support functions, we **know** that that vertex is the vertex which lies the furthest in our direction. If that vertex _doesn't_ go past the origin, we will _never_ get a simplex which goes past the origin, meaning it will _never_ contain it.
 
-We can calculate whether the new vertex passes the origin by determining if `direction` and the line `a0` point in the same direction, meaning their dot product is \\(> 0\\).
+We can calculate whether the new vertex passes the origin by determining if `direction` and the line `a0` point in the same direction, meaning their dot product is \(> 0\).
 
 <figure>
     <img src="/images/collision-engine-2d-detection/past-origin.svg">
     <figcaption>If the new vertex <em>doesn't</em> pass the origin, no simplex we can create will contain the origin, meaning we <b>are not</b> intersecting.</figcaption>
 </figure>
 
-To add this into our code, I'm going to modify things a little bit. Instead of blindly having a function `evolveSimplex` which never returns anything useful outside of itself, I will make it return some useful information&mdash;either we can't possibly intersect, we need to keep evolving the simplex, or we found an intersection. We can also reduce a bit of the repetition by partitioning the new vertex addition into its own function which does the check for us.
+To add this into our code, I'm going to modify things a little bit. Instead of blindly having a function `evolveSimplex` which never returns anything useful outside of itself, I will make it return some useful information—either we can't possibly intersect, we need to keep evolving the simplex, or we found an intersection. We can also reduce a bit of the repetition by partitioning the new vertex addition into its own function which does the check for us.
 
 ```haxe
 enum EvolveResult {
@@ -391,7 +387,7 @@ public function evolveSimplex():EvolveResult {
         case 2: {
             var b:Vec2 = vertices[1];
             var c:Vec2 = vertices[0];
-            
+
             // line cb is the line formed by the first two vertices
             var cb:Vec2 = b - c;
             // line c0 is the line from the first vertex to the origin
@@ -528,7 +524,7 @@ class GJK2D {
             case 2: {
                 var b:Vec2 = vertices[1];
                 var c:Vec2 = vertices[0];
-                
+
                 // line cb is the line formed by the first two vertices
                 var cb:Vec2 = b - c;
                 // line c0 is the line from the first vertex to the origin

@@ -4,28 +4,26 @@ slug: solving-equations-using-the-newton-raphson-method
 author: kenton
 published: 2011-12-03T14:50:00-07:00
 tags: [Python, Math]
-summary: "Computers are great, but as it turns out - they're not always the smartest of folks. However, they are great at doing simple math! Today, I'll show you how to exploit these silicon monsters to do something that sometimes humans even fail at: solving a simple non-linear equation."
+summary: "Computers are great, but as it turns out—they're not always the smartest of folks. However, they are great at doing simple math! Today, I'll show you how to exploit these silicon monsters to do something that sometimes humans even fail at: solving a simple non-linear equation."
 ---
 
-Computers are great, but as it turns out - they're not always the smartest of folks. However, they are great at doing simple math! Today, I'll show you how to exploit these silicon monsters to do something that sometimes humans even fail at: solving a simple non-linear equation.
+Computers are great, but as it turns out—they're not always the smartest of folks. However, they are great at doing simple math! Today, I'll show you how to exploit these silicon monsters to do something that sometimes humans even fail at: solving a simple non-linear equation.
 
-<!-- PELICAN_END_SUMMARY -->
+What do I mean by solving a non-linear equation? Well, try solving for $x$ in the following equation:
 
-What do I mean by solving a non-linear equation? Well, try solving for _x_ in the following equation:
-
-$$
+```katex
 5x+\ln\left(x\right)-\sin\left(3\pi x\right)+x^{0.53}=0
-$$
+```
 
 It's not even likely that there **is** an analytical solution to this, but if there is the amount of work needed to solve it would simply be ludicrous. This is where numerical methods come in. Numerical methods allow complicated equations to be solved by repeatedly solving a series of smaller, easier-to-solve equations. They're limited in that they're **not exact** equations, but most often they do the job well enough regardless.
 
 One the most famous (and simple) of numerical methods is the [Newton-Raphson](http://en.wikipedia.org/wiki/Newton's_method) method. This is a method for find the local roots of a real function. If you want more details about it, head over to Wikipedia, but basically the formula is like such:
 
-$$
+```katex
 x_{n+1}=x_n-\frac{f(x_n)}{f'(x_n)}
-$$
+```
 
-This simply means that you start with an initial guess, _Xn_, that you think is reasonably close to your answer (you can often get a good indication of this by plotting the function and seeing about where it hits 0). Next, you successively update your guess of what _x_ is by making adjustment based on the slope of the function. Finally, you stop improving your guess of what _x_ is once the error (or value of plugging in your estimated _x_ is in the function) is reasonably small.
+This simply means that you start with an initial guess, $Xn$, that you think is reasonably close to your answer (you can often get a good indication of this by plotting the function and seeing about where it hits 0). Next, you successively update your guess of what $x$ is by making adjustment based on the slope of the function. Finally, you stop improving your guess of what $x$ is once the error (or value of plugging in your estimated $x$ is in the function) is reasonably small.
 
 To demonstrate, I've whipped up a simple program in Python which will solve the above problem. It's quite heavily commented, so hopefully you won't have any trouble following along. Here's the source code listing:
 
@@ -76,7 +74,6 @@ print 'Total process took %f seconds!' % (endTime - startTime)
 
 Running this code results in the following:
 
-    
     i	x	error
     ---
     1	0.250	-0.364
@@ -84,7 +81,6 @@ Running this code results in the following:
     3	0.271	0.000
     Total process took 0.003000 seconds!
 
-
-As you can see, the value of _x_ that solved the above equation to an accuracy of better than 0.001 in 3 ms! Note: it probably took even less time that that, but my system clock might not be that accurate / printing to the screen is a relatively slow business. In case you're curious, an _x_ value of 0.271 will make the above equation equal 0.
+As you can see, the value of $x$ that solved the above equation to an accuracy of better than 0.001 in 3 ms! Note: it probably took even less time that that, but my system clock might not be that accurate / printing to the screen is a relatively slow business. In case you're curious, an $x$ value of 0.271 will make the above equation equal 0.
 
 Pretty neat huh?

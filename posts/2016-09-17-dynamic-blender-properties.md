@@ -9,7 +9,7 @@ preview_image: /images/dynamic-blender-properties/sample-finished-result.png
 summary: "As part of my most recent adventures in game engine programming, I came across a small problem—I needed a way to edit levels (both their geometry, and the entities within the level and their associated components). Writing an editor to do this is a rather daunting task. Thankfully, Blender is a free, open-source 3D application that is 'easily' extended (well, easy-ish). So, instead of writing my own editor, I can write a Blender addon to make it do what I need it to. First up in that, was presenting an interface for editing which components an object has, and setting the values of each components' attributes. I found this to be more difficult that I expected, thanks to the way Blender handles and presents data. I will show you here how I got things working, as there doesn't seem to be documentation on this and I had to wade through a lot of half-expired forum posts to get things working."
 ---
 
-As part of my most recent adventures in game engine programming, I came across a small problem&mdash;I needed a way to edit levels (both their geometry, and the entities within the level and their associated components). Writing an editor to do this is a rather daunting task. Thankfully, [Blender](https://www.blender.org/) is a free, open-source 3D application that is "easily" extended (well, easy-_ish_). So, instead of writing my own editor, I can write a Blender addon to make it do what I need it to. First up in that, was presenting an interface for editing which components an object has, and setting the values of each components' attributes. I found this to be more difficult that I expected, thanks to the way Blender handles and presents data. I will show you here how I got things working, as there doesn't seem to be documentation on this and I had to wade through a lot of half-expired forum posts to get things working.
+As part of my most recent adventures in game engine programming, I came across a small problem—I needed a way to edit levels (both their geometry, and the entities within the level and their associated components). Writing an editor to do this is a rather daunting task. Thankfully, [Blender](https://www.blender.org/) is a free, open-source 3D application that is "easily" extended (well, easy-_ish_). So, instead of writing my own editor, I can write a Blender addon to make it do what I need it to. First up in that, was presenting an interface for editing which components an object has, and setting the values of each components' attributes. I found this to be more difficult that I expected, thanks to the way Blender handles and presents data. I will show you here how I got things working, as there doesn't seem to be documentation on this and I had to wade through a lot of half-expired forum posts to get things working.
 
 Basically, in order to display any data in a panel in Blender, you must pre-define the property classes that it will render. The following code listing shows a simple panel which will show up in the object section of the properties panel:
 
@@ -36,7 +36,7 @@ class SamplePanel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         obj = context.object
-        
+
         sampleProperty = obj.samplePropertyGroup
         col = layout.column(align=True)
         col.prop(sampleProperty, "a")
@@ -134,7 +134,7 @@ class SamplePanel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         obj = context.object
-        
+
         # use our layout definition to dynamically create our panel items
         for groupName, attributeDefinitions in propertyGroupLayouts.items():
             # get the instance of our group
@@ -189,7 +189,7 @@ class SamplePanel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         obj = context.object
-        
+
         # use our layout definition to dynamically create our panel items
         for groupName, attributeDefinitions in bpy.propertyGroupLayouts.items():
             # get the instance of our group
@@ -210,7 +210,7 @@ class SamplePanel(bpy.types.Panel):
 def register():
     # register the panel class
     bpy.utils.register_class(SamplePanel)
-    
+
     # iterate over our list of property groups
     for groupName, attributeDefinitions in bpy.propertyGroupLayouts.items():
         # build the attribute dictionary for this group
@@ -233,7 +233,7 @@ def register():
 
         # apply it to all Objects
         setattr(bpy.types.Object, groupName, PointerProperty(type=propertyGroupClass))
-        
+
         # store it for later
         bpy.samplePropertyGroups[groupName] = propertyGroupClass
 

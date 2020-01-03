@@ -20,7 +20,7 @@
     <span class="p">}</span>
     <span class="k">return</span> <span class="n">classes</span><span class="p">.</span><span class="na">toArray</span><span class="p">(</span><span class="k">new</span> <span class="n">Class</span><span class="o">[</span><span class="n">classes</span><span class="p">.</span><span class="na">size</span><span class="p">()</span><span class="o">]</span><span class="p">);</span>
 <span class="p">}</span>
- 
+
 <span class="nd">@SuppressWarnings</span><span class="p">(</span><span class="s">&quot;rawtypes&quot;</span><span class="p">)</span>
 <span class="kd">private</span> <span class="kd">static</span> <span class="n">List</span> <span class="nf">findClasses</span><span class="p">(</span><span class="n">File</span> <span class="n">directory</span><span class="p">,</span> <span class="n">String</span> <span class="n">packageName</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">ClassNotFoundException</span> <span class="p">{</span>
     <span class="n">List</span> <span class="n">classes</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="p">();</span>
@@ -62,7 +62,7 @@
             <span class="k">if</span><span class="p">(</span><span class="n">annotations</span><span class="o">[</span><span class="n">j</span><span class="o">]</span> <span class="k">instanceof</span> <span class="n">ScriptInfo</span><span class="p">)</span> <span class="p">{</span>
                 <span class="c1">// we found our annotation</span>
                 <span class="n">ScriptInfo</span> <span class="n">si</span> <span class="o">=</span> <span class="p">(</span><span class="n">ScriptInfo</span><span class="p">)</span><span class="n">annotations</span><span class="o">[</span><span class="n">j</span><span class="o">]</span><span class="p">;</span>
- 
+
                 <span class="c1">// create the command name</span>
                 <span class="n">String</span> <span class="n">commandName</span> <span class="o">=</span> <span class="n">si</span><span class="p">.</span><span class="na">alias</span><span class="p">();</span>
                 <span class="c1">// get the command args</span>
@@ -71,7 +71,7 @@
                     <span class="c1">// append the arguments to it so that each one is unique</span>
                     <span class="n">commandName</span> <span class="o">+=</span> <span class="s">&quot;:&quot;</span> <span class="o">+</span> <span class="n">params</span><span class="o">[</span><span class="n">k</span><span class="o">]</span><span class="p">.</span><span class="na">getSimpleName</span><span class="p">();</span>
                 <span class="p">}</span>
- 
+
                 <span class="c1">// create the command info</span>
                 <span class="n">CommandInfo</span> <span class="n">ci</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CommandInfo</span><span class="p">();</span>
                 <span class="n">ci</span><span class="p">.</span><span class="na">alias</span> <span class="o">=</span> <span class="n">si</span><span class="p">.</span><span class="na">alias</span><span class="p">();</span>
@@ -85,7 +85,7 @@
                     <span class="n">ci</span><span class="p">.</span><span class="na">longDescription</span> <span class="o">=</span> <span class="n">si</span><span class="p">.</span><span class="na">longDescription</span><span class="p">();</span>
                 <span class="p">}</span>
                 <span class="n">ci</span><span class="p">.</span><span class="na">method</span> <span class="o">=</span> <span class="n">methods</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">;</span>
- 
+
                 <span class="c1">// and add the command!</span>
                 <span class="n">commands</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">commandName</span><span class="p">,</span> <span class="n">ci</span><span class="p">);</span>
             <span class="p">}</span>
@@ -93,7 +93,7 @@
     <span class="p">}</span>
 <span class="p">}</span>
 </pre></div><p>Note that here I am storing each command in a hashmap with a key that includes both the function name and it’s argument signature (since there can be multiple functions with the same name, but different argument signatures). I then store all the information about the function in a container class so I can get information about it later.</p><p>Note that after calling all of this, I have a list of all functions in my package that have been marked as user-callable at their definition. Nowhere did I have to explicitely define functions—if I want to change the description of a function, I change it at the definition of the function; if I want to add an extra user-callable function, I make sure that the class it exists in extends <code>Scriptable</code> then I add the <code>@Scriptinfo</code> annotation definition before the method definition, and I’m done!</p><p>In order to get this running properly, you’ll need a couple more things including actually parsing what the user types in and calling the appropriate method (I’ll put this into a separate post later), and the ScriptInfo annotation definition and CommandInfo container definitions, both of which are included below:</p><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">java.lang.reflect.Method</span><span class="p">;</span>
- 
+
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">CommandInfo</span> <span class="p">{</span>
     <span class="kd">public</span> <span class="n">String</span> <span class="n">alias</span><span class="p">;</span>
     <span class="kd">public</span> <span class="n">String</span><span class="o">[]</span> <span class="n">argNames</span><span class="p">;</span>
@@ -106,7 +106,7 @@
 <span class="kn">import</span> <span class="nn">java.lang.annotation.Retention</span><span class="p">;</span>
 <span class="kn">import</span> <span class="nn">java.lang.annotation.RetentionPolicy</span><span class="p">;</span>
 <span class="kn">import</span> <span class="nn">java.lang.annotation.Target</span><span class="p">;</span>
- 
+
 <span class="nd">@Retention</span><span class="p">(</span><span class="n">RetentionPolicy</span><span class="p">.</span><span class="na">RUNTIME</span><span class="p">)</span>
 <span class="nd">@Target</span><span class="p">(</span><span class="n">ElementType</span><span class="p">.</span><span class="na">METHOD</span><span class="p">)</span>
 <span class="kd">public</span> <span class="nd">@interface</span> <span class="n">ScriptInfo</span> <span class="p">{</span>

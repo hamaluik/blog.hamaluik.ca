@@ -15,7 +15,7 @@
     <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
         <span class="n">layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">object</span>
-        
+
         <span class="n">sampleProperty</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">samplePropertyGroup</span>
         <span class="n">col</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="n">align</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">col</span><span class="o">.</span><span class="n">prop</span><span class="p">(</span><span class="n">sampleProperty</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
@@ -84,7 +84,7 @@
     <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
         <span class="n">layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">object</span>
-        
+
         <span class="c1"># use our layout definition to dynamically create our panel items</span>
         <span class="k">for</span> <span class="n">groupName</span><span class="p">,</span> <span class="n">attributeDefinitions</span> <span class="ow">in</span> <span class="n">propertyGroupLayouts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="c1"># get the instance of our group</span>
@@ -127,7 +127,7 @@
     <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
         <span class="n">layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">object</span>
-        
+
         <span class="c1"># use our layout definition to dynamically create our panel items</span>
         <span class="k">for</span> <span class="n">groupName</span><span class="p">,</span> <span class="n">attributeDefinitions</span> <span class="ow">in</span> <span class="n">bpy</span><span class="o">.</span><span class="n">propertyGroupLayouts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="c1"># get the instance of our group</span>
@@ -148,7 +148,7 @@
 <span class="k">def</span> <span class="nf">register</span><span class="p">():</span>
     <span class="c1"># register the panel class</span>
     <span class="n">bpy</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">register_class</span><span class="p">(</span><span class="n">SamplePanel</span><span class="p">)</span>
-    
+
     <span class="c1"># iterate over our list of property groups</span>
     <span class="k">for</span> <span class="n">groupName</span><span class="p">,</span> <span class="n">attributeDefinitions</span> <span class="ow">in</span> <span class="n">bpy</span><span class="o">.</span><span class="n">propertyGroupLayouts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="c1"># build the attribute dictionary for this group</span>
@@ -171,7 +171,7 @@
 
         <span class="c1"># apply it to all Objects</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="n">bpy</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">Object</span><span class="p">,</span> <span class="n">groupName</span><span class="p">,</span> <span class="n">PointerProperty</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">propertyGroupClass</span><span class="p">))</span>
-        
+
         <span class="c1"># store it for later</span>
         <span class="n">bpy</span><span class="o">.</span><span class="n">samplePropertyGroups</span><span class="p">[</span><span class="n">groupName</span><span class="p">]</span> <span class="o">=</span> <span class="n">propertyGroupClass</span>
 
