@@ -34,6 +34,11 @@ body>header>h1 {
 p {
     text-align: justify;
     margin: 0;
+    overflow-x: auto;
+}
+
+li {
+    overflow-x: auto;
 }
 
 p+p {
@@ -44,11 +49,13 @@ a {
     color: #282a36;
     text-decoration: none;
     font-style: italic;
-    word-break: break-all;
 }
 
 body>header>h1 {
     margin: 0;
+    padding: 0;
+    border-bottom: 3px dotted #8be9fd;
+    line-height: 1;
 }
 
 body>header>h1>a {
@@ -70,13 +77,24 @@ ul.postlist {
 
 ul.postlist>li::before {
     content: "➜";
-    margin-right: 0.25em;
+    width: 1em;
+    height: 1em;
+    margin-left: -1em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: start;
+}
+
+ul.postlist>li {
+    padding-left: 1em;
 }
 
 ul.postlist>li>time,
 article>header>h1>time {
     font-size: 10pt;
     color: #8be9fd;
+    font-weight: normal;
+    font-family: 'Crimson Pro', serif;
 }
 
 article figure {
@@ -105,6 +123,17 @@ article figure figcaption {
 pre,
 figure {
     overflow-x: auto
+}
+
+footer {
+    font-size: 10pt;
+    margin-top: 2em;
+    border-top: 3px dotted #8be9fd;
+    padding-top: 0.5em;
+}
+
+footer>span {
+    display: block;
 }
 
 .icon-ca {
