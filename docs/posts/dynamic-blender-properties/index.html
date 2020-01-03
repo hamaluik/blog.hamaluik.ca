@@ -1,0 +1,193 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Dynamic Blender Properties</title><link href="https://fonts.googleapis.com/css?family=Crimson+Pro:400,400i,700|Eczar:700|Source+Code+Pro:400,400i&display=swap" rel="stylesheet"><link href="/style.css" rel="stylesheet"> <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#bf616a"><meta name="msapplication-TileColor" content="#bf616a"><meta name="theme-color" content="#bf616a"> <meta property="og:title" content="Dynamic Blender Properties"/><meta property="og:url" content="http://blog.hamaluik.ca/posts/dynamic-blender-properties/"/><meta property="og:image" content="https://og-image.now.sh/Dynamic%20Blender%20Properties.png?theme=light&md=0&fontSize=75px&images=https%3A%2F%2Fassets.zeit.co%2Fimage%2Fupload%2Ffront%2Fassets%2Fdesign%2Fhyper-color-logo.svg&widths=350&heights=350"/><meta property="og:description" content="&lt;p&gt;As part of my most recent adventures in game engine programming, I came across a small problem—I needed a way to edit levels (both their geometry, and the entities within the level and their associated components). Writing an editor to do this is a rather daunting task. Thankfully, Blender is a free, open-source 3D application that is ‘easily’ extended (well, easy-ish). So, instead of writing my own editor, I can write a Blender addon to make it do what I need it to. First up in that, was presenting an interface for editing which components an object has, and setting the values of each components’ attributes. I found this to be more difficult that I expected, thanks to the way Blender handles and presents data. I will show you here how I got things working, as there doesn’t seem to be documentation on this and I had to wade through a lot of half-expired forum posts to get things working.&lt;&#x2F;p&gt; "/><meta property="og:type" content="article"/><meta property="og:locale" content="en_CA"/><meta property="og:site_name" content="Kenton Hamaluik"/><meta property="article:published_time" content=" 2016-09-17T19:58:22+00:00 "/><meta property="article:author" content="http://blog.hamaluik.ca/"/><meta property="article:tag" content="Blender"/><meta property="article:tag" content="Python"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:image:alt" content="Dynamic Blender Properties"/></head><body><header><h1><a href="/">Kenton Hamaluik</a></h1></header><article><header><h1>Dynamic Blender Properties <time datetime='2016-09-17T19:58:22+00:00'>(2016-09-17)</time></h1></header><p>As part of my most recent adventures in game engine programming, I came across a small problem—I needed a way to edit levels (both their geometry, and the entities within the level and their associated components). Writing an editor to do this is a rather daunting task. Thankfully, <a href="https://www.blender.org/">Blender</a> is a free, open-source 3D application that is “easily” extended (well, easy-<em>ish</em>). So, instead of writing my own editor, I can write a Blender addon to make it do what I need it to. First up in that, was presenting an interface for editing which components an object has, and setting the values of each components’ attributes. I found this to be more difficult that I expected, thanks to the way Blender handles and presents data. I will show you here how I got things working, as there doesn’t seem to be documentation on this and I had to wade through a lot of half-expired forum posts to get things working.</p><p>Basically, in order to display any data in a panel in Blender, you must pre-define the property classes that it will render. The following code listing shows a simple panel which will show up in the object section of the properties panel:</p><figure><img src="/images/dynamic-blender-properties/sample-predefined-property.png"><figcaption>A sample panel displaying the pre-defined properties in the pre-defined `SamplePropertyGroup` class.</figcaption></figure><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">bpy</span>
+<span class="kn">from</span> <span class="nn">bpy.props</span> <span class="kn">import</span> <span class="n">FloatProperty</span><span class="p">,</span> <span class="n">PointerProperty</span>
+<span class="kn">from</span> <span class="nn">bpy.types</span> <span class="kn">import</span> <span class="n">PropertyGroup</span>
+
+<span class="k">class</span> <span class="nc">SamplePropertyGroup</span><span class="p">(</span><span class="n">PropertyGroup</span><span class="p">):</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">FloatProperty</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">FloatProperty</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">42.0</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">SamplePanel</span><span class="p">(</span><span class="n">bpy</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">Panel</span><span class="p">):</span>
+    <span class="n">bl_label</span> <span class="o">=</span> <span class="s2">&quot;Sample Panel&quot;</span>
+    <span class="n">bl_space_type</span> <span class="o">=</span> <span class="s1">&#39;PROPERTIES&#39;</span>
+    <span class="n">bl_region_type</span> <span class="o">=</span> <span class="s1">&#39;WINDOW&#39;</span>
+    <span class="n">bl_context</span> <span class="o">=</span> <span class="s2">&quot;object&quot;</span>
+
+    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">object</span>
+
+        <span class="n">sampleProperty</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">samplePropertyGroup</span>
+        <span class="n">col</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="n">align</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">col</span><span class="o">.</span><span class="n">prop</span><span class="p">(</span><span class="n">sampleProperty</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
+        <span class="n">col</span><span class="o">.</span><span class="n">prop</span><span class="p">(</span><span class="n">sampleProperty</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">register</span><span class="p">():</span>
+    <span class="n">bpy</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">register_class</span><span class="p">(</span><span class="n">SamplePropertyGroup</span><span class="p">)</span>
+    <span class="n">bpy</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">register_class</span><span class="p">(</span><span class="n">SamplePanel</span><span class="p">)</span>
+    <span class="n">bpy</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">Object</span><span class="o">.</span><span class="n">samplePropertyGroup</span> <span class="o">=</span> <span class="n">PointerProperty</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">SamplePropertyGroup</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">unregister</span><span class="p">():</span>
+    <span class="n">bpy</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">unregister_class</span><span class="p">(</span><span class="n">SamplePropertyGroup</span><span class="p">)</span>
+    <span class="n">bpy</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">unregister_class</span><span class="p">(</span><span class="n">SamplePanel</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">bpy</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">Object</span><span class="o">.</span><span class="n">samplePropertyGroup</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">register</span><span class="p">()</span>
+</pre></div><p>A problem arises, however, when you don’t know ahead of time what that <code>SamplePropertyGroup</code> class will look like. Or even if it will exist (or what custom property groups <em>will</em> exist). For my use case, I want to have each component exist in blender as it’s own subclass of the <code>PropertyGroup</code> class, with its list of attributes defined as class members (as relevant <code>PropertyTypes</code>). Forunately for us, Python is a scripted language, and comes with some tools to dynamically create classes and interact with them via the <a href="https://docs.python.org/2/library/functions.html#type"><code>type()</code></a>, <a href="https://docs.python.org/2/library/functions.html#setattr"><code>setattr()</code></a>, <a href="https://docs.python.org/2/library/functions.html#getattr"><code>getattr()</code></a>, and <a href="https://docs.python.org/2/library/functions.html#delattr"><code>delattr()</code></a> built-in functions.</p><p>Simply put, we can use <code>type()</code> to go from this:</p><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SamplePropertyGroup</span><span class="p">(</span><span class="n">PropertyGroup</span><span class="p">):</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">FloatProperty</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">FloatProperty</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">42.0</span><span class="p">)</span>
+</pre></div><p>to this:</p><div class="highlight"><pre><span></span><span class="n">SamplePropertyGroup</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span>
+    <span class="s2">&quot;SamplePropertyGroup&quot;</span><span class="p">,</span>
+    <span class="p">(</span><span class="n">PropertyGroup</span><span class="p">,),</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">FloatProperty</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">5.0</span><span class="p">),</span>
+        <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">FloatProperty</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">42.0</span><span class="p">)</span>
+    <span class="p">})</span>
+</pre></div><p>We can easily script this to be more dynamic, such that given a dictionary (which we can parse from a JSON file at runtime) that looks like this:</p><div class="highlight"><pre><span></span><span class="n">propertyGroupLayouts</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Health&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;current&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span> <span class="p">},</span>
+        <span class="p">{</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span> <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;Character&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;first_name&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span> <span class="p">},</span>
+        <span class="p">{</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;last_name&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span> <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div><p>We can dynamically create our property groups and register them with Blender by simply iterating the dictionary and constructing classes as we go:</p><div class="highlight"><pre><span></span><span class="c1"># iterate over our list of property groups</span>
+<span class="k">for</span> <span class="n">groupName</span><span class="p">,</span> <span class="n">attributeDefinitions</span> <span class="ow">in</span> <span class="n">propertyGroupLayouts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="c1"># build the attribute dictionary for this group</span>
+    <span class="n">attributes</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">attributeDefinition</span> <span class="ow">in</span> <span class="n">attributeDefinitions</span><span class="p">:</span>
+        <span class="n">attType</span> <span class="o">=</span> <span class="n">attributeDefinition</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
+        <span class="n">attName</span> <span class="o">=</span> <span class="n">attributeDefinition</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">attType</span> <span class="o">==</span> <span class="s1">&#39;float&#39;</span><span class="p">:</span>
+            <span class="n">attributes</span><span class="p">[</span><span class="n">attName</span><span class="p">]</span> <span class="o">=</span> <span class="n">FloatProperty</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">attName</span><span class="o">.</span><span class="n">title</span><span class="p">())</span>
+        <span class="k">elif</span> <span class="n">attType</span> <span class="o">==</span> <span class="s1">&#39;string&#39;</span><span class="p">:</span>
+            <span class="n">attributes</span><span class="p">[</span><span class="n">attName</span><span class="p">]</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">attName</span><span class="o">.</span><span class="n">title</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Unsupported type (</span><span class="si">%s</span><span class="s1">) for </span><span class="si">%s</span><span class="s1"> on </span><span class="si">%s</span><span class="s1">!&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">attType</span><span class="p">,</span> <span class="n">attName</span><span class="p">,</span> <span class="n">groupName</span><span class="p">))</span>
+
+    <span class="c1"># now build the property group class</span>
+    <span class="n">propertyGroupClass</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">groupName</span><span class="p">,</span> <span class="p">(</span><span class="n">PropertyGroup</span><span class="p">,),</span> <span class="n">attributes</span><span class="p">)</span>
+
+    <span class="c1"># register it with Blender</span>
+    <span class="n">bpy</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">register_class</span><span class="p">(</span><span class="n">propertyGroupClass</span><span class="p">)</span>
+
+    <span class="c1"># apply it to all Objects</span>
+    <span class="nb">setattr</span><span class="p">(</span><span class="n">bpy</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">Object</span><span class="p">,</span> <span class="n">groupName</span><span class="p">,</span> <span class="n">PointerProperty</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">propertyGroupClass</span><span class="p">))</span>
+</pre></div><p>Now, whenever we register we just call the above code, and our <code>PropertyGroup</code> classes will be defined and registered in Blender as properties of all objects! Don’t forget to clean up the registered objects in <code>unregister()</code>!</p><p>Finally, to actually show our properties in a Blender panel is relatively straightforward:</p><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SamplePanel</span><span class="p">(</span><span class="n">bpy</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">Panel</span><span class="p">):</span>
+    <span class="n">bl_label</span> <span class="o">=</span> <span class="s2">&quot;Sample Panel&quot;</span>
+    <span class="n">bl_space_type</span> <span class="o">=</span> <span class="s1">&#39;PROPERTIES&#39;</span>
+    <span class="n">bl_region_type</span> <span class="o">=</span> <span class="s1">&#39;WINDOW&#39;</span>
+    <span class="n">bl_context</span> <span class="o">=</span> <span class="s2">&quot;object&quot;</span>
+
+    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">object</span>
+
+        <span class="c1"># use our layout definition to dynamically create our panel items</span>
+        <span class="k">for</span> <span class="n">groupName</span><span class="p">,</span> <span class="n">attributeDefinitions</span> <span class="ow">in</span> <span class="n">propertyGroupLayouts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># get the instance of our group</span>
+            <span class="c1"># dynamic equivalent of `obj.samplePropertyGroup` from before</span>
+            <span class="n">propertyGroup</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">groupName</span><span class="p">)</span>
+
+            <span class="c1"># start laying this group out</span>
+            <span class="n">col</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">column</span><span class="p">()</span>
+            <span class="n">col</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">groupName</span><span class="p">)</span>
+
+            <span class="c1"># loop through all the attributes and show them</span>
+            <span class="k">for</span> <span class="n">attributeDefinition</span> <span class="ow">in</span> <span class="n">attributeDefinitions</span><span class="p">:</span>
+                <span class="n">col</span><span class="o">.</span><span class="n">prop</span><span class="p">(</span><span class="n">propertyGroup</span><span class="p">,</span> <span class="n">attributeDefinition</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+
+            <span class="c1"># draw a separation between groups</span>
+            <span class="n">layout</span><span class="o">.</span><span class="n">separator</span><span class="p">()</span>
+</pre></div><p>And there you have it, dynamic properties (created at run-time, not write-time) in Blender!</p><figure><img src="/images/dynamic-blender-properties/sample-finished-result.png"><figcaption>What the finished result will look like.</figcaption></figure><p>Here is the full source code for the above example:</p><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">bpy</span>
+<span class="kn">from</span> <span class="nn">bpy.props</span> <span class="kn">import</span> <span class="n">FloatProperty</span><span class="p">,</span> <span class="n">StringProperty</span><span class="p">,</span> <span class="n">PointerProperty</span>
+<span class="kn">from</span> <span class="nn">bpy.types</span> <span class="kn">import</span> <span class="n">PropertyGroup</span>
+
+<span class="c1"># TODO: load dynamically at runtime from a JSON file!</span>
+<span class="n">bpy</span><span class="o">.</span><span class="n">propertyGroupLayouts</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Health&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;current&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span> <span class="p">},</span>
+        <span class="p">{</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span> <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;Character&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;first_name&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span> <span class="p">},</span>
+        <span class="p">{</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;last_name&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span> <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+<span class="n">bpy</span><span class="o">.</span><span class="n">samplePropertyGroups</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="k">class</span> <span class="nc">SamplePanel</span><span class="p">(</span><span class="n">bpy</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">Panel</span><span class="p">):</span>
+    <span class="n">bl_label</span> <span class="o">=</span> <span class="s2">&quot;Sample Panel&quot;</span>
+    <span class="n">bl_space_type</span> <span class="o">=</span> <span class="s1">&#39;PROPERTIES&#39;</span>
+    <span class="n">bl_region_type</span> <span class="o">=</span> <span class="s1">&#39;WINDOW&#39;</span>
+    <span class="n">bl_context</span> <span class="o">=</span> <span class="s2">&quot;object&quot;</span>
+
+    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">object</span>
+
+        <span class="c1"># use our layout definition to dynamically create our panel items</span>
+        <span class="k">for</span> <span class="n">groupName</span><span class="p">,</span> <span class="n">attributeDefinitions</span> <span class="ow">in</span> <span class="n">bpy</span><span class="o">.</span><span class="n">propertyGroupLayouts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># get the instance of our group</span>
+            <span class="c1"># dynamic equivalent of `obj.samplePropertyGroup` from before</span>
+            <span class="n">propertyGroup</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">groupName</span><span class="p">)</span>
+
+            <span class="c1"># start laying this group out</span>
+            <span class="n">col</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">column</span><span class="p">()</span>
+            <span class="n">col</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">groupName</span><span class="p">)</span>
+
+            <span class="c1"># loop through all the attributes and show them</span>
+            <span class="k">for</span> <span class="n">attributeDefinition</span> <span class="ow">in</span> <span class="n">attributeDefinitions</span><span class="p">:</span>
+                <span class="n">col</span><span class="o">.</span><span class="n">prop</span><span class="p">(</span><span class="n">propertyGroup</span><span class="p">,</span> <span class="n">attributeDefinition</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+
+            <span class="c1"># draw a separation between groups</span>
+            <span class="n">layout</span><span class="o">.</span><span class="n">separator</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">register</span><span class="p">():</span>
+    <span class="c1"># register the panel class</span>
+    <span class="n">bpy</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">register_class</span><span class="p">(</span><span class="n">SamplePanel</span><span class="p">)</span>
+
+    <span class="c1"># iterate over our list of property groups</span>
+    <span class="k">for</span> <span class="n">groupName</span><span class="p">,</span> <span class="n">attributeDefinitions</span> <span class="ow">in</span> <span class="n">bpy</span><span class="o">.</span><span class="n">propertyGroupLayouts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="c1"># build the attribute dictionary for this group</span>
+        <span class="n">attributes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">attributeDefinition</span> <span class="ow">in</span> <span class="n">attributeDefinitions</span><span class="p">:</span>
+            <span class="n">attType</span> <span class="o">=</span> <span class="n">attributeDefinition</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
+            <span class="n">attName</span> <span class="o">=</span> <span class="n">attributeDefinition</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">attType</span> <span class="o">==</span> <span class="s1">&#39;float&#39;</span><span class="p">:</span>
+                <span class="n">attributes</span><span class="p">[</span><span class="n">attName</span><span class="p">]</span> <span class="o">=</span> <span class="n">FloatProperty</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">attName</span><span class="o">.</span><span class="n">title</span><span class="p">())</span>
+            <span class="k">elif</span> <span class="n">attType</span> <span class="o">==</span> <span class="s1">&#39;string&#39;</span><span class="p">:</span>
+                <span class="n">attributes</span><span class="p">[</span><span class="n">attName</span><span class="p">]</span> <span class="o">=</span> <span class="n">StringProperty</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">attName</span><span class="o">.</span><span class="n">title</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Unsupported type (</span><span class="si">%s</span><span class="s1">) for </span><span class="si">%s</span><span class="s1"> on </span><span class="si">%s</span><span class="s1">!&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">attType</span><span class="p">,</span> <span class="n">attName</span><span class="p">,</span> <span class="n">groupName</span><span class="p">))</span>
+
+        <span class="c1"># now build the property group class</span>
+        <span class="n">propertyGroupClass</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">groupName</span><span class="p">,</span> <span class="p">(</span><span class="n">PropertyGroup</span><span class="p">,),</span> <span class="n">attributes</span><span class="p">)</span>
+
+        <span class="c1"># register it with Blender</span>
+        <span class="n">bpy</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">register_class</span><span class="p">(</span><span class="n">propertyGroupClass</span><span class="p">)</span>
+
+        <span class="c1"># apply it to all Objects</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">bpy</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">Object</span><span class="p">,</span> <span class="n">groupName</span><span class="p">,</span> <span class="n">PointerProperty</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">propertyGroupClass</span><span class="p">))</span>
+
+        <span class="c1"># store it for later</span>
+        <span class="n">bpy</span><span class="o">.</span><span class="n">samplePropertyGroups</span><span class="p">[</span><span class="n">groupName</span><span class="p">]</span> <span class="o">=</span> <span class="n">propertyGroupClass</span>
+
+<span class="k">def</span> <span class="nf">unregister</span><span class="p">():</span>
+    <span class="c1"># unregister the panel class</span>
+    <span class="n">bpy</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">unregister_class</span><span class="p">(</span><span class="n">SamplePanel</span><span class="p">)</span>
+
+    <span class="c1"># unregister our components</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">bpy</span><span class="o">.</span><span class="n">samplePropertyGroups</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="nb">delattr</span><span class="p">(</span><span class="n">bpy</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">Object</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+            <span class="n">bpy</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">unregister_class</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">UnboundLocalError</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="n">bpy</span><span class="o">.</span><span class="n">samplePropertyGroups</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">register</span><span class="p">()</span>
+</pre></div><p>There are of course many more things that need to be done to make this a fully working system, but hopefully this can help you get started. I will continue working on my engine tools addon and release it when it’s ready (you can follow progress at <a href="https://github.com/BlazingMammothGames/mammoth_blender_tools">BlazingMammothGames/mammoth_blender_tools</a> if you really like). The tool, when done, will hopefully server as a solid example for adapting Blender to your own needs in the future. For now, if you run into any trouble, don’t hesitate to ask for help in the comments!</p></article><footer><span>© 2020 Kenton Hamaluik</span></footer></body></html>
