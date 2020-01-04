@@ -49,6 +49,7 @@ body > header > h1 {
 p {
   text-align: justify;
   margin: 0;
+  hyphens: auto;
 }
 
 p + p {
