@@ -64,7 +64,7 @@ a {
 body > header > h1 {
   margin: 0;
   padding: 0;
-  border-bottom: 3px dotted var(--theme-comment);
+  border-bottom: 5px dashed var(--theme-red);
   line-height: 1;
 }
 
@@ -102,7 +102,7 @@ ul.postlist > li {
 ul.postlist > li > time,
 article > header > h1 > time {
   font-size: 10pt;
-  color: var(--theme-comment);
+  color: var(--theme-red);
   font-weight: normal;
   font-family: "Crimson Pro", serif;
 }
@@ -129,7 +129,7 @@ article figure figcaption {
 }
 
 :not(pre) > code {
-  border-bottom: 2px solid var(--theme-comment);
+  border-bottom: 2px dashed var(--theme-red);
   word-break: break-all;
   font-family: "Source Code Pro", monospace;
   font-size: 0.75em;
@@ -155,12 +155,12 @@ body > header {
 footer {
   font-size: 10pt;
   margin-top: 1em;
-  border-top: 3px dotted var(--theme-comment);
+  border-top: 5px dashed var(--theme-red);
   padding-top: 0.5em;
 }
 
 blockquote {
-  border-left: 4px solid var(--theme-comment);
+  border-left: 5px dashed var(--theme-red);
   margin: 1em;
   padding: 0 calc(0.5em + 4px) 0 0.5em;
 }
@@ -187,6 +187,11 @@ svg {
   fill: currentColor;
 }
 
+.highlight {
+  background: var(--theme-background);
+  color: var(--theme-foreground);
+}
+
 @media (prefers-color-scheme: dark) {
   body {
     background-color: var(--theme-background);
@@ -202,7 +207,7 @@ svg {
   }
 
   body > header > h1 {
-    border-bottom: 3px dotted var(--theme-cyan);
+    border-bottom: 5px dashed var(--theme-cyan);
   }
 
   ul.postlist > li > time,
@@ -211,15 +216,15 @@ svg {
   }
 
   :not(pre) > code {
-    border-bottom: 2px solid var(--theme-cyan);
+    border-bottom: 2px dashed var(--theme-cyan);
   }
 
   footer {
-    border-top: 3px dotted var(--theme-cyan);
+    border-top: 5px dashed var(--theme-cyan);
   }
 
   blockquote {
-    border-left: 4px solid var(--theme-cyan);
+    border-left: 5px dashed var(--theme-cyan);
   }
 
   /*img {
@@ -227,16 +232,12 @@ svg {
   }*/
 
   .highlight {
-    background-color: #2f313d;
+    background: #21222c;
   }
 }
 
 .highlight .hll {
   background-color: var(--theme-yellow);
-}
-.highlight {
-  background: var(--theme-background);
-  color: var(--theme-foreground);
 }
 .highlight .c {
   color: var(--theme-comment);

@@ -19,13 +19,13 @@
 
 <body>
     <header>
-        <h1><a href="/">Kenton Hamaluik</a></h1>
+        <h1><a href="{% block nameurl %}{% endblock %}">Kenton Hamaluik</a></h1>
     </header>
     <article>
         {% block content %}{% endblock content %}
     </article>
     <footer>
-        <span>© {{ now() | date(format="%Y") }} Kenton Hamaluik</span>
+        <span>© {{ now() | date(format="%Y") }} <a href="https://hamaluik.ca">Kenton Hamaluik</a></span>
     </footer>
 </body>
 
