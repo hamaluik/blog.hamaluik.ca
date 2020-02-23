@@ -99,7 +99,11 @@ impl Post {
         }))
     }
 
-    pub fn render(&self) -> Result<String, Box<dyn std::error::Error>> {
+    pub fn render(
+        &self,
+        style: &str,
+        katex_style: &str,
+    ) -> Result<String, Box<dyn std::error::Error>> {
         let markdown::FormatResponse {
             output,
             include_katex_css,
@@ -110,6 +114,8 @@ impl Post {
         context.insert("front", &self.front);
         context.insert("content", &output);
         context.insert("include_katex_css", &include_katex_css);
+        context.insert("style", style);
+        context.insert("katex_style", katex_style);
 
         let rendered = TEMPLATES.render("post.html", &context)?;
         let minified = html_minifier::HTMLMinifier::minify(rendered)?;

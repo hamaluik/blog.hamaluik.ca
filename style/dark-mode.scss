@@ -1,0 +1,43 @@
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: var(--theme-background);
+    color: var(--theme-foreground);
+  }
+  a {
+    color: var(--theme-foreground);
+  }
+
+  svg {
+    color: var(--theme-foreground);
+    fill: currentColor;
+  }
+
+  body > header > h1 {
+    border-bottom: 5px dashed var(--theme-cyan);
+  }
+
+  ul.postlist > li > time,
+  article > header > h1 > time {
+    color: var(--theme-cyan);
+  }
+
+  :not(pre) > code {
+    border-bottom: 2px dashed var(--theme-cyan);
+  }
+
+  footer {
+    border-top: 5px dashed var(--theme-cyan);
+  }
+
+  blockquote {
+    border-left: 5px dashed var(--theme-cyan);
+  }
+
+  /*img {
+        filter: grayscale(30%);
+    }*/
+
+  .highlight {
+    background: #21222c;
+  }
+}

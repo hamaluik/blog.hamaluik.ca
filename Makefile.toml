@@ -1,0 +1,16 @@
+[tasks.styles]
+script = [
+	"sass --no-source-map --no-charset style/style.scss docs/style.css",
+	"sass --no-source-map --no-charset style/katex.scss docs/katex.css",
+]
+
+[tasks.build-generator]
+command = "cargo"
+args = ["build"]
+dependencies = ["styles"]
+
+[tasks.build]
+command = "cargo"
+args = ["run"]
+dependencies = ["build-generator", "styles"]
+

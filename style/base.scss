@@ -1,0 +1,153 @@
+body {
+  max-width: 36em;
+  line-height: 1.2;
+  color: var(--theme-background);
+  background: var(--theme-foreground);
+  padding: 0 0.5em;
+  font-family: $font-body;
+  font-size: 16pt;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.2;
+  font-family: $font-headings;
+  font-weight: 800;
+  font-size: 32pt;
+  margin-bottom: 0;
+}
+
+h2 {
+  font-size: 28pt;
+}
+
+h3 {
+  font-size: 20pt;
+}
+
+body > header > h1 {
+  font-size: 60pt;
+  font-weight: 800;
+}
+
+p {
+  text-align: justify;
+  margin: 0;
+  hyphens: auto;
+}
+
+p + p {
+  text-indent: 2em;
+}
+
+a {
+  color: var(--theme-background);
+  text-decoration: none;
+  font-style: italic;
+}
+
+body > header > h1 {
+  margin: 0;
+  padding: 0;
+  border-bottom: 5px dashed var(--theme-red);
+  line-height: 1;
+}
+
+body > header > h1 > a {
+  font-style: normal;
+  word-break: normal;
+}
+
+a:hover,
+a:focus,
+a:active {
+  color: var(--theme-red);
+  text-decoration: none;
+}
+
+ul.postlist {
+  padding: 0;
+  list-style-type: none;
+}
+
+ul.postlist > li::before {
+  content: "➜";
+  width: 1em;
+  height: 1em;
+  margin-left: -1em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: start;
+}
+
+ul.postlist > li {
+  padding-left: 1em;
+}
+
+ul.postlist > li > time,
+article > header > h1 > time {
+  font-size: 10pt;
+  color: var(--theme-red);
+  font-weight: normal;
+  font-family: $font-body;
+}
+
+ul:not(.postlist) > li {
+  overflow-wrap: break-word;
+}
+
+article figure {
+  display: block;
+  text-align: center;
+}
+
+article figure img,
+article figure video {
+  max-width: 100%;
+}
+
+article figure figcaption {
+  display: block;
+  font-size: 10pt;
+  text-align: center;
+  margin-bottom: 0.5em;
+}
+
+:not(pre) > code {
+  border-bottom: 2px dashed var(--theme-red);
+  word-break: break-all;
+  font-family: $font-code;
+  font-size: 0.75em;
+}
+
+pre,
+figure {
+  overflow-x: auto;
+}
+
+body > header {
+  margin-bottom: 1em;
+}
+
+footer {
+  font-size: 10pt;
+  margin-top: 1em;
+  border-top: 5px dashed var(--theme-red);
+  padding-top: 0.5em;
+}
+
+blockquote {
+  border-left: 5px dashed var(--theme-red);
+  margin: 1em;
+  padding: 0 calc(0.5em + 4px) 0 0.5em;
+}
+
+footer > span {
+  display: block;
+}
+
+svg {
+  color: var(--theme-background);
+  fill: currentColor;
+}

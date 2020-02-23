@@ -36,12 +36,17 @@ fn main() {
     let outdir: PathBuf = PathBuf::from("docs").join("posts");
     std::fs::create_dir_all(&outdir).expect("can create docs/posts/ folder");
 
+    let style = std::fs::read_to_string(PathBuf::from("docs").join("style.css"))
+        .expect("can load CSS styles");
+    let katex_style = std::fs::read_to_string(PathBuf::from("docs").join("katex.css"))
+        .expect("can load katex style");
+
     let posts = load_posts("posts").expect("can load posts from posts/ folder");
     println!("Found {} posts, rendering them...", posts.len());
     let errors: Vec<String> = posts
         .par_iter()
         .filter_map(|post| {
-            let html = match post.render() {
+            let html = match post.render(&style, &katex_style) {
                 Ok(h) => h,
                 Err(e) => {
                     return Some(format!(
@@ -73,6 +78,7 @@ fn main() {
         context.insert("title", "Kenton Hamaluik");
         context.insert("posts", &posts);
         context.insert("include_katex_css", &false);
+        context.insert("style", &style);
 
         let rendered = post::TEMPLATES
             .render("index.html", &context)
