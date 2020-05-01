@@ -7,6 +7,7 @@ tags: [Unity]
 meta_image: /images/unity-editor-extension-mesh-colour/new-script.png
 preview_image: /images/unity-editor-extension-mesh-colour/new-script.png
 summary: I'm an engineer and a programmer, not an artist. This sometimes becomes an issue for me when I work on games as while I can make the game technically sound, the art is often downright horrible, or I spend way more time on it than I have any right to. I'm currently working on a long-term, back-burner type game project to keep me busy and distracted when I occasionally need a break from real life. Programming-wise, I'm fine, but what's a game without art? Well, aside from Dwarf Fortress and most Roguelikes out there, it's not much. Fortunately, I recently stumbled across (what I think) is a great art style - geometric assets, as shown below
+section: Game Development
 ---
 
 

@@ -5,6 +5,7 @@ author: kenton
 #published: 2011-12-03T14:50:00-07:00
 tags: [Python, Math]
 summary: "Computers are great, but as it turns out—they're not always the smartest of folks. However, they are great at doing simple math! Today, I'll show you how to exploit these silicon monsters to do something that sometimes humans even fail at: solving a simple non-linear equation."
+section: Math
 ---
 
 Computers are great, but as it turns out—they're not always the smartest of folks. However, they are great at doing simple math! Today, I'll show you how to exploit these silicon monsters to do something that sometimes humans even fail at: solving a simple non-linear equation.

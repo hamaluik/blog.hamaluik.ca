@@ -7,6 +7,7 @@ tags: [Haxe, Math]
 meta_image: /images/swept-aabb-collision-minkowski/raytrace_hit.png
 preview_image: /images/swept-aabb-collision-minkowski/raytrace_hit.png
 summary: Continuing on from yesterday’s post where I explored detecting discrete collisions using Minkowski differences, today I’m going to talk about detecting continuous collisions using Minkowski differences (again, focusing solely on axis-aligned bounding boxes). Continuous collision detection is essential in any game where you have fast-moving objects and/or low frame rates. It adds slightly more complexity to the discrete collision detection algorithm, but the advantages far outweigh the costs in this case!
+section: Math
 ---
 
 Continuing on from [yesterday's post](http://blog.hamaluik.ca/posts/simple-aabb-collision-using-the-minkowski-difference/) where I explored detecting discrete collisions using Minkowski differences, today I'm going to talk about detecting **continuous** collisions using Minkowski differences (again, focusing solely on axis-aligned bounding boxes). Continuous collision detection is essential in any game where you have fast-moving objects and/or low frame rates. It adds slightly more complexity to the discrete collision detection algorithm, but the advantages far outweigh the costs in this case!

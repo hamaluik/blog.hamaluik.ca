@@ -5,6 +5,7 @@ author: kenton
 published: 2012-04-02T00:00:00-07:00
 tags: [Java]
 summary: Although I still have reservations about using Java for publishing large projects (I find these inevitably become slow and clunky due to the JVM), Java is great from a programming standpoint. One thing I especially love about Java is the ability to do run-time "reflections" which allow you to hook into all the loaded classes at run time and do all kinds of crazy things. Combine this with custom Java annotations, and you get a very easy way to write a scriptable interface for a program for example.
+section: Programming Tutorials
 ---
 
 Although I still have reservations about using Java for publishing large projects (I find these inevitably become slow and clunky due to the JVM), Java is great from a programming standpoint. One thing I especially love about Java is the ability to do run-time "reflections" which allow you to hook into all the loaded classes at run time and do all kinds of crazy things. Combine this with custom Java annotations, and you get a very easy way to write a scriptable interface for a program for example.

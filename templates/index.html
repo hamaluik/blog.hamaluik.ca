@@ -14,13 +14,16 @@
 {% block nameurl %}https://hamaluik.ca/{% endblock %}
 
 {% block content %}
-<p>Hi there! I used to be a biomechanical engineer but now I develop software for a living (and for fun!) Occasionally I write about things that have captured my attention and I think others might find interesting. You can access some of my other works at <a href="https://hamaluik.ca">https://hamaluik.ca</a>.</p>
+<p>Hi there! I used to be a biomechanical engineer but now I develop software for a living (and for fun!) Occasionally I write about things that have captured my attention and I think others might find interesting. You can access some of my other works or contact me at <a href="https://hamaluik.ca">https://hamaluik.ca</a>.</p>
 
-<ul class='postlist'>
-    {% for post in posts %}
-    <li>
-        <a href='{{ post.url }}'>{{ post.front.title }}</a> <time datetime='{{ post.front.date | date(format="%+") }}'>({{ post.front.date | date(format="%Y-%m-%d") }})</time>
-    </li>
+{% for section, postlist in posts %}
+<h2>{{ section }}</h2>
+    <ul class="postlist">
+    {% for post in postlist %}
+        <li>
+            <a href='{{ post.url }}'>{{ post.front.title }}</a>
+        </li>
     {% endfor %}
-</ul>
+    </ul>
+{% endfor %}
 {% endblock content %}

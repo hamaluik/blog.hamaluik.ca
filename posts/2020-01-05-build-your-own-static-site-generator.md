@@ -5,6 +5,7 @@ author: kenton
 tags: [Programming]
 published: 2020-01-05T16:33:00-07:00
 summary: "Static site generators are fairly popular tools for creating websites, and there are a glut of them available to choose from. But writing your own generator for each site is relatively easy and straightforward and allows you significant more flexibility and ease-of-use."
+section: Articles
 ---
 
 [Static site generators](https://www.staticgen.com/) are fairly popular tools these days for creating websites. Static site generators typically work by taking a collection of markdown files and converting them into HTML files using templates, and are generally geared towards blogs (although they can be used to create just about any site or portion thereof). These generators represent a middle ground between manually creating an entire website from scratch in HTML and using a [CMS](https://en.wikipedia.org/wiki/Content_management_system) such as [Wordpress](https://wordpress.com/) while retaining significant advantages over each option:

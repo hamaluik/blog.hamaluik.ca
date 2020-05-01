@@ -3,6 +3,7 @@ mod post;
 use post::Post;
 
 use std::path::{Path, PathBuf};
+use std::collections::HashMap;
 
 fn load_posts<P: AsRef<Path>>(src: P) -> Result<Vec<Post>, Box<dyn std::error::Error>> {
     let mut posts: Vec<Post> = Vec::default();
@@ -28,6 +29,23 @@ fn load_posts<P: AsRef<Path>>(src: P) -> Result<Vec<Post>, Box<dyn std::error::E
     }
     posts.sort_by(|a, b| b.front.date.cmp(&a.front.date));
     Ok(posts)
+}
+
+fn group_posts(posts: Vec<Post>) -> Result<HashMap<String, Vec<Post>>, Box<dyn std::error::Error>> {
+    let mut map: HashMap<String, Vec<Post>> = HashMap::default();
+
+    for post in posts.into_iter() {
+        let section = post.front.section.clone();
+        let entry = map.entry(section);
+        let posts = entry.or_default();
+        posts.push(post);
+    }
+
+    for postlist in map.values_mut() {
+        postlist.sort_by(|a, b| a.front.title.cmp(&b.front.title));
+    }
+
+    Ok(map)
 }
 
 fn main() {
@@ -76,6 +94,7 @@ fn main() {
     {
         let mut context = tera::Context::new();
         context.insert("title", "Kenton Hamaluik");
+        let posts = group_posts(posts).expect("failed to group posts???");
         context.insert("posts", &posts);
         context.insert("include_katex_css", &false);
         context.insert("style", &style);

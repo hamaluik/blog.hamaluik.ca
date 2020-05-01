@@ -5,6 +5,7 @@ author: kenton
 published: 2020-03-03T10:29:00-07:00
 tags: [Programming]
 summary: "SQLCipher is a handy “extension” to SQLite3 which provides encryption to SQLite3 databases. It is readily accessible as a static library on Linux, but the community edition doesn't provide support for building a static library on Windows. Here are instructions for doing just that."
+section: Reference
 ---
 
 Why might you want a static library instead of a dynamic one? Theoretically, dynamically linking is preferred over static linking because if you can maintain forward compatibility you can save some space by reusing and sharing binaries across multiple consumers of those binaries. In practice, I've found this to rarely work well, and run headlong into [DLL Hell](https://en.wikipedia.org/wiki/DLL_Hell) more often than I haven't. To combat this, you typically include all the `.dll`s your application requires beside the main binary, which is basically statically linking but more fragile, and way more annoying—you'll always be lugging around several `.dll`s beside your final binary and you'll have to start bundling your application into an archive just to deliver it to consumers when you could just send them a single executable. As for the extra space, my hundreds-of-gigabytes SSD simply doesn't care if my application weighs a couple extra MB. If that is something you do care about, then static linking probably isn't for you. If the thought of adding a couple of MB to your executable size doesn't send you running for the hills, read on.

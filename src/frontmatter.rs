@@ -8,6 +8,7 @@ pub struct RawFrontMatter {
     pub tags: Vec<String>,
     pub published: Option<String>,
     pub summary: String,
+    pub section: Option<String>,
 }
 
 #[derive(Serialize)]
@@ -17,6 +18,7 @@ pub struct FrontMatter {
     pub tags: Vec<String>,
     pub date: DateTime<Utc>,
     pub summary: String,
+    pub section: String,
 }
 
 impl From<RawFrontMatter> for Option<FrontMatter> {
@@ -28,6 +30,7 @@ impl From<RawFrontMatter> for Option<FrontMatter> {
             tags,
             published,
             summary,
+            section,
         } = raw;
         if published.is_none() {
             return None;
@@ -50,6 +53,7 @@ impl From<RawFrontMatter> for Option<FrontMatter> {
             tags,
             date,
             summary,
+            section: section.unwrap_or("Miscellaneous".to_owned()),
         })
     }
 }

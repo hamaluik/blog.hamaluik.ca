@@ -4,6 +4,7 @@ slug: solving-systems-of-partial-differential-equations
 author: kenton
 published: 2011-11-27T00:00:00-07:00
 tags: [Math, Matlab]
+section: Math
 summary: "Systems of partial differential equations crop up all the time in engineering, especially when examining real-world complicated problems that vary in time (such as a ballistic trajectory with drag forces non-negligable), or in various process control systems (ex: relating flow conditions in systems of tanks with the height in those tanks)."
 ---
 
