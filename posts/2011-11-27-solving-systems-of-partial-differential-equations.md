@@ -53,7 +53,7 @@ end
 
 Save this code in the file `FunkySystem.m` in the current Matlab working directory.
 
-See how this function takes in the parameters $x$, $y$ (in $X$), and $t$? It then takes those parameters and calculates the differentials we're looking for an returns them in $\dot{X}$. So, how do we now take this and calculate $x$ and $y$ over a given time frame? Using the aforementioned `ode45` of course! `ode45` takes the form:
+See how this function takes in the parameters $$x$$, $$y$$ (in $$X$$), and $$t$$? It then takes those parameters and calculates the differentials we're looking for an returns them in $$\dot{X}$$. So, how do we now take this and calculate $$x$$ and $$y$$ over a given time frame? Using the aforementioned `ode45` of course! `ode45` takes the form:
 
 ```matlab
 [t, x] = ode45(@function_name, [t0 tf], [initial_values])
@@ -98,7 +98,7 @@ For systems with second-order partial differential equations as in the function:
 m \ddot{x} + c \dot{x} + k x = f(t)
 ```
 
-This method does not work straight away (we need first-order differential equations to be solved with `ode45`. Luckily, it is easy and possible to write a second-order differential in terms of a system of first order differentials by using a simple substitution. That is, create a new variable, $u$, and define it as such:
+This method does not work straight away (we need first-order differential equations to be solved with `ode45`. Luckily, it is easy and possible to write a second-order differential in terms of a system of first order differentials by using a simple substitution. That is, create a new variable, $$u$$, and define it as such:
 
 ```katex
 u = \dot{x}

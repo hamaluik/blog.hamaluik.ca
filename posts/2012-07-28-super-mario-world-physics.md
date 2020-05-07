@@ -44,7 +44,7 @@ Since I've started dabbling around with my own demos and games lately, I figured
 3. Import the motion capture results into Matlab and perform regression analyses on them to figure out the constants of motion
 
 	<figure>
-		<img src="/images/smw-physics/jumpdata.png">
+		<img src="/images/smw-physics/jumpdata.png" class="white">
 		<figcaption>A screenshot of the excel output from Mario jumping using motion analysis software</figcaption>
 	</figure>
 
@@ -52,27 +52,27 @@ Since I've started dabbling around with my own demos and games lately, I figured
 If you want to try this yourself, it's certainly easy enough to do and figure out, but more likely you're just interested in seeing some of the results I found. Here are the plots of the 5 basic motions I examined (walking, running, jumping, high-jumping, and following off a ledge):
 
 <figure>
-	<img src="/images/smw-physics/walking.png">
+	<img src="/images/smw-physics/walking.png" class="white">
 	<figcaption>A trace of the horizontal location of Mario while he walks</figcaption>
 </figure>
 
 <figure>
-	<img src="/images/smw-physics/running.png">
+	<img src="/images/smw-physics/running.png" class="white">
 	<figcaption>A trace of the horizontal location of Mario while he runs</figcaption>
 </figure>
 
 <figure>
-	<img src="/images/smw-physics/smalljump.png">
+	<img src="/images/smw-physics/smalljump.png" class="white">
 	<figcaption>A trace of the vertical location of Mario while he jumps</figcaption>
 </figure>
 
 <figure>
-	<img src="/images/smw-physics/highjump.png">
+	<img src="/images/smw-physics/highjump.png" class="white">
 	<figcaption>A trace of the vertical location of Mario while he high-jumps</figcaption>
 </figure>
 
 <figure>
-	<img src="/images/smw-physics/falling.png">
+	<img src="/images/smw-physics/falling.png" class="white">
 	<figcaption>A trace of the vertical location of Mario while he falls</figcaption>
 </figure>
 
@@ -80,16 +80,16 @@ In each of the plots above I've included a simple linear regression analysis bas
 
 Basically, when thinking about motion, there are a couple key relationships that exist - the velocity of the motion is the derivative with respect to time (rate of change) of the position of the object, and the acceleration of the motion is the derivative of the velocity with respect to time:
 
-$$
+```katex
 \begin{aligned}
 v &= \frac{dy}{dt} \\\\
 a &= \frac{dv}{dt} = \frac{d^2y}{dt^2}
 \end{aligned}
-$$
+```
 
 Then, assuming we have a constant acceleration due to gravity (in the real world this acceleration is 9.81 m/s^2), we can figure out what the regression coefficients in the above analyses mean:
 
-$$
+```katex
 \begin{aligned}
 a &= g \\\\
 v &= \int a dt \\\\
@@ -99,7 +99,7 @@ y &= \int v dt \\\\
 y &= \int \left(gt + v_0\right) dt \\\\
 y &= \frac{1}{2}gt^2 + v_0 t + y_0 \\\\
 \end{aligned}
-$$
+```
 
 Applying this math to the regression coefficients that I calculated, we find that the coefficient in front of the _t²_ term is half of gravity, while the coefficient in front of the _t_ term is the "jump" velocity (we can ignore the y_0 parameter, as it really doesn't mean much here). Using this, I found three separate gravities and push-off velocities, depending on the scenario (assuming short-Mario is 1m tall):
 

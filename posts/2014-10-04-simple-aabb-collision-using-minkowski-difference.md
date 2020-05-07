@@ -18,12 +18,16 @@ With some simple requirements in mind, I started Googling, and came across a met
 
 When you first read about [Minkowski sums and differences](http://twistedoakstudios.com/blog/Post554_minkowski-sums-and-differences), it can become very confusing very quickly (even if you are adept at math!). Luckily for us, the Minkowksi difference for two AABBs is itself an AABB, calculated as follows (assuming positive y is towards the bottom of the screen):
 
-$$AABB_{left}^{MD} = AABB_{left}^A - AABB_{right}^B$$
-$$AABB_{top}^{MD} = AABB_{top}^A - AABB_{bottom}^B$$
-$$AABB_{width}^{MD} = AABB_{width}^A + AABB_{width}^B$$
-$$AABB_{height}^{MD} = AABB_{height}^A + AABB_{height}^B$$
+```katex
+\begin{aligned}
+AABB_{left}^{MD} &= AABB_{left}^A - AABB_{right}^B \\
+AABB_{top}^{MD} &= AABB_{top}^A - AABB_{bottom}^B \\
+AABB_{width}^{MD} &= AABB_{width}^A + AABB_{width}^B \\
+AABB_{height}^{MD} &= AABB_{height}^A + AABB_{height}^B
+\end{aligned}
+```
 
-This tells us that when you compute the Minkowski difference of two AABBs, not only is the result bigger (its width and height are the sum of the input widths and heights, respectively), but its position is in some new weird location. Due to some fancy math that I won't get into here, it turns out that if the resulting Minkowkski-differenced AABB is encompasses the origin—$(0, 0)$—the two input AABBs are colliding! Thankfully, this is incredibly easy to calculate:
+This tells us that when you compute the Minkowski difference of two AABBs, not only is the result bigger (its width and height are the sum of the input widths and heights, respectively), but its position is in some new weird location. Due to some fancy math that I won't get into here, it turns out that if the resulting Minkowkski-differenced AABB is encompasses the origin—$$(0, 0)$$—the two input AABBs are colliding! Thankfully, this is incredibly easy to calculate:
 
 ```haxe
 var boundsPoint:Vector = null;
@@ -90,7 +94,7 @@ class AABB
 We can take this a step further by calculating the penetration vector of the two AABBs. Quite conveniently, the penetration vector is simply the minimum distance from the origin to the Minkowski-differenced resultant AABB, as shown below:
 
 <figure>
-    <img src="/images/simple-aabb-collision-using-minkowski-difference/penetration_vector.png">
+    <img src="/images/simple-aabb-collision-using-minkowski-difference/penetration_vector.png" class="white">
     <figcaption>The penetration vector is the vector that you can apply to one AABB to make sure it leaves the other.</figcaption>
 </figure>
 

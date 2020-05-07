@@ -21,7 +21,7 @@ lazy_static::lazy_static! {
         ext_description_lists: true,
         ..ComrakOptions::default()
     };
-    static ref INLINE_MATH_REGEX: regex::Regex = regex::Regex::new(r#"(\$|\\\()(.*?)(\$|\\\))"#).expect("valid regex");
+    static ref INLINE_MATH_REGEX: regex::Regex = regex::Regex::new(r#"(\$\$|\\\()(.*?)(\$\$|\\\))"#).expect("valid regex");
     //static ref INLINE_MATH_REGEX: regex::Regex = regex::Regex::new(r#"\$(.*?)\$"#).expect("valid regex");
 }
 

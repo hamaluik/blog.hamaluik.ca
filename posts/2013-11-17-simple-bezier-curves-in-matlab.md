@@ -40,7 +40,7 @@ Where \(t \in [0, 1]\). This isn't a big deal though, and in fact makes our live
 t = linspace(0, 1);
 ```
 
-The next thing we need to know is that $x(t)$ and $y(t)$ are just polynomials, defined as:
+The next thing we need to know is that $$x(t)$$ and $$y(t)$$ are just polynomials, defined as:
 
 ```katex
 \begin{aligned}
@@ -108,7 +108,7 @@ D &= x_0
 \end{aligned}
 ```
 
-Note that the equations are essentially the same for each dimension, so $z$ would follow the exact same format (note how the $y$ coefficients are calculated the exact same way as the $x$ ones).
+Note that the equations are essentially the same for each dimension, so $$z$$ would follow the exact same format (note how the $$y$$ coefficients are calculated the exact same way as the $$x$$ ones).
 
 In order to construct this in Matlab, we could do something like the following:
 
@@ -120,7 +120,7 @@ y = [0; 1; 2; 3];
 Such that we get points like:
 
 <figure>
-	<img src="/images/cubic-splines-matlab/points.png">
+	<img src="/images/cubic-splines-matlab/points.png" class="white">
 	<figcaption>The raw points we'll be using</figcaption>
 </figure>
 
@@ -143,7 +143,7 @@ plot(sx, sy);
 So that we get something like:
 
 <figure>
-	<img src="/images/cubic-splines-matlab/result.png">
+	<img src="/images/cubic-splines-matlab/result.png" class="white">
 	<figcaption>The cubic spline using the given raw points</figcaption>
 </figure>
 
@@ -159,7 +159,7 @@ plot(x, y, sx, sy);
 Which results in:
 
 <figure>
-	<img src="/images/cubic-splines-matlab/lowres.png">
+	<img src="/images/cubic-splines-matlab/lowres.png" class="white">
 	<figcaption>We can reduce the resolution of the spline substantially and still get decent results</figcaption>
 </figure>
 
@@ -177,4 +177,4 @@ x_1^2 &= \left(x_3^1 - x_2^1\right) + x_3^1 \\\\
 
 (Use the same formulation for the \(y\) dimension).
 
-I'll probably post more things later, such as how to calculate the length of each spline segment so that we can do things like determine appropriate $t$ resolutions and calculate total lengths of lines etc, but hopefully this will get you off to a start right now!
+I'll probably post more things later, such as how to calculate the length of each spline segment so that we can do things like determine appropriate $$t$$ resolutions and calculate total lengths of lines etc, but hopefully this will get you off to a start right now!

@@ -2,8 +2,8 @@ mod frontmatter;
 mod post;
 use post::Post;
 
-use std::path::{Path, PathBuf};
 use std::collections::HashMap;
+use std::path::{Path, PathBuf};
 
 fn load_posts<P: AsRef<Path>>(src: P) -> Result<Vec<Post>, Box<dyn std::error::Error>> {
     let mut posts: Vec<Post> = Vec::default();

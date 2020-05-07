@@ -91,7 +91,7 @@ for f in glob.iglob('book/*.md'):
 
 This script does the bare minimum:
 
-1. It collects each `.md` file in the `books` directory
+1. It collects each `.md` file in the `book` directory
 2. It parses the markdown and converts it to html
 3. It writes the result out with a minimal template to the `public` directory
 

@@ -2,7 +2,7 @@
 title: Solving Equations Using the Newton-Raphson Method
 slug: solving-equations-using-the-newton-raphson-method
 author: kenton
-#published: 2011-12-03T14:50:00-07:00
+published: 2011-12-03T14:50:00-07:00
 tags: [Python, Math]
 summary: "Computers are great, but as it turns out—they're not always the smartest of folks. However, they are great at doing simple math! Today, I'll show you how to exploit these silicon monsters to do something that sometimes humans even fail at: solving a simple non-linear equation."
 section: Math
@@ -10,7 +10,7 @@ section: Math
 
 Computers are great, but as it turns out—they're not always the smartest of folks. However, they are great at doing simple math! Today, I'll show you how to exploit these silicon monsters to do something that sometimes humans even fail at: solving a simple non-linear equation.
 
-What do I mean by solving a non-linear equation? Well, try solving for $x$ in the following equation:
+What do I mean by solving a non-linear equation? Well, try solving for $$x$$ in the following equation:
 
 ```katex
 5x+\ln\left(x\right)-\sin\left(3\pi x\right)+x^{0.53}=0
@@ -24,7 +24,7 @@ One the most famous (and simple) of numerical methods is the [Newton-Raphson](ht
 x_{n+1}=x_n-\frac{f(x_n)}{f'(x_n)}
 ```
 
-This simply means that you start with an initial guess, $Xn$, that you think is reasonably close to your answer (you can often get a good indication of this by plotting the function and seeing about where it hits 0). Next, you successively update your guess of what $x$ is by making adjustment based on the slope of the function. Finally, you stop improving your guess of what $x$ is once the error (or value of plugging in your estimated $x$ is in the function) is reasonably small.
+This simply means that you start with an initial guess, $$Xn$$, that you think is reasonably close to your answer (you can often get a good indication of this by plotting the function and seeing about where it hits 0). Next, you successively update your guess of what $$x$$ is by making adjustment based on the slope of the function. Finally, you stop improving your guess of what $$x$$ is once the error (or value of plugging in your estimated $$x$$ is in the function) is reasonably small.
 
 To demonstrate, I've whipped up a simple program in Python which will solve the above problem. It's quite heavily commented, so hopefully you won't have any trouble following along. Here's the source code listing:
 
@@ -82,6 +82,6 @@ Running this code results in the following:
     3	0.271	0.000
     Total process took 0.003000 seconds!
 
-As you can see, the value of $x$ that solved the above equation to an accuracy of better than 0.001 in 3 ms! Note: it probably took even less time that that, but my system clock might not be that accurate / printing to the screen is a relatively slow business. In case you're curious, an $x$ value of 0.271 will make the above equation equal 0.
+As you can see, the value of $$x$$ that solved the above equation to an accuracy of better than 0.001 in 3 ms! Note: it probably took even less time that that, but my system clock might not be that accurate / printing to the screen is a relatively slow business. In case you're curious, an $$x$$ value of 0.271 will make the above equation equal 0.
 
 Pretty neat huh?

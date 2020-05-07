@@ -5,7 +5,7 @@ author: kenton
 tags: [Math, Haxe]
 published: 2017-04-23T00:00:00-07:00
 summary: "I've previously written about using the Minkowski Difference to detect collisions of 2D AABBs, but I now want to expand this into creating a fully fleshed out and flexible collision engine for my own purposes. The engine will detect collisions using the GJK method, and calculate intersections using the EPA method. This post details how 2D GJK works, which will serve as a basis for getting the rest of the engine up and running."
-section: Libraries
+section: Programming Tutorials
 ---
 
 I've previously written about [using the Minkowski Difference to detect collisions of 2D AABBs](http://blog.hamaluik.ca/posts/simple-aabb-collision-using-minkowski-difference/), but I now want to expand that into creating a fully fleshed out and _flexible_ collision engine for my own purposes (in [Haxe](http://haxe.org/) of course!). I recommend you read up on the [Minkowski difference](https://en.wikipedia.org/wiki/Minkowski_addition) and the overall technique of using to calculate the intersection of shapes before diving into things here as hopefully things will make much more sense then. Full credit also goes to [William Bittle](https://github.com/wnbittle) who created [dyn4j](http://www.dyn4j.org/) (which is a collision detection and physics engine written in Java) for his blog posts on [GJK](http://www.dyn4j.org/2010/04/gjk-gilbert-johnson-keerthi/) and [EPA](http://www.dyn4j.org/2010/05/epa-expanding-polytope-algorithm/), which this work is heavily based on. Before I get any further, let me define what I want this collision engine to do:
@@ -143,7 +143,7 @@ A [simplex](https://en.wikipedia.org/wiki/Simplex) is a somewhat special shape i
 The GJK algorithm starts by calculating a triangle that fits within the Minkowski difference. If that first triangle contains the origin, then congrats! You've determined that the shapes are intersecting! Otherwise, see if you can make a new triangle which does contain the origin. Keep going until you've either created a triangle which contains the origin or are confident that there is not way you can create a triangle which contains the origin. This process is called "evolving the simplex", because you keep upgrading the simplex until you get what you want or find if its not possible.
 
 <figure>
-    <img src="/images/collision-engine-2d-detection/2d_yes_slow.gif">
+    <img src="/images/collision-engine-2d-detection/2d_yes_slow.gif" class="white">
     <figcaption>Evolving the simplex until it contains the origin.</figcaption>
 </figure>
 

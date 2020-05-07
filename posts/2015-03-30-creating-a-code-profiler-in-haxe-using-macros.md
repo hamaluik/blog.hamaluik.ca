@@ -339,7 +339,7 @@ case FFun(func):
 }
 ```
 
-There's a couple things going on here that need explaining. Firstly, the `macro` statement: using the `macro` statement before an expression is called "[reification](http://haxe.org/manual/macro-reification.html)", which is a fancy way of saying that the expression will be compiled into code. The expression can be any valid Haxe code, and within that expression you can use a variety of "[escapes](http://haxe.org/manual/macro-reification-expression.html)" (think using a `\"` in a string to escape a quote character.) In fact, the `$v{clsName}` and `$v{methodName}` shown above are examples of those escapes which will get replaced by the values of the `clsName` and `methodName` variables. Thus, the macro expression
+There's a couple things going on here that need explaining. Firstly, the `macro` statement: using the `macro` statement before an expression is called "[reification](http://haxe.org/manual/macro-reification.html)", which is a fancy way of saying that the expression will be compiled into code. The expression can be any valid Haxe code, and within that expression you can use a variety of "[escapes](http://haxe.org/manual/macro-reification-expression.html)" (think using a `\"` in a string to escape a quote character.) In fact, the <code>$v{clsName}</code> and <code>$v{methodName}</code> shown above are examples of those escapes which will get replaced by the values of the `clsName` and `methodName` variables. Thus, the macro expression
 
 ```haxe
 macro { Profiler.startProfile($v{clsName}, $v{methodName}); }

@@ -40,4 +40,10 @@
   .highlight {
     background: #21222c;
   }
+
+  img.white {
+      filter: invert(100%) hue-rotate(180deg);
+      mix-blend-mode: screen;
+  }
 }
+

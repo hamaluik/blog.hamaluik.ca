@@ -110,6 +110,10 @@ article figure video {
   max-width: 100%;
 }
 
+img.white {
+    mix-blend-mode: multiply;
+}
+
 article figure figcaption {
   display: block;
   font-size: 10pt;

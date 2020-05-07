@@ -5,7 +5,7 @@ author: kenton
 tags: [Math, Haxe]
 published: 2017-06-11T00:00:00-07:00
 summary: "In my last post, I discussed how to determine if any two convex shapes in two dimensions overlap. The result of this calculation is a boolean state—either the two are colliding or they aren't. This is great for things such as triggers, but if you want to use the collision engine for any type of physics calculations, you'll need at least one more crucial piece of information: the penetration vector. This post discusses how to calculate the penetration vector using the EPA algorithm."
-section: Libraries
+section: Programming Tutorials
 ---
 
 In my [last post](/posts/building-a-collision-engine-part-1-2d-gjk-collision-detection/), I discussed how to determine if any two convex shapes in two dimensions overlap. The result of this calculation is a boolean state—either the two are colliding or they aren't. This is great for things such as triggers, but if you want to use the collision engine for any type of physics calculations, you'll need at least one more crucial piece of information: the penetration vector.

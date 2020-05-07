@@ -17,14 +17,14 @@ Continuing on from [yesterday's post](http://blog.hamaluik.ca/posts/simple-aabb-
 If you aren't already familiar with performing discrete collision detection using Minkowski differences, I suggest you [read up on that now](http://blog.hamaluik.ca/posts/simple-aabb-collision-using-the-minkowski-difference/)—what I'm talking about here is an extension of that work. Probably the biggest reason to use swept/continuous collision detection rather than discrete detection is to prevent what is called _tunneling_, which is shown below.
 
 <figure>
-    <img src="/images/swept-aabb-collision-minkowski/tunneling.png">
+    <img src="/images/swept-aabb-collision-minkowski/tunneling.png" class="white">
     <figcaption>Since we're only solving physics at discrete time points, if an object is moving fast enough (or if the time between discrete points is large enough), said object will jump right "through" an obstacle without a collision ever being detected.</figcaption>
 </figure>
 
 The first thing we need to know about doing continuous collision detection using Minkowski differences is that the technique _doesn't_ work if the objects are already colliding (i.e., the resultant Minkowski AABB contains the origin). This isn't too bad however, as if the origin _is_ in the AABB, we can just do discrete collision detection to push the two objects apart. So if the Minkowski AABB cannot contain the origin, then that means that the Minkowski AABB must be located at some distance from the origin:
 
 <figure>
-    <img src="/images/swept-aabb-collision-minkowski/origin_outside.png">
+    <img src="/images/swept-aabb-collision-minkowski/origin_outside.png" class="white">
 </figure>
 
 We also know that if the Minkowski AABB **ever** contains the origin, then the two objects are colliding. If we are somehow able to construct a vector to move the Minkowski AABB such that it covers the origin, we know that the two objects will collide. If one of the objects were completely static (i.e., not moving), this vector would be the distance moved during the current frame by the moving box, i.e.:
@@ -35,26 +35,26 @@ var movementThisFrame:Vector = boxA.velocity * dt;
 
 However, since in this scenario **both** AABBs could be moving, we must make use of the [_relative_ velocity](http://en.wikipedia.org/wiki/Relative_velocity) between the two AABBs. The relative velocity between two objects refers to the **difference** in their velocities:
 
-$$
+```katex
 \vec{v}_{B/A} = \vec{v}_B - \vec{v}_A
-$$
+```
 
 In a typical world view, each box has its own velocity and is moving of its own accord:
 
 <figure>
-    <img src="/images/swept-aabb-collision-minkowski/world_velocity.png">
+    <img src="/images/swept-aabb-collision-minkowski/world_velocity.png" class="white">
 </figure>
 
 However, if you were to pretend for a moment that the red box is a car in a featureless black box and you were looking at the blue box, you would see its motion _relative_ to you, as if your car were perfectly still and the blue box was the only thing moving:
 
 <figure>
-    <img src="/images/swept-aabb-collision-minkowski/velocity_b_relative_to_a.png">
+    <img src="/images/swept-aabb-collision-minkowski/velocity_b_relative_to_a.png" class="white">
 </figure>
 
 Conversely, if you were in the blue box looking at the red one, your perception would be different:
 
 <figure>
-    <img src="/images/swept-aabb-collision-minkowski/velocity_a_relative_to_b.png">
+    <img src="/images/swept-aabb-collision-minkowski/velocity_a_relative_to_b.png" class="white">
 </figure>
 
 So; relative velocity—simple. But what does it have to do with continuous collision detection? Well, since the Minkowski AABB is the Minkowski _difference_ of our two AABBs, it would make sense that the vector which moves the Minkowski AABB over the origin is the _difference_ (relative velocity) of our two AABB's velocities:
@@ -66,12 +66,12 @@ var relativeMotion:Vector = (boxB.velocity - boxA.velocity) * dt;
 However note that we aren't calculating this vector based on how much we need to move the Minkowski AABB to cover the origin—we're calculating it based on the current velocities of each of the input boxes. Thus, there is _no_ guarantee that this vector will cause the Minkowski AABB to cover the origin and cause the AABBs to collide. However, **if it does**, we know that the two objects will collide during this frame! Kinda sneaky, eh?
 
 <figure>
-    <img src="/images/swept-aabb-collision-minkowski/relativeMotion_noCollide.png">
+    <img src="/images/swept-aabb-collision-minkowski/relativeMotion_noCollide.png" class="white">
     <figcaption>If moving the Minkowski AABB by the relative motion vector doesn't cause it to cover the origin, the objects can't collide during this frame.</figcaption>
 </figure>
 
 <figure>
-    <img src="/images/swept-aabb-collision-minkowski/relativeMotion_collide.png">
+    <img src="/images/swept-aabb-collision-minkowski/relativeMotion_collide.png" class="white">
     <figcaption>However, if moving the Minkowski AABB by the relative motion vector <b>does</b> cause it to cover the origin, the objects <b>will</b> collide during this frame!</figcaption>
 </figure>
 
@@ -84,28 +84,26 @@ var relativeMotion:Vector = (boxA.velocity - boxB.velocity) * dt;
 Now, we can ray-trace this relative motion vector from the origin, and see if it collides with our Minkowski AABB (see below). If it does, we get the same result as before with an added bonus—the point on the ray which first touches the AABB defines the point in time when the two objects will start colliding.
 
 <figure>
-    <img src="/images/swept-aabb-collision-minkowski/raytrace_nohit.png">
+    <img src="/images/swept-aabb-collision-minkowski/raytrace_nohit.png" class="white">
     <figcaption>If the relativeMotion ray cast from the origin <em>doesn't</em> intersect the AABB, then no collision will occur this frame.</figcaption>
 </figure>
 
 <figure>
-    <img src="/images/swept-aabb-collision-minkowski/raytrace_hit.png">
+    <img src="/images/swept-aabb-collision-minkowski/raytrace_hit.png" class="white">
     <figcaption>If the relativeMotion ray cast from the origin <em>does</em> intersect the AABB, then a collision will occur at the collision point.</figcaption>
 </figure>
 
-Once we have the collision point, all that's left to do is move the AABBs only as far as that collision point and zero their velocity in the normal direction. Note that this is a lot simpler if the collision point is converted into a fractional component $(h)$ of the relativeMotion vector such that:
+Once we have the collision point, all that's left to do is move the AABBs only as far as that collision point and zero their velocity in the normal direction. Note that this is a lot simpler if the collision point is converted into a fractional component $$(h)$$ of the relativeMotion vector such that:
 
-<div>
-$$
+```katex
 h\cdot\vec{d}_{B/A} = \vec{d}_{collision}
-$$
-</div>
+```
 
-We can then take $h$ to move the two boxes only as far as they can physically go (without penetrating each other):
+We can then take $$h$$ to move the two boxes only as far as they can physically go (without penetrating each other):
 
-$$
+```katex
 \vec{p}_A = \vec{p}_A + \left(\vec{v}_A \cdot \Delta_t \cdot h\right)
-$$
+```
 
 In code, this is easy:
 
