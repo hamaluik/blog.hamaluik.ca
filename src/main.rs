@@ -31,14 +31,16 @@ fn load_posts<P: AsRef<Path>>(src: P) -> Result<Vec<Post>, Box<dyn std::error::E
     Ok(posts)
 }
 
-fn group_posts(posts: Vec<Post>) -> Result<HashMap<String, Vec<Post>>, Box<dyn std::error::Error>> {
+fn group_posts(
+    posts: &Vec<Post>,
+) -> Result<HashMap<String, Vec<Post>>, Box<dyn std::error::Error>> {
     let mut map: HashMap<String, Vec<Post>> = HashMap::default();
 
     for post in posts.into_iter() {
         let section = post.front.section.clone();
         let entry = map.entry(section);
         let posts = entry.or_default();
-        posts.push(post);
+        posts.push(post.clone());
     }
 
     for postlist in map.values_mut() {
@@ -94,7 +96,7 @@ fn main() {
     {
         let mut context = tera::Context::new();
         context.insert("title", "Kenton Hamaluik");
-        let posts = group_posts(posts).expect("failed to group posts???");
+        let posts = group_posts(&posts).expect("failed to group posts???");
         context.insert("posts", &posts);
         context.insert("include_katex_css", &false);
         context.insert("style", &style);
@@ -107,6 +109,68 @@ fn main() {
         std::fs::write(outpath, minified).expect("can write index to index.html file");
     }
     println!("Index generated!");
+
+    println!("Generating RSS feed...");
+    {
+        let channel = rss::ChannelBuilder::default()
+            .namespaces({
+                let mut n: HashMap<String, String> = HashMap::with_capacity(1);
+                n.insert("atom".to_owned(), "http://www.w3.org/2005/Atom".to_owned());
+                n
+            })
+            .title("Kenton Hamaluik")
+            .link("https://blog.hamaluik.ca")
+            .description("Things from my life, usually programming related")
+            .language(Some("en-ca".to_owned()))
+            .copyright(Some(format!(
+                "Copyright {}, Kenton Hamaluik",
+                chrono::Local::now().format("%Y").to_string()
+            )))
+            .managing_editor(Some("kenton@hamaluik.ca (Kenton Hamaluik)".to_owned()))
+            .webmaster(Some("kenton@hamaluik.ca (Kenton Hamaluik)".to_owned()))
+            .pub_date(Some(chrono::Local::now().to_rfc2822()))
+            .last_build_date(Some(chrono::Local::now().to_rfc2822()))
+            .generator(Some("A roll-my-own special".to_owned()))
+            .ttl(Some("1440".to_string()))
+            .image(Some(
+                rss::ImageBuilder::default()
+                    .url("https://blog.hamaluik.ca/avatar_rss.png")
+                    .title("Kenton Hamaluik")
+                    .link("https://blog.hamaluik.ca")
+                    .width(Some("144".to_owned()))
+                    .height(Some("144".to_owned()))
+                    .description(Some("Kenton Hamaluik".to_owned()))
+                    .build()
+                    .unwrap(),
+            ))
+            .items(
+                posts
+                    .iter()
+                    .map(|post| {
+                        rss::ItemBuilder::default()
+                            .title(Some(post.front.title.to_owned()))
+                            .link(Some(format!("https://blog.hamaluik.ca{}", post.url)))
+                            .description(Some(post.front.summary.to_owned()))
+                            .author(Some("kenton@hamaluik.ca (Kenton Hamaluik)".to_owned()))
+                            .guid(Some(
+                                rss::GuidBuilder::default()
+                                    .value(format!("https://blog.hamaluik.ca{}", post.url))
+                                    .permalink(true)
+                                    .build()
+                                    .unwrap(),
+                            ))
+                            .pub_date(Some(post.front.date.to_rfc2822()))
+                            .build()
+                            .unwrap()
+                    })
+                    .collect::<Vec<rss::Item>>(),
+            )
+            .build()
+            .unwrap();
+        let output = PathBuf::from("docs").join("feed.rss");
+        std::fs::write(output, channel.to_string().replace("<channel>", "<channel><atom:link href=\"https://blog.hamaluik.ca/feed.rss\" rel=\"self\" type=\"application/rss+xml\" />")).expect("can write rss feed to feed.rss");
+    }
+    println!("RSS feed generated!");
 
     println!("Copying assets...");
     let outdir = PathBuf::from("docs");

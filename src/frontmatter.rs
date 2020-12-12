@@ -11,7 +11,7 @@ pub struct RawFrontMatter {
     pub section: Option<String>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Clone)]
 pub struct FrontMatter {
     pub title: String,
     pub slug: String,

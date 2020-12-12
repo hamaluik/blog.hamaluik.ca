@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ title }}</title>
+    <link rel="alternate" type="application/rss+xml" href="https://blog.hamaluik.ca/feed.rss" title="Posts RSS">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -25,6 +26,7 @@
     </article>
     <footer>
         <span>© {{ now() | date(format="%Y") }} <a href="https://hamaluik.ca">Kenton Hamaluik</a></span>
+        <span><a class="has-icon" href="https://blog.hamaluik.ca/feed.rss"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><rect width="256" height="256" fill="none"></rect><path d="M48,144a64,64,0,0,1,64,64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path><path d="M48,96A112,112,0,0,1,160,208" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path><path d="M48,48A160,160,0,0,1,208,208" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path><circle cx="52" cy="204" r="12"></circle></svg> Subscribe</a></span>
     </footer>
 </body>
 

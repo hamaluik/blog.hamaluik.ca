@@ -22,7 +22,7 @@ lazy_static::lazy_static! {
     };
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Clone)]
 pub struct Post {
     pub front: FrontMatter,
     pub source: PathBuf,
