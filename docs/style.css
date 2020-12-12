@@ -86,7 +86,7 @@
 }
 
 body {
-  margin: 0 auto;
+  margin: 1em auto;
   max-width: 36em;
   line-height: 1.2;
   color: var(--theme-background);
@@ -114,8 +114,12 @@ h3 {
   font-size: 20pt;
 }
 
+h1 a, h2 a, h3 a {
+  text-decoration: none;
+}
+
 body > header > h1 {
-  font-size: 60pt;
+  font-size: 48pt;
   font-weight: 800;
 }
 
@@ -131,8 +135,8 @@ p + p {
 
 a {
   color: var(--theme-background);
-  text-decoration: none;
-  font-style: italic;
+  text-decoration: underline;
+  text-decoration-color: var(--theme-red);
 }
 
 body > header > h1 {
@@ -162,7 +166,6 @@ ul.postlist {
 }
 
 ul.postlist > li::before {
-  content: "➜";
   width: 1em;
   height: 1em;
   margin-left: -1em;
@@ -173,6 +176,9 @@ ul.postlist > li::before {
 
 ul.postlist > li {
   padding-left: 1em;
+}
+ul.postlist > li a {
+  text-decoration: none;
 }
 
 ul.postlist > li > time,
@@ -209,7 +215,6 @@ article figure figcaption {
 }
 
 :not(pre) > code {
-  border-bottom: 2px dashed var(--theme-red);
   word-break: break-all;
   font-family: "Source Code Pro", "Fira Code", "Fira Mono", Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
   font-size: 0.75em;
@@ -254,6 +259,7 @@ svg {
 
   a {
     color: var(--theme-foreground);
+    text-decoration-color: var(--theme-cyan);
   }
 
   svg {
@@ -262,7 +268,7 @@ svg {
   }
 
   body > header > h1 {
-    border-bottom: 5px dashed var(--theme-cyan);
+    border-bottom-color: var(--theme-cyan);
   }
 
   ul.postlist > li > time,
@@ -271,20 +277,17 @@ article > header > h1 > time {
   }
 
   :not(pre) > code {
-    border-bottom: 2px dashed var(--theme-cyan);
+    /*border-color: var(--theme-cyan);*/
   }
 
   footer {
-    border-top: 5px dashed var(--theme-cyan);
+    border-top-color: var(--theme-cyan);
   }
 
   blockquote {
-    border-left: 5px dashed var(--theme-cyan);
+    border-left-color: var(--theme-cyan);
   }
 
-  /*img {
-        filter: grayscale(30%);
-    }*/
   .highlight {
     background: #21222c;
   }

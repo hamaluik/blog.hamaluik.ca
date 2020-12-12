@@ -5,6 +5,7 @@
   }
   a {
     color: var(--theme-foreground);
+    text-decoration-color: var(--theme-cyan);
   }
 
   svg {
@@ -13,7 +14,7 @@
   }
 
   body > header > h1 {
-    border-bottom: 5px dashed var(--theme-cyan);
+    border-bottom-color: var(--theme-cyan);
   }
 
   ul.postlist > li > time,
@@ -22,20 +23,16 @@
   }
 
   :not(pre) > code {
-    border-bottom: 2px dashed var(--theme-cyan);
+    /*border-color: var(--theme-cyan);*/
   }
 
   footer {
-    border-top: 5px dashed var(--theme-cyan);
+    border-top-color: var(--theme-cyan);
   }
 
   blockquote {
-    border-left: 5px dashed var(--theme-cyan);
+    border-left-color: var(--theme-cyan);
   }
-
-  /*img {
-        filter: grayscale(30%);
-    }*/
 
   .highlight {
     background: #21222c;

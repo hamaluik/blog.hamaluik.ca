@@ -1,5 +1,5 @@
 body {
-  margin: 0 auto;
+  margin: 1em auto;
   max-width: 36em;
   line-height: 1.2;
   color: var(--theme-background);
@@ -27,8 +27,14 @@ h3 {
   font-size: 20pt;
 }
 
+h1, h2, h3 {
+    a {
+        text-decoration: none;
+    }
+}
+
 body > header > h1 {
-  font-size: 60pt;
+  font-size: 48pt;
   font-weight: 800;
 }
 
@@ -44,8 +50,8 @@ p + p {
 
 a {
   color: var(--theme-background);
-  text-decoration: none;
-  font-style: italic;
+  text-decoration: underline;
+  text-decoration-color: var(--theme-red);
 }
 
 body > header > h1 {
@@ -75,7 +81,7 @@ ul.postlist {
 }
 
 ul.postlist > li::before {
-  content: "➜";
+  //content: "➜";
   width: 1em;
   height: 1em;
   margin-left: -1em;
@@ -86,6 +92,10 @@ ul.postlist > li::before {
 
 ul.postlist > li {
   padding-left: 1em;
+
+  a {
+      text-decoration: none;
+  }
 }
 
 ul.postlist > li > time,
@@ -122,10 +132,11 @@ article figure figcaption {
 }
 
 :not(pre) > code {
-  border-bottom: 2px dashed var(--theme-red);
+  //border: 1px solid var(--theme-red);
   word-break: break-all;
   font-family: $font-code;
   font-size: 0.75em;
+  //padding: 0 0.25em;
 }
 
 pre,
