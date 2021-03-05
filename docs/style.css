@@ -269,6 +269,10 @@ svg {
 }
 
 @media (prefers-color-scheme: dark) {
+  /*:root {
+      --theme-foreground: #282a36;
+      --theme-background: #f8f8f2;
+  }*/
   body {
     background-color: var(--theme-background);
     color: var(--theme-foreground);
@@ -724,3 +728,75 @@ article > header > h1 > time {
 }
 
 /* Literal.Number.Integer.Long */
+.slideshow {
+  width: 512px;
+  box-sizing: border-box;
+  text-align: center;
+  overflow: hidden;
+  margin: 0 auto;
+}
+.slideshow a {
+  display: inline-flex;
+  width: 1.5rem;
+  height: 1.5rem;
+  background: var(--theme-foreground);
+  color: var(--theme-background);
+  text-decoration: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin: 0 0 0.5rem 0;
+  position: relative;
+}
+.slideshow a:focus, .slideshow a:hover, .slideshow a:active {
+  color: var(--theme-foreground);
+  background: var(--theme-background);
+}
+@supports (scroll-snap-type) {
+  .slideshow a {
+    display: none;
+  }
+}
+.slideshow .slides {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--theme-foreground) transparent;
+}
+.slideshow .slides img {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+  width: 512px;
+  height: 512px;
+  margin-right: 50px;
+  border-radius: 10px;
+  transform-origin: center center;
+  transform: scale(1);
+  transition: transform 0.5s;
+  position: relative;
+}
+.slideshow .slides::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.slideshow .slides::-webkit-scrollbar-thumb {
+  background: var(--theme-foreground);
+  border-radius: 10px;
+}
+.slideshow .slides::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@media (prefers-color-scheme: dark) {
+  .slideshow a {
+    color: var(--theme-foreground);
+    background: var(--theme-background);
+  }
+  .slideshow a:focus, .slideshow a:hover, .slideshow a:active {
+    background: var(--theme-foreground);
+    color: var(--theme-background);
+  }
+}

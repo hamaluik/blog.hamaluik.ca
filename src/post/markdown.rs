@@ -1,25 +1,33 @@
 use super::katex::{create_katex_block, create_katex_inline};
 use super::plantuml::create_plantuml_svg;
 use super::pygments::create_code_block;
-use comrak::ComrakOptions;
+use comrak::{ComrakExtensionOptions, ComrakOptions, ComrakParseOptions, ComrakRenderOptions};
 
 lazy_static::lazy_static! {
     static ref COMRAK_OPTIONS: ComrakOptions = ComrakOptions {
-        hardbreaks: false,
-        smart: true,
-        github_pre_lang: false,
-        default_info_string: None,
-        unsafe_: true,
-        ext_strikethrough: true,
-        ext_tagfilter: false,
-        ext_table: true,
-        ext_autolink: true,
-        ext_tasklist: true,
-        ext_superscript: true,
-        ext_header_ids: Some("header".to_owned()),
-        ext_footnotes: true,
-        ext_description_lists: true,
-        ..ComrakOptions::default()
+        extension: ComrakExtensionOptions {
+            strikethrough: true,
+            tagfilter: false,
+            table: true,
+            autolink: true,
+            tasklist: true,
+            superscript: true,
+            header_ids: Some("header".to_owned()),
+            footnotes: true,
+            description_lists: true,
+            front_matter_delimiter: None,
+        },
+        parse: ComrakParseOptions {
+            smart: true,
+            default_info_string: None,
+        },
+        render: ComrakRenderOptions {
+            hardbreaks: false,
+            github_pre_lang: false,
+            width: 120,
+            unsafe_: true,
+            escape: false,
+        }
     };
     static ref INLINE_MATH_REGEX: regex::Regex = regex::Regex::new(r#"(\$\$|\\\()(.*?)(\$\$|\\\))"#).expect("valid regex");
     //static ref INLINE_MATH_REGEX: regex::Regex = regex::Regex::new(r#"\$(.*?)\$"#).expect("valid regex");
