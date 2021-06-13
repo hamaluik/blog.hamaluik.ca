@@ -21,12 +21,16 @@
     <header>
         <h1><a href="{% block nameurl %}{% endblock %}">Kenton Hamaluik</a></h1>
     </header>
-    <article>
-        {% block content %}{% endblock content %}
-    </article>
+    <main>
+        <article>
+            {% block content %}{% endblock content %}
+        </article>
+    </main>
     <footer>
-        <span>© {{ now() | date(format="%Y") }} <a href="https://hamaluik.ca">Kenton Hamaluik</a></span>
-        <span><a class="has-icon" href="https://blog.hamaluik.ca/feed.rss"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><rect width="256" height="256" fill="none"></rect><path d="M48,144a64,64,0,0,1,64,64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path><path d="M48,96A112,112,0,0,1,160,208" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path><path d="M48,48A160,160,0,0,1,208,208" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path><circle cx="52" cy="204" r="12"></circle></svg> Subscribe</a></span>
+        <p>
+            <span>© {{ now() | date(format="%Y") }} <a href="https://hamaluik.ca">Kenton Hamaluik</a></span>
+            <span><a class="has-icon" href="https://blog.hamaluik.ca/feed.rss"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><rect width="256" height="256" fill="none"></rect><path d="M48,144a64,64,0,0,1,64,64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path><path d="M48,96A112,112,0,0,1,160,208" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path><path d="M48,48A160,160,0,0,1,208,208" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path><circle cx="52" cy="204" r="12"></circle></svg> Subscribe</a></span>
+        </p>
     </footer>
 </body>
 

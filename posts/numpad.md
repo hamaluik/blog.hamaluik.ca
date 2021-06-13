@@ -17,7 +17,7 @@ With the macro keys idea in my head I decided to add an additional row to the nu
 This may be getting a bit confusing, but the schematic is straightforward enough, see below. I decided to give [KiCad](https://www.kicad.org/) a try for this project, and I'm glad I did—it was relatively pleasant to use and ultimately succeeded in a (spoilers) working board!
 
 <figure>
-    <a href="/images/numpad/schematic.pdf"><img src="/images/numpad/schematic.svg" alt="numpad schematic" loading="lazy"></a>
+    <a href="/images/numpad/schematic.pdf"><img class="white" src="/images/numpad/schematic.svg" alt="numpad schematic" loading="lazy"></a>
     <figcaption>The final numpad schematic, including encoders on the matrix, a buzzer, some controllable RGB LEDs, and a <a href="https://www.pjrc.com/teensy/teensyLC.html">Teensy LC</a> to tie it all together.</figcaption>
 </figure>
 
@@ -50,8 +50,6 @@ Once everything was in hand, it was time for assembly, starting with a test of t
             <img id="s01" src="/images/numpad/01.png" width="512" height="512" loading="lazy">
             <img id="s02" src="/images/numpad/02.png" width="512" height="512" loading="lazy">
         </div>
-        <a href="#s01">1</a>
-        <a href="#s02">2</a>
     </div>
     <figcaption>Beginning soldering the components onto the board</figcaption>
 </figure>
@@ -70,14 +68,6 @@ After those were in place, I decided to place the Teensy on the board. This ende
             <img id="s09" src="/images/numpad/09.png" width="512" height="512" loading="lazy">
             <img id="s10" src="/images/numpad/10.png" width="512" height="512" loading="lazy">
         </div>
-        <a href="#s03">1</a>
-        <a href="#s04">2</a>
-        <a href="#s05">3</a>
-        <a href="#s06">4</a>
-        <a href="#s07">5</a>
-        <a href="#s08">6</a>
-        <a href="#s09">7</a>
-        <a href="#s10">8</a>
     </div>
     <figcaption>Fitting and soldering the Teensy into place</figcaption>
 </figure>
@@ -90,8 +80,6 @@ With that in place, I could finally move on to soldering the remaining component
             <img id="s11" src="/images/numpad/11.png" width="512" height="512" loading="lazy">
             <img id="s12" src="/images/numpad/12.png" width="512" height="512" loading="lazy">
         </div>
-        <a href="#s11">1</a>
-        <a href="#s12">2</a>
     </div>
     <figcaption>Soldering the remaining components</figcaption>
 </figure>
@@ -111,8 +99,6 @@ With the electronics sorted, I dug out some old keycaps I wasn't using and got t
             <img id="s14" src="/images/numpad/14.png" width="512" height="512" loading="lazy">
             <img id="s15" src="/images/numpad/15.png" width="512" height="512" loading="lazy">
         </div>
-        <a href="#s14">1</a>
-        <a href="#s15">2</a>
     </div>
     <figcaption>The board with scrounged keycaps</figcaption>
 </figure>
@@ -129,17 +115,11 @@ Since I had a few LEDs on the bottom of the board, I decided to include some cle
             <img id="s20" src="/images/numpad/20.png" width="512" height="512" loading="lazy">
             <img id="s21" src="/images/numpad/21.png" width="512" height="512" loading="lazy">
         </div>
-        <a href="#s16">1</a>
-        <a href="#s17">2</a>
-        <a href="#s18">3</a>
-        <a href="#s19">4</a>
-        <a href="#s20">5</a>
-        <a href="#s21">6</a>
     </div>
     <figcaption>Making a plexiglass sandwich to cut walls out of</figcaption>
 </figure>
 
-Unfortunately, this design quickly unravelled as soon as I cut my block into thin strips for walls—the epoxy I used to bind the layers did not keep them together at all. A couple of the pieces exploded on the table saw, and the ones that came out fine crumbled under the slightest pressue. I'm not sure what exactly went wrong; though I suspect either I used the wrong epoxy for this job or the ratio was wildly off. In any event, since this was supposed to be a quick job, I decided not to fart around with it and just put together a more straightforward wooden box.
+Unfortunately, this design quickly unravelled as soon as I cut my block into thin strips for walls—the epoxy I used to bind the layers did not keep them together at all. A couple of the pieces exploded on the table saw, and the ones that came out fine crumbled under the slightest pressure. I'm not sure what exactly went wrong; though I suspect either I used the wrong epoxy for this job or the ratio was wildly off. In any event, since this was supposed to be a quick job, I decided not to fart around with it and just put together a more straightforward wooden box.
 
 <figure>
     <div class="slideshow">
@@ -147,8 +127,6 @@ Unfortunately, this design quickly unravelled as soon as I cut my block into thi
             <img id="s22" src="/images/numpad/22.png" width="512" height="512" loading="lazy">
             <img id="s23" src="/images/numpad/23.png" width="512" height="512" loading="lazy">
         </div>
-        <a href="#s22">1</a>
-        <a href="#s23">2</a>
     </div>
     <figcaption>Disaster!</figcaption>
 </figure>
@@ -164,11 +142,6 @@ I built the box using half-rabbets all along the base and a mitre joint on all t
             <img id="s27" src="/images/numpad/27.png" width="512" height="512" loading="lazy">
             <img id="s28" src="/images/numpad/28.png" width="512" height="512" loading="lazy">
         </div>
-        <a href="#s24">1</a>
-        <a href="#s25">2</a>
-        <a href="#s26">3</a>
-        <a href="#s27">4</a>
-        <a href="#s28">5</a>
     </div>
     <figcaption>Cutting all of the pieces to make a simple box case for the numpad</figcaption>
 </figure>
@@ -184,11 +157,6 @@ Once the pieces were cut I used tape to help me glue together all the edges, the
             <img id="s32" src="/images/numpad/32.png" width="512" height="512" loading="lazy">
             <img id="s33" src="/images/numpad/33.png" width="512" height="512" loading="lazy">
         </div>
-        <a href="#s29">1</a>
-        <a href="#s30">2</a>
-        <a href="#s31">3</a>
-        <a href="#s32">4</a>
-        <a href="#s33">5</a>
     </div>
     <figcaption>Glueing it all together</figcaption>
 </figure>
@@ -207,14 +175,6 @@ The next day, I removed the clamps, marked where to drill holes for the support 
             <img id="s40" src="/images/numpad/40.png" width="512" height="512" loading="lazy">
             <img id="s41" src="/images/numpad/41.png" width="512" height="512" loading="lazy">
         </div>
-        <a href="#s34">1</a>
-        <a href="#s35">2</a>
-        <a href="#s36">3</a>
-        <a href="#s37">4</a>
-        <a href="#s38">5</a>
-        <a href="#s39">6</a>
-        <a href="#s40">7</a>
-        <a href="#s41">8</a>
     </div>
     <figcaption>Glueing the threaded brass inserts into place</figcaption>
 </figure>
@@ -228,9 +188,6 @@ At this point, I remembered that I had to plug a USB cable through the case some
             <img id="s43" src="/images/numpad/43.png" width="512" height="512" loading="lazy">
             <img id="s44" src="/images/numpad/44.png" width="512" height="512" loading="lazy">
         </div>
-        <a href="#s42">1</a>
-        <a href="#s43">2</a>
-        <a href="#s44">3</a>
     </div>
     <figcaption>Finishing the case</figcaption>
 </figure>
@@ -244,9 +201,6 @@ Finally, it was time to place the board into the case and finish the firmware. T
             <img id="s46" src="/images/numpad/46.png" width="512" height="512" loading="lazy">
             <img id="s47" src="/images/numpad/47.png" width="512" height="512" loading="lazy">
         </div>
-        <a href="#s45">1</a>
-        <a href="#s46">2</a>
-        <a href="#s47">3</a>
     </div>
     <figcaption>Done!</figcaption>
 </figure>

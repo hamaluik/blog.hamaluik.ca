@@ -7,16 +7,37 @@ $font-code: "Source Code Pro", "Fira Code", "Fira Mono", Consolas, "Andale Mono 
   "Courier New", Courier, monospace;
 
 :root {
-  --theme-background: #282a36;
-  --theme-currentline: #44475a;
-  --theme-selection: #44475a;
-  --theme-foreground: #f8f8f2;
-  --theme-comment: #6272a4;
-  --theme-cyan: #8be9fd;
-  --theme-green: #50fa7b;
-  --theme-orange: #ffb86c;
-  --theme-pink: #ff79c6;
-  --theme-purple: #bd93f9;
-  --theme-red: #ff5555;
-  --theme-yellow: #f1fa8c;
+    --background-colour: #fff;
+    --font-colour: #222;
+    --footer-colour: #777;
+    --link-colour: #076678;
+    --visited-colour: #8f3f71;
+
+    --theme-background: #282a36;
+    --theme-currentline: #44475a;
+    --theme-selection: #44475a;
+    --theme-foreground: #f8f8f2;
+    --theme-comment: #6272a4;
+    --theme-cyan: #8be9fd;
+    --theme-green: #50fa7b;
+    --theme-orange: #ffb86c;
+    --theme-pink: #ff79c6;
+    --theme-purple: #bd93f9;
+    --theme-red: #ff5555;
+    --theme-yellow: #f1fa8c;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background-colour: #222;
+        --font-colour: #ddd;
+        --footer-colour: #aaa;
+        --link-colour: #458588;
+        --visited-colour: #b16286;
+    }
+
+    img.white {
+        filter: invert(100%) hue-rotate(180deg);
+        mix-blend-mode: screen !important;
+    }
 }

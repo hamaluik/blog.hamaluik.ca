@@ -1,142 +1,74 @@
-body {
-    margin: 1em auto;
-    max-width: 36em;
-    line-height: 1.2;
-    color: var(--theme-background);
-    background: var(--theme-foreground);
-    padding: 0 0.5em;
-    font-family: $font-body;
-    font-size: 16pt;
+*  {
+    box-sizing: border-box;
+    margin: 0;
 }
 
-h1,
-h2,
-h3 {
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 1rem clamp(1rem, 5vw, 3rem) 1rem;
+    font-family: $font-body;
+    font-size: 14pt;
+    line-height: 1.5;
+    color: var(--font-colour);
+    background: var(--background-colour);
+}
+
+body > * {
+    --layout-spacing: max(2vh, 2rem);
+    width: 100%;
+    max-width: 70ch;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+main {
+    margin-top: var(--layout-spacing);
+}
+
+footer {
+    margin-top: auto;
+    padding-top: var(--layout-spacing);
+}
+
+footer p {
+    border-top: 1px solid var(--footer-colour);
+    padding-top: 0.25em;
+    font-size: 0.9rem;
+    color: var(--footer-colour);
+
+    display: flex;
+    justify-content: space-between;
+}
+
+:is(h1, h2, h3) {
     line-height: 1.2;
     font-family: $font-headings;
-    font-weight: 800;
-    font-size: 32pt;
-    margin-bottom: 0;
 }
 
-h2 {
-    font-size: 28pt;
+:is(h2, h3, figure):not(:first-child) {
+    margin-top: 2em;
 }
 
-h3 {
-    font-size: 20pt;
-}
-
-h1, h2, h3 {
-    a {
-        text-decoration: none;
-    }
-}
-
-body > header > h1 {
-    font-size: 48pt;
-    font-weight: 800;
-}
-
-p {
-    text-align: justify;
-    margin: 0;
-    hyphens: auto;
-}
-
-p + p {
-    text-indent: 2em;
+article * + * {
+    margin-top: 1em;
 }
 
 a {
-    color: var(--theme-background);
-    text-decoration: underline;
-    text-decoration-color: var(--theme-red);
+    word-break: break-all;
+    color: var(--link-colour);
+    text-underline-offset: 0.15em;
 }
 
-body > header > h1 {
-    margin: 0;
-    padding: 0;
-    border-bottom: 5px dashed var(--theme-red);
-    line-height: 1;
-}
-
-body > header > h1 > a {
-    font-style: normal;
-    word-break: normal;
-}
-
-a:hover,
-a:focus,
-a:active {
-    color: var(--theme-red);
-    text-decoration: none;
-}
-
-ul.postlist {
-    padding: 0;
-    list-style-type: none;
-    margin-top: 0;
-    margin-bottom: 1em;
-}
-
-ul.postlist > li::before {
-    //content: "➜";
-    width: 1em;
-    height: 1em;
-    margin-left: -1em;
-    display: inline-flex;
-    align-items: center;
-    justify-content: start;
-}
-
-ul.postlist > li {
-    padding-left: 1em;
-
-    a {
-        text-decoration: none;
-    }
-}
-
-ul.postlist > li > time,
-article > header > h1 > time {
-    font-size: 10pt;
-    color: var(--theme-red);
-    font-weight: normal;
-    font-family: $font-body;
-}
-
-ul:not(.postlist) > li {
-    overflow-wrap: break-word;
-}
-
-article figure {
-    display: block;
-    text-align: center;
-}
-
-article figure img,
-article figure video {
-    max-width: 100%;
-}
-
-img.white {
-    mix-blend-mode: multiply;
-}
-
-article figure figcaption {
-    display: block;
-    font-size: 10pt;
-    text-align: center;
-    margin-bottom: 0.5em;
+a:visited {
+    color: var(--visited-colour);
 }
 
 :not(pre) > code {
-    //border: 1px solid var(--theme-red);
     word-break: break-all;
     font-family: $font-code;
-    font-size: 0.75em;
-    //padding: 0 0.25em;
+    font-size: 12pt;
 }
 
 pre,
@@ -144,48 +76,50 @@ figure {
     overflow-x: auto;
 }
 
-body > header {
-    margin-bottom: 1em;
-}
-
-footer {
-    font-size: 10pt;
-    margin-top: 1em;
-    border-top: 5px dashed var(--theme-red);
-    padding-top: 0.5em;
+figure {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    justify-content: center;
+    max-width: 100%;
 
-    a.has-icon {
-        display: inline-flex;
-        flex-direction: row;
-        align-items: center;
-
-        > svg {
-            margin-right: 0.5em;
+    &> {
+        a > img, img, video {
+            max-width: 100%;
+            margin: 0 auto;
         }
     }
 
-    svg {
-        width: auto;
-        height: 1em;
-        fill: currentColor;
-        stroke: currentColor;
+    figcaption {
+        font-size: 0.8rem;
+        text-align: center;
     }
 }
 
-blockquote {
-    border-left: 5px dashed var(--theme-red);
-    margin: 1em;
-    padding: 0 calc(0.5em + 4px) 0 0.5em;
+time {
+    font-size: 0.8rem;
 }
 
-footer > span {
-    display: block;
+header {
+    h1 {
+        a {
+            color: var(--font-colour);
+            font-size: 4rem;
+            font-weight: bold;
+            word-break: normal;
+        }
+
+        a:visited {
+            color: var(--font-colour);
+        }
+    }
 }
 
 svg {
-    color: var(--theme-background);
+    color: var(--font-colour);
     fill: currentColor;
+}
+
+img.white {
+    mix-blend-mode: multiply;
 }
