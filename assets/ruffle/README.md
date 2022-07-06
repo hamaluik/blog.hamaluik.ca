@@ -12,9 +12,13 @@ For more examples and in-depth documentation on how to use Ruffle on your websit
 
 ### Host Ruffle
 
+The `selfhosted` package is configured for websites that do not use bundlers or npm and just want
+to get up and running. If you'd prefer to use Ruffle through npm and a bundler, please 
+[refer to ruffle core](https://github.com/ruffle-rs/ruffle/tree/master/web/packages/core).
+
 Before you can get started with using Ruffle on your website, you must host its files yourself.
-Either take the [latest build](https://ruffle-rs.s3-us-west-1.amazonaws.com/builds/web/ruffle_web_latest.zip)
-or [build it yourself](../../README.md), and make these files accessible by your web server.
+Either take the [latest build](https://github.com/ruffle-rs/ruffle/releases)
+or [build it yourself](https://github.com/ruffle-rs/ruffle/blob/master/web/README.md), and make these files accessible by your web server.
 
 Please note that the `.wasm` file must be served properly, and some web servers may not do that
 correctly out of the box. Please see [our wiki](https://github.com/ruffle-rs/ruffle/wiki/Using-Ruffle#configure-wasm-mime-type)
@@ -39,10 +43,10 @@ If you want to control the Ruffle player, you may use our Javascript API.
 
     window.addEventListener("DOMContentLoaded", () => {
         let ruffle = window.RufflePlayer.newest();
-        let player = ruffle.create_player();
+        let player = ruffle.createPlayer();
         let container = document.getElementById("container");
         container.appendChild(player);
-        player.stream_swf_url("movie.swf");
+        player.load("movie.swf");
     });
 </script>
 <script src="path/to/ruffle/ruffle.js"></script>
@@ -50,4 +54,4 @@ If you want to control the Ruffle player, you may use our Javascript API.
 
 ## Building, testing or contributing
 
-Please see [the ruffle-web README](../../README.md).
+Please see [the ruffle-web README](https://github.com/ruffle-rs/ruffle/blob/master/web/README.md).

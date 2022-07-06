@@ -1,15 +1,14 @@
 $font-body: "Crimson Pro", Constantia, "Lucida Bright", Lucidabright, "Lucida Serif", Lucida, "DejaVu Serif",
   "Bitstream Vera Serif", "Liberation Serif", Georgia, serif;
-$font-headings: "Eczar", Constantia, "Lucida Bright", Lucidabright, "Lucida Serif", Lucida, "DejaVu Serif",
-  "Bitstream Vera Serif", "Liberation Serif", Georgia, serif;
+$font-headings: system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,BlinkMacSystemFont,Helvetica Neue;
 $font-code: "Source Code Pro", "Fira Code", "Fira Mono", Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console",
   "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco,
   "Courier New", Courier, monospace;
 
 :root {
-    --background-colour: #fff;
+    --background-colour: #fafafa;
     --font-colour: #222;
-    --footer-colour: #777;
+    --footer-colour: #222;
     --link-colour: #076678;
     --visited-colour: #8f3f71;
 
@@ -27,17 +26,3 @@ $font-code: "Source Code Pro", "Fira Code", "Fira Mono", Consolas, "Andale Mono 
     --theme-yellow: #f1fa8c;
 }
 
-@media (prefers-color-scheme: dark) {
-    :root {
-        --background-colour: #222;
-        --font-colour: #ddd;
-        --footer-colour: #aaa;
-        --link-colour: #458588;
-        --visited-colour: #b16286;
-    }
-
-    img.white {
-        filter: invert(100%) hue-rotate(180deg);
-        mix-blend-mode: screen !important;
-    }
-}

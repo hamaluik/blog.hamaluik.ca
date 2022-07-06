@@ -52,28 +52,10 @@
   src: local("Crimson Pro Bold"), local("CrimsonPro Bold"), local("Crimson-Pro-Bold"), local("CrimsonPro-Bold"), url(/fonts/crimson-pro-bold-latin.woff2) format("woff2"), url(/fonts/CrimsonPro-Bold.ttf.ttf) format("ttf");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
-/* latin-ext */
-@font-face {
-  font-family: "Eczar";
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: local("Eczar Bold"), local("Eczar-Bold"), url(/fonts/eczar-bold-latin-ext.woff2) format("woff2"), url(/fonts/Eczar-Bold.ttf.ttf) format("ttf");
-  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: "Eczar";
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: local("Eczar Bold"), local("Eczar-Bold"), url(/fonts/eczar-bold-latin.woff2) format("woff2"), url(/fonts/Eczar-Bold.ttf.ttf) format("ttf");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
 :root {
-  --background-colour: #fff;
+  --background-colour: #fafafa;
   --font-colour: #222;
-  --footer-colour: #777;
+  --footer-colour: #222;
   --link-colour: #076678;
   --visited-colour: #8f3f71;
   --theme-background: #282a36;
@@ -90,20 +72,6 @@
   --theme-yellow: #f1fa8c;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background-colour: #222;
-    --font-colour: #ddd;
-    --footer-colour: #aaa;
-    --link-colour: #458588;
-    --visited-colour: #b16286;
-  }
-
-  img.white {
-    filter: invert(100%) hue-rotate(180deg);
-    mix-blend-mode: screen !important;
-  }
-}
 * {
   box-sizing: border-box;
   margin: 0;
@@ -115,7 +83,7 @@ body {
   min-height: 100vh;
   padding: 1rem clamp(1rem, 5vw, 3rem) 1rem;
   font-family: "Crimson Pro", Constantia, "Lucida Bright", Lucidabright, "Lucida Serif", Lucida, "DejaVu Serif", "Bitstream Vera Serif", "Liberation Serif", Georgia, serif;
-  font-size: 14pt;
+  font-size: 16pt;
   line-height: 1.5;
   color: var(--font-colour);
   background: var(--background-colour);
@@ -149,7 +117,7 @@ footer p {
 
 :is(h1, h2, h3) {
   line-height: 1.2;
-  font-family: "Eczar", Constantia, "Lucida Bright", Lucidabright, "Lucida Serif", Lucida, "DejaVu Serif", "Bitstream Vera Serif", "Liberation Serif", Georgia, serif;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, BlinkMacSystemFont, Helvetica Neue;
 }
 
 :is(h2, h3, figure):not(:first-child) {
@@ -158,6 +126,10 @@ footer p {
 
 article * + * {
   margin-top: 1em;
+}
+
+li > a {
+  text-decoration: none;
 }
 
 a {
@@ -692,5 +664,3 @@ img.white {
   scroll-snap-align: center;
   scroll-snap-stop: always;
 }
-
-/*# sourceMappingURL=style.css.map */
