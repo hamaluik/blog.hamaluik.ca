@@ -103,7 +103,7 @@ impl Post {
         &self,
         style: &str,
         katex_style: &str,
-    ) -> Result<String, Box<dyn std::error::Error>> {
+    ) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
         let markdown::FormatResponse {
             output,
             include_katex_css,
@@ -118,8 +118,11 @@ impl Post {
         context.insert("katex_style", katex_style);
 
         let rendered = TEMPLATES.render("post.html", &context)?;
-        let minified = html_minifier::HTMLMinifier::minify(rendered)?;
 
-        Ok(minified)
+        let mut minifier = html_minifier::HTMLMinifier::new();
+        minifier.set_remove_comments(true);
+        minifier.set_minify_code(false);
+        minifier.digest(rendered)?;
+        Ok(Vec::from(minifier.get_html()))
     }
 }

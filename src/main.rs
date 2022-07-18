@@ -2,7 +2,7 @@ mod frontmatter;
 mod post;
 use post::Post;
 
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 use std::path::{Path, PathBuf};
 
 fn load_posts<P: AsRef<Path>>(src: P) -> Result<Vec<Post>, Box<dyn std::error::Error>> {
@@ -104,9 +104,12 @@ fn main() {
         let rendered = post::TEMPLATES
             .render("index.html", &context)
             .expect("can render index");
-        let minified = html_minifier::HTMLMinifier::minify(rendered).expect("can minify index");
+        let mut minifier = html_minifier::HTMLMinifier::new();
+        minifier.set_remove_comments(true);
+        minifier.set_minify_code(false);
+        minifier.digest(rendered).expect("can minify index");
         let outpath = PathBuf::from("docs").join("index.html");
-        std::fs::write(outpath, minified).expect("can write index to index.html file");
+        std::fs::write(outpath, minifier.get_html()).expect("can write index to index.html file");
     }
     println!("Index generated!");
 
@@ -114,14 +117,14 @@ fn main() {
     {
         let channel = rss::ChannelBuilder::default()
             .namespaces({
-                let mut n: HashMap<String, String> = HashMap::with_capacity(1);
+                let mut n: BTreeMap<String, String> = BTreeMap::new();
                 n.insert("atom".to_owned(), "http://www.w3.org/2005/Atom".to_owned());
                 n
             })
-            .title("Kenton Hamaluik")
-            .link("https://blog.hamaluik.ca")
-            .description("Things from my life, usually programming related")
-            .language(Some("en-ca".to_owned()))
+            .title("Kenton Hamaluik".to_string())
+            .link("https://blog.hamaluik.ca".to_string())
+            .description("Things from my life, usually programming related".to_string())
+            .language(Some("en-ca".to_string()))
             .copyright(Some(format!(
                 "Copyright {}, Kenton Hamaluik",
                 chrono::Local::now().format("%Y").to_string()
@@ -134,14 +137,13 @@ fn main() {
             .ttl(Some("1440".to_string()))
             .image(Some(
                 rss::ImageBuilder::default()
-                    .url("https://blog.hamaluik.ca/avatar_rss.png")
-                    .title("Kenton Hamaluik")
-                    .link("https://blog.hamaluik.ca")
+                    .url("https://blog.hamaluik.ca/avatar_rss.png".to_string())
+                    .title("Kenton Hamaluik".to_string())
+                    .link("https://blog.hamaluik.ca".to_string())
                     .width(Some("144".to_owned()))
                     .height(Some("144".to_owned()))
                     .description(Some("Kenton Hamaluik".to_owned()))
-                    .build()
-                    .unwrap(),
+                    .build(),
             ))
             .items(
                 posts
@@ -156,17 +158,14 @@ fn main() {
                                 rss::GuidBuilder::default()
                                     .value(format!("https://blog.hamaluik.ca{}", post.url))
                                     .permalink(true)
-                                    .build()
-                                    .unwrap(),
+                                    .build(),
                             ))
                             .pub_date(Some(post.front.date.to_rfc2822()))
                             .build()
-                            .unwrap()
                     })
                     .collect::<Vec<rss::Item>>(),
             )
-            .build()
-            .unwrap();
+            .build();
         let output = PathBuf::from("docs").join("feed.rss");
         std::fs::write(output, channel.to_string().replace("<channel>", "<channel><atom:link href=\"https://blog.hamaluik.ca/feed.rss\" rel=\"self\" type=\"application/rss+xml\" />")).expect("can write rss feed to feed.rss");
     }
