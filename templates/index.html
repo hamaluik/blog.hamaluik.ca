@@ -21,7 +21,7 @@
     <ul class="postlist">
     {% for post in postlist %}
         <li>
-            <a href='{{ post.url }}'>{{ post.front.title }}</a>
+            <a href='{{ post.url }}'>{{ post.front.title }}</a> <time datetime='{{ post.front.date | date(format="%+") }}'>({{ post.front.date | date(format="%Y-%m-%d") }})</time>
         </li>
     {% endfor %}
     </ul>

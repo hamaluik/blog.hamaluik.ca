@@ -128,10 +128,6 @@ article * + * {
   margin-top: 1em;
 }
 
-li > a {
-  text-decoration: none;
-}
-
 a {
   word-break: break-all;
   color: var(--link-colour);
